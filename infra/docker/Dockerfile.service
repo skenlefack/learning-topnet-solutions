@@ -13,7 +13,7 @@ COPY package.json package-lock.json* ./
 COPY packages/shared/package.json ./packages/shared/
 ARG SERVICE_NAME
 COPY packages/${SERVICE_NAME}/package.json ./packages/${SERVICE_NAME}/
-RUN npm ci --production=false
+RUN npm install --production=false
 
 # --- Build ---
 FROM base AS build
