@@ -1,0 +1,40 @@
+###############################################################################
+# ARIS Academy — Backend Microservice Dockerfile
+# Multi-stage build for Fastify services
+###############################################################################
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# --- Dependencies ---
+FROM base AS deps
+COPY package.json package-lock.json* ./
+COPY packages/shared/package.json ./packages/shared/
+ARG SERVICE_NAME
+COPY packages/${SERVICE_NAME}/package.json ./packages/${SERVICE_NAME}/
+RUN npm ci --production=false
+
+# --- Build ---
+FROM base AS build
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ARG SERVICE_NAME
+RUN npm run build --workspace=packages/shared || echo "shared build skipped"
+RUN npm run build --workspace=packages/${SERVICE_NAME}
+
+# --- Production ---
+FROM base AS production
+ENV NODE_ENV=production
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 academy
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/packages/shared ./packages/shared
+ARG SERVICE_NAME
+COPY --from=build /app/packages/${SERVICE_NAME}/dist ./packages/${SERVICE_NAME}/dist
+COPY --from=build /app/packages/${SERVICE_NAME}/package.json ./packages/${SERVICE_NAME}/package.json
+COPY package.json ./
+USER academy
+EXPOSE ${SERVICE_PORT:-4001}
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:'+(process.env.SERVICE_PORT||4001)+'/health',r=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"
+CMD ["sh", "-c", "node packages/${SERVICE_NAME}/dist/server.js"]

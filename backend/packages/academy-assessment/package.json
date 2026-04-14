@@ -1,0 +1,15 @@
+{
+  "name": "@aris-academy/academy-assessment",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": { "build": "tsc", "dev": "tsx watch src/server.ts", "start": "node dist/server.js" },
+  "dependencies": {
+    "@aris-academy/shared": "*",
+    "fastify": "^4.25.0", "@fastify/jwt": "^8.0.0", "@fastify/cors": "^9.0.0",
+    "minio": "^8.0.0", "pdfkit": "^0.14.0", "qrcode": "^1.5.3", "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5"
+  }
+}

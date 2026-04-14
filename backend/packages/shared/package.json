@@ -1,0 +1,26 @@
+{
+  "name": "@aris-academy/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "ioredis": "^5.3.2",
+    "kafkajs": "^2.2.4",
+    "fastify": "^4.25.0",
+    "@fastify/jwt": "^8.0.0",
+    "@fastify/cors": "^9.0.0",
+    "@fastify/rate-limit": "^9.1.0",
+    "zod": "^3.22.4",
+    "fastify-plugin": "^4.5.1",
+    "pino": "^8.17.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0"
+  }
+}

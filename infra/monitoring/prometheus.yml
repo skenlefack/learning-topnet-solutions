@@ -1,0 +1,110 @@
+###############################################################################
+# ARIS Academy — Prometheus Configuration
+# Scrape targets: Fastify services, Node Exporter, PG Exporter, Redis Exporter
+###############################################################################
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    cluster: "aris-academy"
+    environment: "production"
+
+# ---------------------------------------------------------------------------
+# Alerting (Alertmanager)
+# ---------------------------------------------------------------------------
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+# ---------------------------------------------------------------------------
+# Rule files
+# ---------------------------------------------------------------------------
+rule_files:
+  - "/etc/prometheus/rules/*.yml"
+
+# ---------------------------------------------------------------------------
+# Scrape configs
+# ---------------------------------------------------------------------------
+scrape_configs:
+  # --- Prometheus self-monitoring ------------------------------------------
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          service: "prometheus"
+
+  # --- ARIS Academy Backend Services (Fastify /metrics) --------------------
+  - job_name: "academy-course"
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["academy-course:4001"]
+        labels:
+          service: "academy-course"
+          tier: "backend"
+
+  - job_name: "academy-learning"
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["academy-learning:4002"]
+        labels:
+          service: "academy-learning"
+          tier: "backend"
+
+  - job_name: "academy-assessment"
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["academy-assessment:4003"]
+        labels:
+          service: "academy-assessment"
+          tier: "backend"
+
+  - job_name: "academy-live"
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["academy-live:4004"]
+        labels:
+          service: "academy-live"
+          tier: "backend"
+
+  # --- Node Exporter (system / VM metrics) ---------------------------------
+  - job_name: "node-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          service: "node-exporter"
+          tier: "infrastructure"
+
+  # --- PostgreSQL Exporter -------------------------------------------------
+  - job_name: "postgres-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+        labels:
+          service: "postgres"
+          tier: "database"
+
+  # --- Redis Exporter ------------------------------------------------------
+  - job_name: "redis-exporter"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+        labels:
+          service: "redis"
+          tier: "cache"
+
+  # --- Traefik metrics (if enabled via static config) ----------------------
+  # Uncomment if you add metrics entrypoint to traefik.yml:
+  # - job_name: "traefik"
+  #   static_configs:
+  #     - targets: ["traefik:8082"]
+  #       labels:
+  #         service: "traefik"
+  #         tier: "proxy"

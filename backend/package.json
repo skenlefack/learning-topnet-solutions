@@ -1,0 +1,42 @@
+{
+  "name": "aris-academy-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ARIS Academy — Backend Microservices (AU-IBAR)",
+  "workspaces": [
+    "packages/shared",
+    "packages/academy-course",
+    "packages/academy-learning",
+    "packages/academy-assessment",
+    "packages/academy-live"
+  ],
+  "scripts": {
+    "dev:course": "npm run dev --workspace=packages/academy-course",
+    "dev:learning": "npm run dev --workspace=packages/academy-learning",
+    "dev:assessment": "npm run dev --workspace=packages/academy-assessment",
+    "dev:live": "npm run dev --workspace=packages/academy-live",
+    "build": "npm run build --workspaces",
+    "lint": "eslint packages/*/src --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:routes": "vitest run --config vitest.routes.config.ts",
+    "test:integration": "vitest run --config vitest.config.ts",
+    "migrate:up": "node-pg-migrate up --migrations-dir migrations --migration-file-language sql",
+    "migrate:down": "node-pg-migrate down --migrations-dir migrations --migration-file-language sql",
+    "migrate:create": "node-pg-migrate create --migrations-dir migrations --migration-file-language sql"
+  },
+  "devDependencies": {
+    "node-pg-migrate": "^7.0.0",
+    "@testcontainers/postgresql": "^10.28.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^1.6.1",
+    "eslint": "^8.56.0",
+    "jsonwebtoken": "^9.0.3",
+    "testcontainers": "^10.28.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}

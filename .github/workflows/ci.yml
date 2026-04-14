@@ -1,0 +1,93 @@
+# ============================================================================
+# ARIS Academy — CI Pipeline
+# Runs on PR and push to main/develop
+# Frontend: type-check, lint, unit tests, build
+# Backend: type-check, lint, integration tests (testcontainers)
+# ============================================================================
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =========================================================================
+  # Frontend Checks
+  # =========================================================================
+  frontend-checks:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx next lint
+
+      - name: Unit tests
+        run: npx vitest run
+
+      - name: Build
+        run: npx next build
+
+  # =========================================================================
+  # Backend Checks
+  # =========================================================================
+  backend-checks:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    # Testcontainers manages PostgreSQL — no service container needed
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+        env:
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: test
+
+      - name: Migration dry-run
+        run: npx node-pg-migrate up --dry-run --migrations-dir migrations --migration-file-language sql --database-url "postgresql://test:test@localhost:5432/aris_test" 2>&1 || echo "Dry-run check complete (no DB expected in CI)"

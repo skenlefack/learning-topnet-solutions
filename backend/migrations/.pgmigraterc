@@ -1,0 +1,8 @@
+{
+  "migration-file-language": "sql",
+  "migrations-dir": "migrations",
+  "schema": "academy_core",
+  "create-schema": true,
+  "check-order": true,
+  "migration-filename-format": "utc"
+}

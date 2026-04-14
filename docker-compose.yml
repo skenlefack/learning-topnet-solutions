@@ -1,0 +1,366 @@
+###############################################################################
+# ARIS Academy — learning.au-ibar.org
+# Docker Compose — Production-Ready Containerized Platform
+# AU-IBAR © 2026
+###############################################################################
+
+name: aris-academy
+
+services:
+  # =========================================================================
+  # INFRASTRUCTURE
+  # =========================================================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: academy-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: academy
+      POSTGRES_USER: ${POSTGRES_USER:-academy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-academy_secret_2026}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./infra/postgres/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - academy-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-academy} -d academy"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: academy-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - academy-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  kafka:
+    image: apache/kafka:latest
+    container_name: academy-kafka
+    restart: unless-stopped
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: "aris-academy-kafka-cluster-01"
+    volumes:
+      - kafka_data:/tmp/kraft-combined-logs
+    ports:
+      - "9094:9094"
+    networks:
+      - academy-net
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  kafka-init:
+    image: apache/kafka:latest
+    container_name: academy-kafka-init
+    restart: "no"
+    entrypoint: ["/bin/bash", "/scripts/init-kafka-topics.sh"]
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: kafka:9092
+      KAFKA_REPLICATION_FACTOR: 1
+    volumes:
+      - ./infra/scripts/init-kafka-topics.sh:/scripts/init-kafka-topics.sh:ro
+    networks:
+      - academy-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  # =========================================================================
+  # DATABASE MIGRATIONS (run-once)
+  # =========================================================================
+
+  migrate:
+    image: node:20-alpine
+    container_name: academy-migrate
+    restart: "no"
+    working_dir: /app
+    command: npx node-pg-migrate up --migrations-dir migrations --migration-file-language sql
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-academy}:${POSTGRES_PASSWORD:-academy_secret_2026}@postgres:5432/academy
+    volumes:
+      - ./backend/migrations:/app/migrations:ro
+      - ./backend/package.json:/app/package.json:ro
+    networks:
+      - academy-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # =========================================================================
+  # BACKEND MICROSERVICES
+  # =========================================================================
+
+  academy-course:
+    build:
+      context: ./backend
+      dockerfile: ../infra/docker/Dockerfile.service
+      args:
+        SERVICE_NAME: academy-course
+    container_name: academy-course
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: academy-course
+      SERVICE_PORT: 4001
+      DATABASE_URL: postgres://${POSTGRES_USER:-academy}:${POSTGRES_PASSWORD:-academy_secret_2026}@postgres:5432/academy
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-academy_minio_secret}
+    ports:
+      - "4001:4001"
+    networks:
+      - academy-net
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  academy-learning:
+    build:
+      context: ./backend
+      dockerfile: ../infra/docker/Dockerfile.service
+      args:
+        SERVICE_NAME: academy-learning
+    container_name: academy-learning
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: academy-learning
+      SERVICE_PORT: 4002
+      DATABASE_URL: postgres://${POSTGRES_USER:-academy}:${POSTGRES_PASSWORD:-academy_secret_2026}@postgres:5432/academy
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+    ports:
+      - "4002:4002"
+    networks:
+      - academy-net
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  academy-assessment:
+    build:
+      context: ./backend
+      dockerfile: ../infra/docker/Dockerfile.service
+      args:
+        SERVICE_NAME: academy-assessment
+    container_name: academy-assessment
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: academy-assessment
+      SERVICE_PORT: 4003
+      DATABASE_URL: postgres://${POSTGRES_USER:-academy}:${POSTGRES_PASSWORD:-academy_secret_2026}@postgres:5432/academy
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-academy_minio_secret}
+    ports:
+      - "4003:4003"
+    networks:
+      - academy-net
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  academy-live:
+    build:
+      context: ./backend
+      dockerfile: ../infra/docker/Dockerfile.service
+      args:
+        SERVICE_NAME: academy-live
+    container_name: academy-live
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: academy-live
+      SERVICE_PORT: 4004
+      DATABASE_URL: postgres://${POSTGRES_USER:-academy}:${POSTGRES_PASSWORD:-academy_secret_2026}@postgres:5432/academy
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+      BBB_URL: ${BBB_URL:-https://bbb.au-ibar.org/bigbluebutton/}
+      BBB_SECRET: ${BBB_SECRET:-bbb-shared-secret}
+    ports:
+      - "4004:4004"
+    networks:
+      - academy-net
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  # =========================================================================
+  # FRONTEND
+  # =========================================================================
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infra/docker/Dockerfile.frontend
+    container_name: academy-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+      NEXT_PUBLIC_BBB_URL: ${BBB_URL:-https://bbb.au-ibar.org}
+      NEXT_PUBLIC_APP_URL: ${APP_URL:-https://learning.au-ibar.org}
+    ports:
+      - "3000:3000"
+    networks:
+      - academy-net
+    depends_on:
+      - academy-course
+      - academy-learning
+      - academy-assessment
+      - academy-live
+
+  # =========================================================================
+  # REVERSE PROXY (Traefik)
+  # =========================================================================
+
+  traefik:
+    image: traefik:v3.0
+    container_name: academy-traefik
+    restart: unless-stopped
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.filename=/etc/traefik/dynamic.yml"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@au-ibar.org"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./infra/nginx/traefik-dynamic.yml:/etc/traefik/dynamic.yml
+      - letsencrypt_data:/letsencrypt
+    networks:
+      - academy-net
+    labels:
+      - "traefik.enable=true"
+
+  # =========================================================================
+  # STORAGE
+  # =========================================================================
+
+  minio:
+    image: minio/minio:latest
+    container_name: academy-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-academy_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-academy_minio_secret}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - academy-net
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: academy-minio-init
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_HOST: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-academy_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-academy_minio_secret}
+    volumes:
+      - ./infra/scripts/init-minio.sh:/init-minio.sh:ro
+    entrypoint: ["/bin/sh", "/init-minio.sh"]
+    networks:
+      - academy-net
+
+# =========================================================================
+# VOLUMES & NETWORKS
+# =========================================================================
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  kafka_data:
+    driver: local
+  minio_data:
+    driver: local
+  letsencrypt_data:
+    driver: local
+
+networks:
+  academy-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24

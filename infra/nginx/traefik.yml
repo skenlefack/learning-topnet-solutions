@@ -1,0 +1,92 @@
+###############################################################################
+# ARIS Academy — Traefik v3 Static Configuration
+# Production: TLS via Let's Encrypt, security hardening, access logging
+###############################################################################
+
+# ---------------------------------------------------------------------------
+# Global
+# ---------------------------------------------------------------------------
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+# ---------------------------------------------------------------------------
+# Log
+# ---------------------------------------------------------------------------
+log:
+  level: WARN
+  format: json
+
+accessLog:
+  format: json
+  filters:
+    statusCodes:
+      - "200-299"
+      - "400-599"
+  fields:
+    defaultMode: keep
+    names:
+      ClientUsername: drop
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
+        Content-Type: keep
+        X-Forwarded-For: keep
+
+# ---------------------------------------------------------------------------
+# EntryPoints
+# ---------------------------------------------------------------------------
+entryPoints:
+  web:
+    address: ":80"
+    transport:
+      respondingTimeouts:
+        readTimeout: 60s
+        writeTimeout: 60s
+        idleTimeout: 180s
+
+  # websecure — uncomment when TLS/Let's Encrypt is available
+  # websecure:
+  #   address: ":443"
+  #   http:
+  #     tls:
+  #       certResolver: letsencrypt
+
+# ---------------------------------------------------------------------------
+# Certificate Resolvers — Let's Encrypt (uncomment when public DNS is ready)
+# ---------------------------------------------------------------------------
+# certificatesResolvers:
+#   letsencrypt:
+#     acme:
+#       email: admin@au-ibar.org
+#       storage: /letsencrypt/acme.json
+#       httpChallenge:
+#         entryPoint: web
+
+# ---------------------------------------------------------------------------
+# API / Dashboard
+# ---------------------------------------------------------------------------
+api:
+  dashboard: true
+  insecure: false
+
+# ---------------------------------------------------------------------------
+# Providers
+# ---------------------------------------------------------------------------
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    watch: true
+    exposedByDefault: false
+    network: aris-academy_academy-net
+
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+
+# ---------------------------------------------------------------------------
+# Ping (health check for Traefik itself)
+# ---------------------------------------------------------------------------
+ping:
+  entryPoint: web

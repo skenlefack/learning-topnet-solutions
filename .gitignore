@@ -1,0 +1,15 @@
+node_modules/
+.next/
+dist/
+.env
+*.log
+.DS_Store
+.turbo/
+coverage/
+*.tsbuildinfo
+letsencrypt/
+NUL
+test-output.txt
+test-err.txt
+.claude/
+*.docx

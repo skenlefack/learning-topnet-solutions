@@ -1,0 +1,128 @@
+###############################################################################
+# ARIS Academy — GitLab CI/CD Pipeline
+# Stages: test → build → deploy
+# Target: VM-ACADEMY (10.202.101.144) via SSH
+###############################################################################
+
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: "20"
+  DOCKER_TLS_CERTDIR: ""
+
+# =============================================================================
+# TEST STAGE
+# =============================================================================
+
+frontend-test:
+  stage: test
+  image: node:20-alpine
+  cache:
+    key: frontend-${CI_COMMIT_REF_SLUG}
+    paths:
+      - frontend/node_modules/
+  before_script:
+    - cd frontend
+    - npm ci --prefer-offline
+  script:
+    - npx tsc --noEmit
+    - npx vitest run
+  only:
+    - main
+    - develop
+    - merge_requests
+
+backend-test:
+  stage: test
+  image: node:20-alpine
+  cache:
+    key: backend-${CI_COMMIT_REF_SLUG}
+    paths:
+      - backend/node_modules/
+  before_script:
+    - cd backend
+    - npm ci --prefer-offline
+  script:
+    - npx tsc --noEmit
+    - npm run lint --if-present
+    - npx vitest run --config vitest.unit.config.ts
+    - npx vitest run --config vitest.routes.config.ts
+  variables:
+    JWT_SECRET: test-secret-key-for-ci
+    NODE_ENV: test
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# =============================================================================
+# BUILD STAGE — Build Docker images on the server directly
+# =============================================================================
+
+build:
+  stage: build
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq sshpass > /dev/null
+  script:
+    - |
+      sshpass -p "$VM_ACADEMY_PASSWORD" ssh -o StrictHostKeyChecking=no \
+        ${VM_ACADEMY_USER}@${VM_ACADEMY_HOST} << 'ENDSSH'
+        set -e
+        cd /opt/aris-academy
+
+        # Pull latest code
+        git pull origin main
+
+        # Build all images
+        docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+
+        echo "Build complete: $(date)"
+      ENDSSH
+  only:
+    - main
+  when: on_success
+
+# =============================================================================
+# DEPLOY STAGE — Deploy to VM-ACADEMY
+# =============================================================================
+
+deploy-production:
+  stage: deploy
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq sshpass curl > /dev/null
+  script:
+    - |
+      sshpass -p "$VM_ACADEMY_PASSWORD" ssh -o StrictHostKeyChecking=no \
+        ${VM_ACADEMY_USER}@${VM_ACADEMY_HOST} << 'ENDSSH'
+        set -e
+        cd /opt/aris-academy
+
+        # Stop and recreate containers with prod overlay
+        docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+
+        # Clean up old images
+        docker image prune -f
+
+        # Wait for services to start
+        echo "Waiting for services to start..."
+        sleep 15
+
+        # Health checks
+        echo "Running health checks..."
+        curl -sf http://localhost:3000 > /dev/null && echo "✓ Frontend OK" || echo "✗ Frontend FAILED"
+        curl -sf http://localhost:4001/health > /dev/null && echo "✓ Course service OK" || echo "✗ Course service FAILED"
+        curl -sf http://localhost:4002/health > /dev/null && echo "✓ Learning service OK" || echo "✗ Learning service FAILED"
+        curl -sf http://localhost:4003/health > /dev/null && echo "✓ Assessment service OK" || echo "✗ Assessment service FAILED"
+        curl -sf http://localhost:4004/health > /dev/null && echo "✓ Live service OK" || echo "✗ Live service FAILED"
+
+        echo "Deployment complete: $(date)"
+      ENDSSH
+  environment:
+    name: production
+    url: http://learning.au-ibar.org
+  only:
+    - main
+  when: manual

@@ -1,0 +1,219 @@
+###############################################################################
+# ARIS Academy — Traefik Dynamic Routing
+# learning.au-ibar.org
+###############################################################################
+
+http:
+  # =========================================================================
+  # Routers
+  # =========================================================================
+  routers:
+    # --- Dashboard (secured, internal access only) -------------------------
+    academy-dashboard:
+      rule: "Host(`learning.au-ibar.org`) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
+      entryPoints: ["web"]
+      service: api@internal
+      middlewares: ["dashboard-auth"]
+
+    # --- Frontend ----------------------------------------------------------
+    academy-web:
+      rule: "Host(`learning.au-ibar.org`)"
+      entryPoints: ["web"]
+      service: academy-frontend
+      middlewares: ["security-headers", "compress", "rate-limit-frontend"]
+      priority: 1
+
+    # --- API: Course Service -----------------------------------------------
+    academy-api-course:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/courses`)"
+      entryPoints: ["web"]
+      service: academy-course-svc
+      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- API: Learning Service ---------------------------------------------
+    academy-api-learning:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/learning`)"
+      entryPoints: ["web"]
+      service: academy-learning-svc
+      middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- API: Assessment Service -------------------------------------------
+    academy-api-assessment:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/assessment`)"
+      entryPoints: ["web"]
+      service: academy-assessment-svc
+      middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- API: Live Service -------------------------------------------------
+    academy-api-live:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/live`)"
+      entryPoints: ["web"]
+      service: academy-live-svc
+      middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+  # =========================================================================
+  # Services (load-balanced backends)
+  # =========================================================================
+  services:
+    academy-frontend:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:3000"
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 5s
+
+    academy-course-svc:
+      loadBalancer:
+        servers:
+          - url: "http://academy-course:4001"
+        healthCheck:
+          path: /health
+          interval: 15s
+          timeout: 5s
+
+    academy-learning-svc:
+      loadBalancer:
+        servers:
+          - url: "http://academy-learning:4002"
+        healthCheck:
+          path: /health
+          interval: 15s
+          timeout: 5s
+
+    academy-assessment-svc:
+      loadBalancer:
+        servers:
+          - url: "http://academy-assessment:4003"
+        healthCheck:
+          path: /health
+          interval: 15s
+          timeout: 5s
+
+    academy-live-svc:
+      loadBalancer:
+        servers:
+          - url: "http://academy-live:4004"
+        healthCheck:
+          path: /health
+          interval: 15s
+          timeout: 5s
+
+  # =========================================================================
+  # Middlewares
+  # =========================================================================
+  middlewares:
+    # --- HTTPS redirect (uncomment when TLS is enabled) --------------------
+    # https-redirect:
+    #   redirectScheme:
+    #     scheme: https
+    #     permanent: true
+
+    # --- Strip prefixes (one per service for clarity) ----------------------
+    api-strip-courses:
+      stripPrefix:
+        prefixes:
+          - "/api/courses"
+
+    api-strip-learning:
+      stripPrefix:
+        prefixes:
+          - "/api/learning"
+
+    api-strip-assessment:
+      stripPrefix:
+        prefixes:
+          - "/api/assessment"
+
+    api-strip-live:
+      stripPrefix:
+        prefixes:
+          - "/api/live"
+
+    # --- CORS --------------------------------------------------------------
+    cors:
+      headers:
+        accessControlAllowOriginList:
+          - "http://learning.au-ibar.org"
+          - "http://10.202.101.144"
+          - "https://learning.au-ibar.org"
+          - "https://au-ibar.org"
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        accessControlAllowHeaders:
+          - Content-Type
+          - Authorization
+          - X-Tenant-ID
+          - X-Request-ID
+          - Accept-Language
+        accessControlExposeHeaders:
+          - X-Request-ID
+          - X-RateLimit-Limit
+          - X-RateLimit-Remaining
+        accessControlMaxAge: 86400
+        addVaryHeader: true
+
+    # --- Rate limiting (API) — 100 avg / 200 burst per source IP ----------
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 200
+        period: 1s
+        sourceCriterion:
+          requestHeaderName: X-Forwarded-For
+
+    # --- Rate limiting (frontend) — more generous -------------------------
+    rate-limit-frontend:
+      rateLimit:
+        average: 200
+        burst: 400
+        period: 1s
+        sourceCriterion:
+          requestHeaderName: X-Forwarded-For
+
+    # --- Security headers --------------------------------------------------
+    security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(self), geolocation=(), payment=()"
+        customResponseHeaders:
+          X-Content-Type-Options: "nosniff"
+          X-Download-Options: "noopen"
+          X-Permitted-Cross-Domain-Policies: "none"
+          X-Robots-Tag: "noindex, nofollow"
+
+    # --- Gzip compression --------------------------------------------------
+    compress:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
+        minResponseBodyBytes: 1024
+
+    # --- Retry (backend services) ------------------------------------------
+    retry:
+      retry:
+        attempts: 3
+        initialInterval: 100ms
+
+    # --- Dashboard basic auth (generate with htpasswd) ---------------------
+    dashboard-auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$ARIS2026$ly1e4f69xCaUOzHH6mYFv0"

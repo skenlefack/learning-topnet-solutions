@@ -1,0 +1,238 @@
+###############################################################################
+# ARIS Academy — Prometheus Alert Rules
+# Covers: services, infrastructure, PostgreSQL, Redis, Kafka, SSL
+###############################################################################
+
+groups:
+  # =========================================================================
+  # Service Health
+  # =========================================================================
+  - name: service_health
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.job }} on {{ $labels.instance }} has been unreachable for more than 1 minute."
+
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (job)
+            /
+            sum(rate(http_requests_total[5m])) by (job)
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High 5xx error rate on {{ $labels.job }}"
+          description: "{{ $labels.job }} has >5% error rate (current: {{ $value | humanizePercentage }})."
+
+      - alert: HighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job)) > 2
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p95 latency on {{ $labels.job }}"
+          description: "{{ $labels.job }} p95 latency is {{ $value | humanizeDuration }} (threshold: 2s)."
+
+      - alert: HighRequestRate
+        expr: sum(rate(http_requests_total[1m])) by (job) > 500
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unusually high request rate on {{ $labels.job }}"
+          description: "{{ $labels.job }} is receiving {{ $value | humanize }} req/s."
+
+  # =========================================================================
+  # Infrastructure (Node Exporter)
+  # =========================================================================
+  - name: infrastructure
+    rules:
+      - alert: HighCpuUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanize }}% (threshold: 85%)."
+
+      - alert: CriticalCpuUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanize }}% (threshold: 95%)."
+
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanize }}% (threshold: 90%)."
+
+      - alert: DiskSpaceWarning
+        expr: (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk space warning on {{ $labels.instance }}"
+          description: "Disk {{ $labels.mountpoint }} is {{ $value | humanize }}% full."
+
+      - alert: DiskSpaceCritical
+        expr: (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk space critical on {{ $labels.instance }}"
+          description: "Disk {{ $labels.mountpoint }} is {{ $value | humanize }}% full. Immediate action required."
+
+  # =========================================================================
+  # PostgreSQL
+  # =========================================================================
+  - name: postgresql
+    rules:
+      - alert: PostgresTooManyConnections
+        expr: pg_stat_activity_count > 150
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL connections approaching limit"
+          description: "{{ $value }} active connections (max: 200)."
+
+      - alert: PostgresConnectionsCritical
+        expr: pg_stat_activity_count > 180
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL connections critical"
+          description: "{{ $value }} active connections — near max_connections=200."
+
+      - alert: PostgresSlowQueries
+        expr: pg_stat_activity_max_tx_duration{datname="academy"} > 300
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Long-running PostgreSQL queries detected"
+          description: "Longest transaction running for {{ $value | humanizeDuration }}."
+
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL exporter cannot reach the database."
+
+      - alert: PostgresDeadlocks
+        expr: rate(pg_stat_database_deadlocks{datname="academy"}[5m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL deadlocks detected"
+          description: "Deadlocks occurring in database 'academy'."
+
+  # =========================================================================
+  # Redis
+  # =========================================================================
+  - name: redis
+    rules:
+      - alert: RedisHighMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis is using {{ $value | humanize }}% of maxmemory (768MB)."
+
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis exporter cannot reach the server."
+
+      - alert: RedisTooManyClients
+        expr: redis_connected_clients > 200
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Too many Redis clients connected"
+          description: "{{ $value }} clients connected to Redis."
+
+      - alert: RedisHighEvictions
+        expr: rate(redis_evicted_keys_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis high eviction rate"
+          description: "Redis is evicting {{ $value | humanize }} keys/s — consider increasing maxmemory."
+
+  # =========================================================================
+  # Kafka
+  # =========================================================================
+  - name: kafka
+    rules:
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_group_lag > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka consumer lag is high"
+          description: "Consumer group {{ $labels.consumergroup }} on topic {{ $labels.topic }} has lag {{ $value }}."
+
+      - alert: KafkaConsumerLagCritical
+        expr: kafka_consumer_group_lag > 10000
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kafka consumer lag is critical"
+          description: "Consumer group {{ $labels.consumergroup }} lag: {{ $value }}. Messages are piling up."
+
+  # =========================================================================
+  # SSL Certificate
+  # =========================================================================
+  - name: ssl
+    rules:
+      - alert: SSLCertExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "Certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}."
+
+      - alert: SSLCertExpiryCritical
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "SSL certificate expiry critical"
+          description: "Certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}. Renew immediately."
