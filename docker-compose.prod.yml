@@ -290,9 +290,9 @@ services:
     restart: unless-stopped
     ports: []
     environment:
-      NEXT_PUBLIC_API_URL: https://learning.au-ibar.org/api
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://10.202.101.144/api}
       NEXT_PUBLIC_BBB_URL: ${BBB_URL:-http://10.202.101.145/bigbluebutton/}
-      NEXT_PUBLIC_APP_URL: https://learning.au-ibar.org
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://10.202.101.144}
       NODE_ENV: production
     logging:
       driver: json-file

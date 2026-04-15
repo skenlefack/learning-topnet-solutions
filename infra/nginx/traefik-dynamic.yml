@@ -1,6 +1,6 @@
 ###############################################################################
 # ARIS Academy — Traefik Dynamic Routing
-# learning.au-ibar.org
+# learning.au-ibar.org | 10.202.101.144
 ###############################################################################
 
 http:
@@ -8,18 +8,10 @@ http:
   # Routers
   # =========================================================================
   routers:
-    # --- HTTP → HTTPS redirect (exclude ACME challenge path) ----------------
-    academy-http-redirect:
-      rule: "Host(`learning.au-ibar.org`) && !PathPrefix(`/.well-known/acme-challenge/`)"
-      entryPoints: ["web"]
-      middlewares: ["https-redirect"]
-      service: academy-frontend
-      priority: 1
-
     # --- Dashboard (secured, internal access only) -------------------------
     academy-dashboard:
-      rule: "Host(`learning.au-ibar.org`) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
-      entryPoints: ["websecure"]
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
+      entryPoints: ["web", "websecure"]
       service: api@internal
       middlewares: ["dashboard-auth"]
       tls:
@@ -27,8 +19,8 @@ http:
 
     # --- Frontend ----------------------------------------------------------
     academy-web:
-      rule: "Host(`learning.au-ibar.org`)"
-      entryPoints: ["websecure"]
+      rule: "Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)"
+      entryPoints: ["web", "websecure"]
       service: academy-frontend
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
       priority: 1
@@ -37,8 +29,8 @@ http:
 
     # --- API: Course Service -----------------------------------------------
     academy-api-course:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/courses`)"
-      entryPoints: ["websecure"]
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
+      entryPoints: ["web", "websecure"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
@@ -47,8 +39,8 @@ http:
 
     # --- API: Learning Service ---------------------------------------------
     academy-api-learning:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/learning`)"
-      entryPoints: ["websecure"]
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/learning`)"
+      entryPoints: ["web", "websecure"]
       service: academy-learning-svc
       middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
@@ -57,8 +49,8 @@ http:
 
     # --- API: Assessment Service -------------------------------------------
     academy-api-assessment:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/assessment`)"
-      entryPoints: ["websecure"]
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/assessment`)"
+      entryPoints: ["web", "websecure"]
       service: academy-assessment-svc
       middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
@@ -67,8 +59,8 @@ http:
 
     # --- API: Live Service -------------------------------------------------
     academy-api-live:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/live`)"
-      entryPoints: ["websecure"]
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/live`)"
+      entryPoints: ["web", "websecure"]
       service: academy-live-svc
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
@@ -128,12 +120,6 @@ http:
   # Middlewares
   # =========================================================================
   middlewares:
-    # --- HTTPS redirect ----------------------------------------------------
-    https-redirect:
-      redirectScheme:
-        scheme: https
-        permanent: true
-
     # --- Strip prefixes (one per service for clarity) ----------------------
     api-strip-courses:
       stripPrefix:
