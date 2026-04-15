@@ -5,65 +5,110 @@
 
 http:
   # =========================================================================
-  # Routers
+  # Routers — HTTP (port 80) for internal access
   # =========================================================================
   routers:
-    # --- Dashboard (secured, internal access only) -------------------------
-    academy-dashboard:
+    # --- Frontend (HTTP) ---------------------------------------------------
+    academy-web-http:
+      rule: "Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)"
+      entryPoints: ["web"]
+      service: academy-frontend
+      middlewares: ["security-headers", "compress", "rate-limit-frontend"]
+      priority: 1
+
+    # --- API: Course (HTTP) ------------------------------------------------
+    academy-api-course-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
+      entryPoints: ["web"]
+      service: academy-course-svc
+      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- API: Learning (HTTP) ----------------------------------------------
+    academy-api-learning-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/learning`)"
+      entryPoints: ["web"]
+      service: academy-learning-svc
+      middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- API: Assessment (HTTP) --------------------------------------------
+    academy-api-assessment-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/assessment`)"
+      entryPoints: ["web"]
+      service: academy-assessment-svc
+      middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- API: Live (HTTP) --------------------------------------------------
+    academy-api-live-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/live`)"
+      entryPoints: ["web"]
+      service: academy-live-svc
+      middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      priority: 10
+
+    # --- Dashboard (HTTP, secured) -----------------------------------------
+    academy-dashboard-http:
       rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
-      entryPoints: ["web", "websecure"]
+      entryPoints: ["web"]
       service: api@internal
       middlewares: ["dashboard-auth"]
-      tls:
-        certResolver: letsencrypt
 
-    # --- Frontend ----------------------------------------------------------
-    academy-web:
-      rule: "Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)"
-      entryPoints: ["web", "websecure"]
+    # =====================================================================
+    # Routers — HTTPS (port 443) with TLS (domain only, no IP)
+    # These activate automatically once Let's Encrypt issues the cert
+    # =====================================================================
+    academy-web-https:
+      rule: "Host(`learning.au-ibar.org`)"
+      entryPoints: ["websecure"]
       service: academy-frontend
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
       priority: 1
       tls:
         certResolver: letsencrypt
 
-    # --- API: Course Service -----------------------------------------------
-    academy-api-course:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
-      entryPoints: ["web", "websecure"]
+    academy-api-course-https:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/courses`)"
+      entryPoints: ["websecure"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
       tls:
         certResolver: letsencrypt
 
-    # --- API: Learning Service ---------------------------------------------
-    academy-api-learning:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/learning`)"
-      entryPoints: ["web", "websecure"]
+    academy-api-learning-https:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/learning`)"
+      entryPoints: ["websecure"]
       service: academy-learning-svc
       middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
       tls:
         certResolver: letsencrypt
 
-    # --- API: Assessment Service -------------------------------------------
-    academy-api-assessment:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/assessment`)"
-      entryPoints: ["web", "websecure"]
+    academy-api-assessment-https:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/assessment`)"
+      entryPoints: ["websecure"]
       service: academy-assessment-svc
       middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
       tls:
         certResolver: letsencrypt
 
-    # --- API: Live Service -------------------------------------------------
-    academy-api-live:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/live`)"
-      entryPoints: ["web", "websecure"]
+    academy-api-live-https:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/live`)"
+      entryPoints: ["websecure"]
       service: academy-live-svc
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
+      tls:
+        certResolver: letsencrypt
+
+    academy-dashboard-https:
+      rule: "Host(`learning.au-ibar.org`) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
+      entryPoints: ["websecure"]
+      service: api@internal
+      middlewares: ["dashboard-auth"]
       tls:
         certResolver: letsencrypt
 
