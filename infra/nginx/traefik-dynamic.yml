@@ -8,52 +8,72 @@ http:
   # Routers
   # =========================================================================
   routers:
+    # --- HTTP → HTTPS redirect --------------------------------------------
+    academy-http-redirect:
+      rule: "Host(`learning.au-ibar.org`)"
+      entryPoints: ["web"]
+      middlewares: ["https-redirect"]
+      service: academy-frontend
+      priority: 0
+
     # --- Dashboard (secured, internal access only) -------------------------
     academy-dashboard:
       rule: "Host(`learning.au-ibar.org`) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
-      entryPoints: ["web"]
+      entryPoints: ["websecure"]
       service: api@internal
       middlewares: ["dashboard-auth"]
+      tls:
+        certResolver: letsencrypt
 
     # --- Frontend ----------------------------------------------------------
     academy-web:
       rule: "Host(`learning.au-ibar.org`)"
-      entryPoints: ["web"]
+      entryPoints: ["websecure"]
       service: academy-frontend
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
       priority: 1
+      tls:
+        certResolver: letsencrypt
 
     # --- API: Course Service -----------------------------------------------
     academy-api-course:
       rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/courses`)"
-      entryPoints: ["web"]
+      entryPoints: ["websecure"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
+      tls:
+        certResolver: letsencrypt
 
     # --- API: Learning Service ---------------------------------------------
     academy-api-learning:
       rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/learning`)"
-      entryPoints: ["web"]
+      entryPoints: ["websecure"]
       service: academy-learning-svc
       middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
+      tls:
+        certResolver: letsencrypt
 
     # --- API: Assessment Service -------------------------------------------
     academy-api-assessment:
       rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/assessment`)"
-      entryPoints: ["web"]
+      entryPoints: ["websecure"]
       service: academy-assessment-svc
       middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
+      tls:
+        certResolver: letsencrypt
 
     # --- API: Live Service -------------------------------------------------
     academy-api-live:
       rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/live`)"
-      entryPoints: ["web"]
+      entryPoints: ["websecure"]
       service: academy-live-svc
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
+      tls:
+        certResolver: letsencrypt
 
   # =========================================================================
   # Services (load-balanced backends)
@@ -108,11 +128,11 @@ http:
   # Middlewares
   # =========================================================================
   middlewares:
-    # --- HTTPS redirect (uncomment when TLS is enabled) --------------------
-    # https-redirect:
-    #   redirectScheme:
-    #     scheme: https
-    #     permanent: true
+    # --- HTTPS redirect ----------------------------------------------------
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
 
     # --- Strip prefixes (one per service for clarity) ----------------------
     api-strip-courses:
@@ -139,10 +159,10 @@ http:
     cors:
       headers:
         accessControlAllowOriginList:
-          - "http://learning.au-ibar.org"
-          - "http://10.202.101.144"
           - "https://learning.au-ibar.org"
           - "https://au-ibar.org"
+          - "http://learning.au-ibar.org"
+          - "http://10.202.101.144"
         accessControlAllowMethods:
           - GET
           - POST

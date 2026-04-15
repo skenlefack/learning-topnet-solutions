@@ -46,23 +46,27 @@ entryPoints:
         writeTimeout: 60s
         idleTimeout: 180s
 
-  # websecure — uncomment when TLS/Let's Encrypt is available
-  # websecure:
-  #   address: ":443"
-  #   http:
-  #     tls:
-  #       certResolver: letsencrypt
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+    transport:
+      respondingTimeouts:
+        readTimeout: 60s
+        writeTimeout: 60s
+        idleTimeout: 180s
 
 # ---------------------------------------------------------------------------
-# Certificate Resolvers — Let's Encrypt (uncomment when public DNS is ready)
+# Certificate Resolvers — Let's Encrypt
 # ---------------------------------------------------------------------------
-# certificatesResolvers:
-#   letsencrypt:
-#     acme:
-#       email: admin@au-ibar.org
-#       storage: /letsencrypt/acme.json
-#       httpChallenge:
-#         entryPoint: web
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@au-ibar.org
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
 
 # ---------------------------------------------------------------------------
 # API / Dashboard

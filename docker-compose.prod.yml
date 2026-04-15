@@ -290,9 +290,9 @@ services:
     restart: unless-stopped
     ports: []
     environment:
-      NEXT_PUBLIC_API_URL: http://learning.au-ibar.org/api
+      NEXT_PUBLIC_API_URL: https://learning.au-ibar.org/api
       NEXT_PUBLIC_BBB_URL: ${BBB_URL:-http://10.202.101.145/bigbluebutton/}
-      NEXT_PUBLIC_APP_URL: http://learning.au-ibar.org
+      NEXT_PUBLIC_APP_URL: https://learning.au-ibar.org
       NODE_ENV: production
     logging:
       driver: json-file
@@ -321,7 +321,7 @@ services:
     command: []  # Clear base command — use static config file instead
     ports:
       - "80:80"
-      # - "443:443"  # Uncomment when TLS is enabled
+      - "443:443"
       # No 8080 dashboard port exposed externally in production
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -422,7 +422,7 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-aris-grafana-2026}
-      GF_SERVER_ROOT_URL: http://learning.au-ibar.org/grafana
+      GF_SERVER_ROOT_URL: https://learning.au-ibar.org/grafana
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_USERS_ALLOW_ORG_CREATE: "false"
@@ -540,7 +540,7 @@ services:
     command:
       - "--config.file=/etc/alertmanager/alertmanager.yml"
       - "--storage.path=/alertmanager"
-      - "--web.external-url=http://learning.au-ibar.org/alertmanager"
+      - "--web.external-url=https://learning.au-ibar.org/alertmanager"
     volumes:
       - ./infra/monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_data:/alertmanager

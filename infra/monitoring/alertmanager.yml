@@ -6,12 +6,12 @@
 global:
   resolve_timeout: 5m
   # -------------------------------------------------------------------------
-  # SMTP settings — CHANGE_ME before production deployment
+  # SMTP settings — configure via setup-vm-academy.sh or edit manually
   # -------------------------------------------------------------------------
-  smtp_smarthost: "smtp.example.com:587"           # CHANGE_ME
-  smtp_from: "alerts@learning.au-ibar.org"         # CHANGE_ME
-  smtp_auth_username: "alerts@learning.au-ibar.org" # CHANGE_ME
-  smtp_auth_password: "CHANGE_ME_SMTP_PASSWORD"    # CHANGE_ME
+  smtp_smarthost: "mail.au-ibar.org:587"
+  smtp_from: "lms-alerts@au-ibar.org"
+  smtp_auth_username: "lms-alerts@au-ibar.org"
+  smtp_auth_password: "SMTP_PASSWORD_SET_BY_SETUP"
   smtp_require_tls: true
 
 # ---------------------------------------------------------------------------
@@ -65,14 +65,14 @@ inhibit_rules:
 receivers:
   - name: "email-default"
     email_configs:
-      - to: "ops-team@au-ibar.org"             # CHANGE_ME
+      - to: "ops-team@au-ibar.org"
         send_resolved: true
         headers:
           Subject: "[ARIS Academy] {{ .GroupLabels.alertname }} — {{ .Status | toUpper }}"
 
   - name: "email-critical"
     email_configs:
-      - to: "ops-critical@au-ibar.org"          # CHANGE_ME
+      - to: "ops-critical@au-ibar.org"
         send_resolved: true
         headers:
           Subject: "[CRITICAL] ARIS Academy — {{ .GroupLabels.alertname }}"
@@ -93,7 +93,7 @@ receivers:
 
   - name: "email-warning"
     email_configs:
-      - to: "ops-team@au-ibar.org"              # CHANGE_ME
+      - to: "ops-team@au-ibar.org"
         send_resolved: true
         headers:
           Subject: "[WARNING] ARIS Academy — {{ .GroupLabels.alertname }}"

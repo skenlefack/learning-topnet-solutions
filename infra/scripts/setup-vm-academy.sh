@@ -100,9 +100,9 @@ BBB_URL=http://10.202.101.145/bigbluebutton/
 BBB_SECRET=CHANGE_ME_WITH_BBB_SECRET
 
 # --- Application URLs ---
-APP_URL=http://learning.au-ibar.org
-NEXT_PUBLIC_API_URL=http://learning.au-ibar.org/api
-NEXT_PUBLIC_APP_URL=http://learning.au-ibar.org
+APP_URL=https://learning.au-ibar.org
+NEXT_PUBLIC_API_URL=https://learning.au-ibar.org/api
+NEXT_PUBLIC_APP_URL=https://learning.au-ibar.org
 
 # --- ARIS SSO ---
 ARIS_SSO_URL=https://au-ibar.org/api/auth
@@ -112,6 +112,12 @@ ARIS_SSO_CLIENT_SECRET=CHANGE_ME
 # --- Grafana ---
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+
+# --- SMTP (for Alertmanager notifications) ---
+SMTP_HOST=mail.au-ibar.org
+SMTP_PORT=587
+SMTP_USER=lms-alerts@au-ibar.org
+SMTP_PASSWORD=CHANGE_ME_SMTP_PASSWORD
 ENVEOF
 
   chmod 600 "$ENV_FILE"
@@ -124,6 +130,21 @@ ENVEOF
   echo "  ║  Look for: securitySalt=...                         ║"
   echo "  ╚══════════════════════════════════════════════════════╝"
   echo ""
+fi
+
+# ---------------------------------------------------------------------------
+# 4b. Configure Alertmanager SMTP from .env
+# ---------------------------------------------------------------------------
+echo "[4b/7] Configuring Alertmanager SMTP..."
+ALERTMANAGER_CFG="$DEPLOY_DIR/infra/monitoring/alertmanager.yml"
+if [ -f "$ALERTMANAGER_CFG" ] && [ -f "$ENV_FILE" ]; then
+  SMTP_PASS=$(grep '^SMTP_PASSWORD=' "$ENV_FILE" | cut -d'=' -f2-)
+  if [ -n "$SMTP_PASS" ] && [ "$SMTP_PASS" != "CHANGE_ME_SMTP_PASSWORD" ]; then
+    sed -i "s|SMTP_PASSWORD_SET_BY_SETUP|${SMTP_PASS}|g" "$ALERTMANAGER_CFG"
+    echo "  Alertmanager SMTP password configured"
+  else
+    echo "  ⚠ SMTP_PASSWORD not set in .env — update it and re-run, or edit alertmanager.yml manually"
+  fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -197,14 +218,15 @@ echo "=============================================="
 echo " Setup Complete!"
 echo "=============================================="
 echo ""
-echo " Application:  http://learning.au-ibar.org"
-echo " Grafana:       http://learning.au-ibar.org:3001"
+echo " Application:  https://learning.au-ibar.org"
+echo " Grafana:       https://learning.au-ibar.org:3001"
 echo " MinIO Console: http://localhost:9001 (internal only)"
 echo ""
 echo " Default login: serge@au-ibar.org / academy2026"
 echo ""
 echo " Next steps:"
 echo "  1. Update BBB_SECRET in /opt/aris-academy/.env"
-echo "  2. Setup backup cron: cp infra/scripts/backup-cron.conf /etc/cron.d/aris-backup"
-echo "  3. Configure DNS on your network to point learning.au-ibar.org → 10.202.101.144"
+echo "  2. Update SMTP_PASSWORD in /opt/aris-academy/.env (then re-run step 4b or edit alertmanager.yml)"
+echo "  3. Setup backup cron: cp infra/scripts/backup-cron.conf /etc/cron.d/aris-backup"
+echo "  4. TLS certificate will be auto-provisioned by Let's Encrypt on first HTTPS request"
 echo ""
