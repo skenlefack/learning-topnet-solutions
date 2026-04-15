@@ -8,13 +8,13 @@ http:
   # Routers
   # =========================================================================
   routers:
-    # --- HTTP → HTTPS redirect --------------------------------------------
+    # --- HTTP → HTTPS redirect (exclude ACME challenge path) ----------------
     academy-http-redirect:
-      rule: "Host(`learning.au-ibar.org`)"
+      rule: "Host(`learning.au-ibar.org`) && !PathPrefix(`/.well-known/acme-challenge/`)"
       entryPoints: ["web"]
       middlewares: ["https-redirect"]
       service: academy-frontend
-      priority: 0
+      priority: 1
 
     # --- Dashboard (secured, internal access only) -------------------------
     academy-dashboard:

@@ -79,12 +79,6 @@ api:
 # Providers
 # ---------------------------------------------------------------------------
 providers:
-  docker:
-    endpoint: "unix:///var/run/docker.sock"
-    watch: true
-    exposedByDefault: false
-    network: aris-academy_academy-net
-
   file:
     filename: /etc/traefik/dynamic.yml
     watch: true

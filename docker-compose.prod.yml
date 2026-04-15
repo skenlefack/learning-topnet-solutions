@@ -310,6 +310,8 @@ services:
     image: traefik:v3.3
     container_name: academy-traefik
     restart: unless-stopped
+    environment:
+      DOCKER_API_VERSION: "1.44"
     deploy:
       resources:
         limits:
@@ -324,7 +326,6 @@ services:
       - "443:443"
       # No 8080 dashboard port exposed externally in production
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./infra/nginx/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./infra/nginx/traefik-dynamic.yml:/etc/traefik/dynamic.yml:ro
       - letsencrypt_data:/letsencrypt
