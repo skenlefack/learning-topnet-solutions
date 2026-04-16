@@ -281,10 +281,8 @@ export async function sessionRoutes(app: FastifyInstance) {
       }, session.tenant_id, user.sub);
     }
 
-    return reply.send({
-      success: true,
-      data: { cancelled: true, notifiedCount: attendees.length },
-    });
+    reply.header('X-Notified-Count', String(attendees.length));
+    return reply.code(204).send();
   });
 
   // ==========================================================================

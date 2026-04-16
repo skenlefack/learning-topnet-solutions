@@ -35,7 +35,6 @@ vi.mock('@aris-academy/shared', async (importOriginal) => {
     publishEvent: vi.fn().mockResolvedValue(undefined),
     auditLog: vi.fn().mockResolvedValue(undefined),
     createConsumer: vi.fn().mockResolvedValue({ disconnect: vi.fn() }),
-    validateBody: (schema: any, data: any) => schema.parse(data),
   };
 });
 

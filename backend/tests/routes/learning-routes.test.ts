@@ -34,7 +34,6 @@ vi.mock('@aris-academy/shared', async (importOriginal) => {
     createConsumer: vi.fn().mockResolvedValue({ disconnect: vi.fn() }),
     isRedisAvailable: vi.fn().mockReturnValue(false),
     getRedis: vi.fn().mockReturnValue({ hgetall: vi.fn(), zrevrange: vi.fn(), zcard: vi.fn() }),
-    validateBody: (schema: any, data: any) => schema.parse(data),
   };
 });
 
