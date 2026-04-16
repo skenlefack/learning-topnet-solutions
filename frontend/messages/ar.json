@@ -187,7 +187,8 @@
     "error": "خطأ",
     "noDiscussions": "لا توجد مناقشات في هذه الفئة.",
     "replies": "ردود",
-    "replyPlaceholder": "الرد..."
+    "replyPlaceholder": "الرد...",
+    "publish": "نشر"
   },
   "timeAgo": {
     "instant": "الآن",
@@ -271,7 +272,8 @@
     "slide4CTA": "التسجيل",
     "slide5Title": "التجارة وتسويق الموارد الحيوانية",
     "slide5Subtitle": "المعايير الصحية وتسهيل التجارة وتطوير سلاسل القيمة في أفريقيا",
-    "slide5CTA": "اعرف المزيد"
+    "slide5CTA": "اعرف المزيد",
+    "freeSignup": "سجل مجاناً"
   },
   "categories": {
     "animalHealth": "صحة الحيوان",
@@ -283,7 +285,8 @@
     "animalWelfare": "رعاية الحيوان",
     "geneticResources": "الموارد الوراثية",
     "beekeeping": "تربية النحل",
-    "environmentBiodiversity": "البيئة والتنوع البيولوجي"
+    "environmentBiodiversity": "البيئة والتنوع البيولوجي",
+    "environment": "البيئة والتنوع البيولوجي"
   },
   "stats": {
     "courses": "65+ دورة متاحة",

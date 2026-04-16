@@ -187,7 +187,8 @@
     "error": "Erreur",
     "noDiscussions": "Aucune discussion dans cette catégorie.",
     "replies": "réponses",
-    "replyPlaceholder": "Répondre..."
+    "replyPlaceholder": "Répondre...",
+    "publish": "Publier"
   },
   "timeAgo": {
     "instant": "À l'instant",
@@ -271,7 +272,8 @@
     "slide4CTA": "S'inscrire",
     "slide5Title": "Commerce & Marketing des ressources animales",
     "slide5Subtitle": "Normes sanitaires, facilitation du commerce et développement des chaînes de valeur en Afrique",
-    "slide5CTA": "En savoir plus"
+    "slide5CTA": "En savoir plus",
+    "freeSignup": "Inscription gratuite"
   },
   "categories": {
     "animalHealth": "Santé animale",
@@ -283,6 +285,7 @@
     "geneticResources": "Ressources génétiques",
     "beekeeping": "Apiculture",
     "environmentBiodiversity": "Environnement & Biodiversité",
+    "environment": "Environnement & Biodiversité",
     "fisheries": "Pêche & Aquaculture"
   },
   "stats": {

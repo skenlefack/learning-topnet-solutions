@@ -187,7 +187,8 @@
     "error": "Erro",
     "noDiscussions": "Nenhuma discussão nesta categoria.",
     "replies": "respostas",
-    "replyPlaceholder": "Responder..."
+    "replyPlaceholder": "Responder...",
+    "publish": "Publicar"
   },
   "timeAgo": {
     "instant": "Agora mesmo",
@@ -271,7 +272,8 @@
     "slide4CTA": "Registar-se",
     "slide5Title": "Comércio e Marketing dos Recursos Animais",
     "slide5Subtitle": "Normas sanitárias, facilitação do comércio e desenvolvimento das cadeias de valor em África",
-    "slide5CTA": "Saber mais"
+    "slide5CTA": "Saber mais",
+    "freeSignup": "Registo gratuito"
   },
   "categories": {
     "animalHealth": "Saúde Animal",
@@ -283,7 +285,8 @@
     "animalWelfare": "Bem-estar Animal",
     "geneticResources": "Recursos Genéticos",
     "beekeeping": "Apicultura",
-    "environmentBiodiversity": "Ambiente e Biodiversidade"
+    "environmentBiodiversity": "Ambiente e Biodiversidade",
+    "environment": "Ambiente e Biodiversidade"
   },
   "stats": {
     "courses": "65+ Cursos disponíveis",

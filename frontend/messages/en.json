@@ -187,7 +187,8 @@
     "error": "Error",
     "noDiscussions": "No discussions in this category.",
     "replies": "replies",
-    "replyPlaceholder": "Reply..."
+    "replyPlaceholder": "Reply...",
+    "publish": "Publish"
   },
   "timeAgo": {
     "instant": "Just now",
@@ -271,7 +272,8 @@
     "slide4CTA": "Sign up",
     "slide5Title": "Trade & Marketing of Animal Resources",
     "slide5Subtitle": "Sanitary standards, trade facilitation and value chain development in Africa",
-    "slide5CTA": "Learn more"
+    "slide5CTA": "Learn more",
+    "freeSignup": "Sign up free"
   },
   "categories": {
     "animalHealth": "Animal Health",
@@ -283,6 +285,7 @@
     "geneticResources": "Genetic Resources",
     "beekeeping": "Beekeeping",
     "environmentBiodiversity": "Environment & Biodiversity",
+    "environment": "Environment & Biodiversity",
     "fisheries": "Fisheries & Aquaculture"
   },
   "stats": {
