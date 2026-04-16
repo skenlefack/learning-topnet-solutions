@@ -4,7 +4,7 @@
 // ============================================================================
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import LivePanel from '@/app/(dashboard)/_components/LivePanel';
+import LivePanel from '@/app/(main)/_components/LivePanel';
 import { mockLiveSessions } from '../mocks/data';
 
 describe('LivePanel', () => {

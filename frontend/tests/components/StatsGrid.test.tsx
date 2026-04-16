@@ -27,7 +27,7 @@ describe('StatsGrid', () => {
 
   // ---- Correct counts ----
 
-  it('shows correct enrolled count (active enrollments)', () => {
+  it('shows correct enrolled count (active enrollments)', async () => {
     render(
       <StatsGrid
         enrollments={mockEnrollments}
@@ -36,13 +36,14 @@ describe('StatsGrid', () => {
         isLoading={false}
       />,
     );
-    // mockEnrollments has 2 active enrollments
+    // mockEnrollments has 2 active enrollments. The count-up animation runs
+    // asynchronously (RAF mocked as setTimeout 0), so use findByText to wait.
     const activeCount = mockEnrollments.filter((e) => e.status === 'active').length;
     expect(activeCount).toBe(2);
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(await screen.findByText('2')).toBeInTheDocument();
   });
 
-  it('shows correct available courses count', () => {
+  it('shows correct available courses count', async () => {
     render(
       <StatsGrid
         enrollments={mockEnrollments}
@@ -52,10 +53,10 @@ describe('StatsGrid', () => {
       />,
     );
     // mockCourses has 3 courses
-    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(await screen.findByText('3')).toBeInTheDocument();
   });
 
-  it('shows correct certifications count', () => {
+  it('shows correct certifications count', async () => {
     render(
       <StatsGrid
         enrollments={mockEnrollments}
@@ -67,7 +68,7 @@ describe('StatsGrid', () => {
     // mockCertifications has 1 issued certification
     const issuedCount = mockCertifications.filter((c) => c.status === 'issued').length;
     expect(issuedCount).toBe(1);
-    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(await screen.findByText('1')).toBeInTheDocument();
   });
 
   // ---- Loading state ----

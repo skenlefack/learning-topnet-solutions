@@ -1,11 +1,12 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Hero Banner
+// ARIS Academy — Hero Banner
 // Gradient navy background, progress ring, resume button
 // ============================================================================
 import clsx from 'clsx';
 import { Play } from 'lucide-react';
 import ProgressRing from './ProgressRing';
+import { t as pickLang } from '@/lib/utils';
 
 interface HeroBannerProps {
   user: any;
@@ -15,7 +16,8 @@ interface HeroBannerProps {
 
 export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerProps) {
   const progress = enrollment?.progress ?? 0;
-  const courseName = enrollment?.course?.title ?? enrollment?.courseName ?? '';
+  // course.title may be a MultiLangText (JSONB) or a plain string; courseName is always a string
+  const courseName = pickLang(enrollment?.course?.title, 'fr') || enrollment?.courseName || '';
   const firstName = user?.firstName ?? user?.name?.split(' ')[0] ?? '';
 
   if (isLoading) {
@@ -44,7 +46,7 @@ export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerPr
         {/* Text content */}
         <div className="space-y-2">
           <p className="text-green-100/70 text-sm">
-            {firstName ? `Bienvenue, ${firstName}` : 'Bienvenue sur AU-IBAR Learning'}
+            {firstName ? `Bienvenue, ${firstName}` : 'Bienvenue sur ARIS Academy'}
           </p>
           <h1 className="text-2xl lg:text-3xl font-bold text-white">
             Continuez votre parcours de certification

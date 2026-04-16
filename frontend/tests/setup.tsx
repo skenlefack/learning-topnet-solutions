@@ -1,7 +1,46 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
-import { afterAll, afterEach, beforeAll } from 'vitest';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from './mocks/server';
+import frMessages from '../messages/fr.json';
+
+// ----------------------------------------------------------------------------
+// next-intl mock — components calling useTranslations() get real fr.json values
+// without needing to wrap each render() in NextIntlClientProvider.
+// ----------------------------------------------------------------------------
+vi.mock('next-intl', () => {
+  const lookup = (path: string): any =>
+    path.split('.').reduce<any>((acc, k) => (acc && typeof acc === 'object' ? acc[k] : undefined), frMessages);
+
+  const interpolate = (template: string, params?: Record<string, unknown>) =>
+    !params ? template : Object.entries(params).reduce(
+      (str, [k, v]) => str.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v)),
+      template,
+    );
+
+  const makeT = (namespace?: string) => {
+    const fn = (key: string, params?: Record<string, unknown>) => {
+      const fullPath = namespace ? `${namespace}.${key}` : key;
+      const value = lookup(fullPath);
+      if (typeof value === 'string') return interpolate(value, params);
+      // Missing translation: return the key (matches next-intl 'silent' fallback)
+      return fullPath;
+    };
+    fn.rich = (key: string, _values?: any) => fn(key);
+    return fn;
+  };
+
+  return {
+    useTranslations: (namespace?: string) => makeT(namespace),
+    useLocale: () => 'fr',
+    useFormatter: () => ({
+      dateTime: (d: Date | string) => new Date(d).toLocaleString('fr'),
+      number: (n: number) => n.toLocaleString('fr'),
+      relativeTime: (d: Date | string) => new Date(d).toLocaleDateString('fr'),
+    }),
+    NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
 
 // Mock IntersectionObserver for components that use it (StatsGrid count-up)
 class MockIntersectionObserver {

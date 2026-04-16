@@ -80,10 +80,14 @@ describe('LeaderboardTab', () => {
   it('shows scores formatted', async () => {
     render(<LeaderboardTab />);
     await waitFor(() => {
-      // toLocaleString() formats numbers — check the raw values are present
-      expect(screen.getByText((_, el) => el?.textContent === '2,450')).toBeInTheDocument();
-      expect(screen.getByText((_, el) => el?.textContent === '2,280')).toBeInTheDocument();
-      expect(screen.getByText((_, el) => el?.textContent === '2,100')).toBeInTheDocument();
+      // toLocaleString() formats numbers — match the leaf <span> only (not its parent <td>).
+      // The inner span carries the formatted score and is a SPAN, while the wrapping <td>
+      // also contains it as textContent. Restrict to SPAN to get a unique element.
+      const isLeafScore = (value: string) => (_: string, el: Element | null) =>
+        el?.tagName === 'SPAN' && el?.textContent === value;
+      expect(screen.getByText(isLeafScore('2,450'))).toBeInTheDocument();
+      expect(screen.getByText(isLeafScore('2,280'))).toBeInTheDocument();
+      expect(screen.getByText(isLeafScore('2,100'))).toBeInTheDocument();
     });
   });
 

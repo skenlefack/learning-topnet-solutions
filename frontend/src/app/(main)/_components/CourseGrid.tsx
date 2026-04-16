@@ -108,10 +108,10 @@ const LEVEL_COLORS: Record<string, string> = {
 
 function CourseCard({ course, enrollment }: { course: any; enrollment?: any }) {
   const progress = enrollment?.progress ?? 0;
-  const title = typeof course.title === 'object'
-    ? (course.title.fr || course.title.en || Object.values(course.title)[0])
-    : course.title;
-  const description = typeof course.description === 'object'
+  const title = course.title && typeof course.title === 'object'
+    ? (course.title.fr || course.title.en || Object.values(course.title)[0] || 'Sans titre')
+    : (course.title || 'Sans titre');
+  const description = course.description && typeof course.description === 'object'
     ? (course.description.fr || course.description.en || '')
     : (course.description ?? '');
   const level = course.level ?? course.difficulty;

@@ -4,7 +4,7 @@
 // ============================================================================
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import ProgressRing from '@/app/(dashboard)/_components/ProgressRing';
+import ProgressRing from '@/app/(main)/_components/ProgressRing';
 
 describe('ProgressRing', () => {
   const defaults = {

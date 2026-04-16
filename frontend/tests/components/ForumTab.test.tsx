@@ -59,7 +59,7 @@ describe('ForumTab', () => {
   it('renders category filter buttons', () => {
     render(<ForumTab />);
     expect(screen.getByText('Tous')).toBeInTheDocument();
-    expect(screen.getByText('General')).toBeInTheDocument();
+    expect(screen.getByText('Général')).toBeInTheDocument();
     expect(screen.getByText('Questions')).toBeInTheDocument();
     expect(screen.getByText('Ressources')).toBeInTheDocument();
     expect(screen.getByText('Annonces')).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('ForumTab', () => {
   it('shows reply count with "reponses"', async () => {
     render(<ForumTab />);
     await waitFor(() => {
-      expect(screen.getByText(/2 reponses/)).toBeInTheDocument();
+      expect(screen.getByText(/2 réponses/)).toBeInTheDocument();
     });
   });
 
@@ -108,7 +108,7 @@ describe('ForumTab', () => {
     render(<ForumTab />);
     await waitFor(() => {
       expect(
-        screen.getByText('Aucune discussion dans cette categorie.'),
+        screen.getByText('Aucune discussion dans cette catégorie.'),
       ).toBeInTheDocument();
     });
   });

@@ -2,9 +2,10 @@
 // ARIS Academy — Hook Test: useAuth
 // Tests login, logout, token refresh, redirect behavior
 // ============================================================================
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAuthStore } from '@/lib/store';
+import { server } from '../mocks/server';
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -17,9 +18,22 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush, replace: mockReplace }),
 }));
 
-// Mock fetch globally
+// Stop the global MSW server for this file so we can stub fetch directly.
+// The shared setup (tests/setup.tsx) starts the MSW interceptor, which wraps
+// global.fetch and breaks plain object mocks (Response.clone is not a function).
+beforeAll(() => server.close());
+afterAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+
+// Mock fetch globally with proper Response objects
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+vi.stubGlobal('fetch', mockFetch);
+
+// Helper: build a minimal Response-like object usable by useAuth (only .ok / .json())
+const makeResponse = (status: number, body: unknown) => ({
+  ok: status >= 200 && status < 300,
+  status,
+  json: async () => body,
+});
 
 // Mock document.cookie
 Object.defineProperty(document, 'cookie', {
@@ -79,10 +93,7 @@ describe('useAuth hook', () => {
     const mockUser = { id: 'u1', email: 'test@test.org', role: 'learner' };
     const mockToken = 'jwt-token-123';
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ user: mockUser, token: mockToken }),
-    });
+    mockFetch.mockResolvedValueOnce(makeResponse(200, { user: mockUser, token: mockToken }));
 
     const { result } = renderHook(() => useAuth());
 
@@ -98,10 +109,7 @@ describe('useAuth hook', () => {
   });
 
   it('should throw error on login failure', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ error: 'Invalid credentials' }),
-    });
+    mockFetch.mockResolvedValueOnce(makeResponse(401, { error: 'Invalid credentials' }));
 
     const { result } = renderHook(() => useAuth());
 
@@ -152,10 +160,7 @@ describe('useAuth hook', () => {
     const refreshedUser = { id: 'u1', email: 'refreshed@test.org' };
     const refreshedToken = 'refreshed-token';
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ user: refreshedUser, token: refreshedToken }),
-    });
+    mockFetch.mockResolvedValueOnce(makeResponse(200, { user: refreshedUser, token: refreshedToken }));
 
     useAuthStore.setState({
       user: { id: 'u1' } as any,

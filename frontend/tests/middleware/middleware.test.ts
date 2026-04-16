@@ -16,6 +16,12 @@ vi.mock('next/server', () => {
   return {
     NextRequest: vi.fn().mockImplementation((url: string) => {
       const parsedUrl = new URL(url, 'https://learning.au-ibar.org');
+      // Next.js NextURL extends URL with a clone() method — replicate for tests
+      (parsedUrl as any).clone = () => {
+        const cloned = new URL(parsedUrl.toString());
+        (cloned as any).clone = (parsedUrl as any).clone;
+        return cloned;
+      };
       const cookies = new Map<string, { value: string }>();
       return {
         nextUrl: parsedUrl,

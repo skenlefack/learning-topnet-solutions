@@ -394,7 +394,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={onClose}
         >
-          <motion.div
+          <motion.form
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -404,6 +404,14 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
               'bg-white dark:bg-surface-dark-card border border-[var(--border)]',
             )}
             onClick={e => e.stopPropagation()}
+            onSubmit={e => {
+              e.preventDefault();
+              if (step === 2) {
+                handleSave();
+              } else if (canGoNext) {
+                setStep(s => s + 1);
+              }
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
@@ -858,8 +866,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
                 </button>
                 {step < 2 ? (
                   <button
-                    type="button"
-                    onClick={() => setStep(s => s + 1)}
+                    type="submit"
                     disabled={!canGoNext}
                     className={clsx(
                       'flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium',
@@ -872,8 +879,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
                   </button>
                 ) : (
                   <button
-                    type="button"
-                    onClick={handleSave}
+                    type="submit"
                     disabled={saving}
                     className={clsx(
                       'flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium',
@@ -888,7 +894,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
                 )}
               </div>
             </div>
-          </motion.div>
+          </motion.form>
         </motion.div>
       )}
     </AnimatePresence>

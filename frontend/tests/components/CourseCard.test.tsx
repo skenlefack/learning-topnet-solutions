@@ -4,7 +4,7 @@
 // ============================================================================
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import CourseGrid from '@/app/(dashboard)/_components/CourseGrid';
+import CourseGrid from '@/app/(main)/_components/CourseGrid';
 import { mockCourses, mockEnrollments } from '../mocks/data';
 
 // CourseGrid renders CourseCard internally, so we test via the parent
