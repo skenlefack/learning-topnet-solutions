@@ -18,6 +18,11 @@ import {
   courseLevelSchema,
   uuidSchema,
   paginationSchema,
+  // OpenAPI helpers
+  UuidParam,
+  MultiLangTextSchema,
+  PaginationQuery,
+  BearerSecurity,
 } from '@aris-academy/shared';
 import { resolveCourse, invalidateResolvedCache } from '../services/course-resolver';
 
@@ -84,6 +89,22 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // GET / — List courses with multi-tenant resolution
   // =========================================================================
   app.get('/', {
+    schema: {
+      summary: 'List courses',
+      description: 'List courses with multi-tenant resolution, filtering and pagination',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      querystring: {
+        type: 'object',
+        properties: {
+          ...PaginationQuery.properties,
+          level: { type: 'string', enum: ['beginner', 'intermediate', 'advanced', 'expert'] },
+          status: { type: 'string', enum: ['draft', 'published', 'archived'] },
+          search: { type: 'string', maxLength: 200 },
+          lang: { type: 'string', enum: ['fr', 'en', 'ar', 'pt'], default: 'fr' },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -178,6 +199,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // GET /:id — Get single course (raw, no override resolution)
   // =========================================================================
   app.get<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Get course by ID',
+      description: 'Get a single course with its modules (no tenant override resolution)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -207,6 +235,14 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // GET /:id/resolved?lang=fr — Fully resolved course (overrides applied)
   // =========================================================================
   app.get<{ Params: { id: string }; Querystring: { lang?: string } }>('/:id/resolved', {
+    schema: {
+      summary: 'Get resolved course',
+      description: 'Get a fully resolved course with tenant overrides applied',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+      querystring: { type: 'object', properties: { lang: { type: 'string', enum: ['fr', 'en', 'ar', 'pt'], default: 'fr' } } },
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -223,6 +259,26 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // POST / — Create course
   // =========================================================================
   app.post('/', {
+    schema: {
+      summary: 'Create course',
+      description: 'Create a new course (trainer or admin)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['title', 'slug', 'level'],
+        properties: {
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          slug: { type: 'string', minLength: 3, maxLength: 255, pattern: '^[a-z0-9-]+$' },
+          level: { type: 'string', enum: ['beginner', 'intermediate', 'advanced', 'expert'] },
+          status: { type: 'string', enum: ['draft', 'published'], default: 'draft' },
+          estimatedHours: { type: 'number', exclusiveMinimum: 0 },
+          passingScore: { type: 'integer', minimum: 0, maximum: 100, default: 70 },
+          tags: { type: 'array', items: { type: 'string' }, default: [] },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole(...CREATOR_ROLES)],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const body = validateBody(createCourseSchema, request.body);
@@ -260,6 +316,25 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // PUT /:id — Update course
   // =========================================================================
   app.put<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Update course',
+      description: 'Update course fields (trainer or admin)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object',
+        properties: {
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          level: { type: 'string', enum: ['beginner', 'intermediate', 'advanced', 'expert'] },
+          status: { type: 'string', enum: ['draft', 'published', 'archived'] },
+          estimatedHours: { type: 'number', exclusiveMinimum: 0 },
+          passingScore: { type: 'integer', minimum: 0, maximum: 100 },
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole(...CREATOR_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -302,6 +377,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // DELETE /:id — Delete course
   // =========================================================================
   app.delete<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Delete course',
+      description: 'Delete a course (admin_rec or admin_continental only)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole('admin_rec', 'admin_continental')],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -326,6 +408,24 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // POST /:id/override — Create/update a tenant override
   // =========================================================================
   app.post<{ Params: { id: string } }>('/:id/override', {
+    schema: {
+      summary: 'Upsert course override',
+      description: 'Create or update a tenant-specific override for a course',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object',
+        properties: {
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          estimatedHours: { type: 'number', exclusiveMinimum: 0 },
+          passingScore: { type: 'integer', minimum: 0, maximum: 100 },
+          tags: { type: 'array', items: { type: 'string' } },
+          metadata: { type: 'object', additionalProperties: true },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole(...ADMIN_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -364,6 +464,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // GET /:id/overrides — List all overrides for a course (admin only)
   // =========================================================================
   app.get<{ Params: { id: string } }>('/:id/overrides', {
+    schema: {
+      summary: 'List course overrides',
+      description: 'List all tenant overrides for a course (admin only)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole(...ADMIN_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -386,6 +493,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // DELETE /:id/override — Remove the current tenant's override
   // =========================================================================
   app.delete<{ Params: { id: string } }>('/:id/override', {
+    schema: {
+      summary: 'Delete course override',
+      description: "Remove the current tenant's override for a course",
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole(...ADMIN_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -410,6 +524,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // POST /:id/publish — Publish a draft course
   // =========================================================================
   app.post<{ Params: { id: string } }>('/:id/publish', {
+    schema: {
+      summary: 'Publish course',
+      description: 'Publish a draft course (admin only)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole(...ADMIN_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -438,6 +559,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // POST /:id/archive — Archive a published course
   // =========================================================================
   app.post<{ Params: { id: string } }>('/:id/archive', {
+    schema: {
+      summary: 'Archive course',
+      description: 'Archive a published course (admin only)',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole(...ADMIN_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -465,6 +593,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
   // POST /:id/duplicate — Deep copy course + modules + lessons
   // =========================================================================
   app.post<{ Params: { id: string } }>('/:id/duplicate', {
+    schema: {
+      summary: 'Duplicate course',
+      description: 'Deep copy a course with all its modules and lessons',
+      tags: ['Courses'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole(...CREATOR_ROLES)],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);

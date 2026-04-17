@@ -13,6 +13,10 @@ import {
   multiLangTextSchema,
   uuidSchema,
   auditLog,
+  UuidParam,
+  UuidParamNamed,
+  MultiLangTextSchema,
+  BearerSecurity,
 } from '@aris-academy/shared';
 import { invalidateResolvedCache } from '../services/course-resolver';
 
@@ -51,6 +55,13 @@ export async function moduleRoutes(app: FastifyInstance): Promise<void> {
   // GET /course/:courseId — List modules with nested lessons
   // =========================================================================
   app.get<{ Params: { courseId: string } }>('/course/:courseId', {
+    schema: {
+      summary: 'List modules for a course',
+      description: 'List all modules with nested lessons for a course',
+      tags: ['Modules'],
+      security: BearerSecurity,
+      params: UuidParamNamed('courseId'),
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.courseId);
@@ -78,6 +89,24 @@ export async function moduleRoutes(app: FastifyInstance): Promise<void> {
   // POST / — Create module
   // =========================================================================
   app.post('/', {
+    schema: {
+      summary: 'Create module',
+      description: 'Create a new module in a course',
+      tags: ['Modules'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['courseId', 'title'],
+        properties: {
+          courseId: { type: 'string', format: 'uuid' },
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          sortOrder: { type: 'integer', minimum: 0, default: 0 },
+          estimatedMinutes: { type: 'integer', exclusiveMinimum: 0 },
+          isRequired: { type: 'boolean', default: true },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const body = validateBody(createModuleSchema, request.body);
@@ -106,6 +135,22 @@ export async function moduleRoutes(app: FastifyInstance): Promise<void> {
   // PUT /:id — Update module
   // =========================================================================
   app.put<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Update module',
+      tags: ['Modules'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object',
+        properties: {
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          sortOrder: { type: 'integer', minimum: 0 },
+          estimatedMinutes: { type: 'integer', exclusiveMinimum: 0 },
+          isRequired: { type: 'boolean' },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -146,6 +191,12 @@ export async function moduleRoutes(app: FastifyInstance): Promise<void> {
   // DELETE /:id — Delete module (cascades to lessons via FK)
   // =========================================================================
   app.delete<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Delete module',
+      tags: ['Modules'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole('admin_country', 'admin_rec', 'admin_continental')],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -171,6 +222,17 @@ export async function moduleRoutes(app: FastifyInstance): Promise<void> {
   // POST /reorder — Batch update sort_order for modules
   // =========================================================================
   app.post('/reorder', {
+    schema: {
+      summary: 'Reorder modules',
+      description: 'Batch update sort_order for modules',
+      tags: ['Modules'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['moduleIds'],
+        properties: { moduleIds: { type: 'array', items: { type: 'string', format: 'uuid' }, minItems: 1 } },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const { moduleIds } = validateBody(reorderSchema, request.body);

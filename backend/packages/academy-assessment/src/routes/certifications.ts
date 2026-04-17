@@ -3,7 +3,10 @@
 // Issue, verify, download, revoke, stats
 // ============================================================================
 import { FastifyInstance } from 'fastify';
-import { query, queryOne, publishEvent, TOPICS, auditLog } from '@aris-academy/shared';
+import {
+  query, queryOne, publishEvent, TOPICS, auditLog,
+  UuidParam, BearerSecurity,
+} from '@aris-academy/shared';
 import { randomUUID } from 'crypto';
 import { generateCertificate, getSignedDownloadUrl } from '../services/certificate-generator';
 
@@ -51,7 +54,17 @@ export async function certificationRoutes(app: FastifyInstance) {
 
   // Verify certification (PUBLIC — no auth required)
   // Path: GET /verify/:certNumber
-  app.get('/verify/:certNumber', async (req: any, reply) => {
+  app.get('/verify/:certNumber', {
+    schema: {
+      summary: 'Verify a certification by certificate number',
+      tags: ['Certifications'],
+      params: {
+        type: 'object',
+        properties: { certNumber: { type: 'string' } },
+        required: ['certNumber'],
+      },
+    },
+  }, async (req: any, reply) => {
     const cert = await queryOne(`
       SELECT c.*, u.first_name, u.last_name, co.title AS course_title
       FROM academy_core.certifications c
@@ -70,6 +83,11 @@ export async function certificationRoutes(app: FastifyInstance) {
   // List my certifications
   // Path: GET /certifications
   app.get('/certifications', {
+    schema: {
+      summary: 'List my certifications',
+      tags: ['Certifications'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     try {
@@ -105,6 +123,16 @@ export async function certificationRoutes(app: FastifyInstance) {
   // Download certificate PDF (pre-signed URL redirect)
   // Path: GET /certifications/download/:certNumber
   app.get('/certifications/download/:certNumber', {
+    schema: {
+      summary: 'Download certificate PDF',
+      tags: ['Certifications'],
+      security: BearerSecurity,
+      params: {
+        type: 'object',
+        properties: { certNumber: { type: 'string' } },
+        required: ['certNumber'],
+      },
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     const cert = await queryOne(
@@ -134,6 +162,18 @@ export async function certificationRoutes(app: FastifyInstance) {
   // Revoke a certificate (admin only)
   // Path: POST /certifications/:id/revoke
   app.post('/certifications/:id/revoke', {
+    schema: {
+      summary: 'Revoke a certification',
+      tags: ['Certifications'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object',
+        properties: {
+          reason: { type: 'string' },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     if (!['admin_country', 'admin_rec', 'admin_continental'].includes(req.user.role)) {
@@ -177,6 +217,11 @@ export async function certificationRoutes(app: FastifyInstance) {
   // Certification summary by level (for current user)
   // Path: GET /certifications/summary
   app.get('/certifications/summary', {
+    schema: {
+      summary: 'Certification level summary for current user',
+      tags: ['Certifications'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     try {
@@ -257,6 +302,11 @@ export async function certificationRoutes(app: FastifyInstance) {
   // Certification stats (admin only)
   // Path: GET /certifications/stats
   app.get('/certifications/stats', {
+    schema: {
+      summary: 'Certification statistics (admin)',
+      tags: ['Certifications'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     if (!['admin_country', 'admin_rec', 'admin_continental'].includes(req.user.role)) {

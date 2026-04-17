@@ -9,6 +9,8 @@ import {
   queryOne,
   validateBody,
   paginationSchema,
+  BearerSecurity,
+  PaginationQuery,
 } from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
@@ -29,6 +31,18 @@ export default async function notificationRoutes(app: FastifyInstance): Promise<
   // GET /notifications — list user's notifications
   // =========================================================================
   app.get('/notifications', {
+    schema: {
+      summary: 'List user notifications',
+      tags: ['Notifications'],
+      security: BearerSecurity,
+      querystring: {
+        type: 'object' as const,
+        properties: {
+          unreadOnly: { type: 'string' },
+          ...PaginationQuery.properties,
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const user = request.user;
@@ -82,6 +96,11 @@ export default async function notificationRoutes(app: FastifyInstance): Promise<
   // GET /notifications/unread-count
   // =========================================================================
   app.get('/notifications/unread-count', {
+    schema: {
+      summary: 'Get unread notification count',
+      tags: ['Notifications'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -100,6 +119,11 @@ export default async function notificationRoutes(app: FastifyInstance): Promise<
   // PUT /notifications/:id/read — mark single notification as read
   // =========================================================================
   app.put<{ Params: { id: string } }>('/notifications/:id/read', {
+    schema: {
+      summary: 'Mark notification as read',
+      tags: ['Notifications'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const notif = await queryOne(
@@ -120,6 +144,11 @@ export default async function notificationRoutes(app: FastifyInstance): Promise<
   // PUT /notifications/read-all — mark all as read
   // =========================================================================
   app.put('/notifications/read-all', {
+    schema: {
+      summary: 'Mark all notifications as read',
+      tags: ['Notifications'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     await query(

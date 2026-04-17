@@ -5,7 +5,9 @@
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { createHash } from 'crypto';
-import { query, queryOne, publishEvent, TOPICS } from '@aris-academy/shared';
+import {
+  query, queryOne, publishEvent, TOPICS,
+} from '@aris-academy/shared';
 import { processRecording } from '../services/recording-processor';
 
 const BBB_SECRET = process.env.BBB_SECRET || 'bbb-shared-secret';
@@ -233,7 +235,14 @@ export async function webhookRoutes(app: FastifyInstance) {
   // ==========================================================================
   // POST /webhooks/bbb — Main BBB webhook endpoint
   // ==========================================================================
-  app.post('/bbb', async (req: FastifyRequest, reply: FastifyReply) => {
+  app.post('/bbb', {
+    schema: {
+      summary: 'BBB webhook callback',
+      description: 'Receives event callbacks from BigBlueButton. No auth required — BBB validates via shared secret checksum.',
+      tags: ['Webhooks'],
+      body: { type: 'object' as const, additionalProperties: true },
+    },
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     const body = req.body as any;
 
     // --- Checksum validation ---
@@ -310,7 +319,12 @@ export async function webhookRoutes(app: FastifyInstance) {
   // ==========================================================================
   // GET /webhooks/health — Health check for webhook endpoint
   // ==========================================================================
-  app.get('/health', async (_req: FastifyRequest, reply: FastifyReply) => {
+  app.get('/health', {
+    schema: {
+      summary: 'Webhook health check',
+      tags: ['Webhooks'],
+    },
+  }, async (_req: FastifyRequest, reply: FastifyReply) => {
     return reply.send({ success: true, service: 'bbb-webhooks', status: 'ok' });
   });
 }

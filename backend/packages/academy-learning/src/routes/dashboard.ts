@@ -8,6 +8,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import {
   query, queryOne, getRedis, isRedisAvailable, validateBody, uuidSchema,
+  BearerSecurity,
 } from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
@@ -131,7 +132,14 @@ export default async function dashboardRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/dashboard',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Learner personal dashboard with enrollments, stats, and activity',
+        tags: ['Dashboard'],
+        security: BearerSecurity,
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const userId = req.user.sub;
 
@@ -251,7 +259,24 @@ export default async function dashboardRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/dashboard/leaderboard',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Ranked learners leaderboard from Redis sorted sets',
+        tags: ['Dashboard'],
+        security: BearerSecurity,
+        querystring: {
+          type: 'object' as const,
+          required: ['tenantId'],
+          properties: {
+            tenantId: { type: 'string', format: 'uuid' },
+            period: { type: 'string', enum: ['week', 'month', 'all'], default: 'month' },
+            page: { type: 'integer', minimum: 1, default: 1 },
+            limit: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+          },
+        },
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       try {
         const { tenantId, period = 'month', page = 1, limit = 20 } = validateBody(leaderboardQuerySchema, req.query);
@@ -317,6 +342,11 @@ export default async function dashboardRoutes(app: FastifyInstance) {
         app.authenticate,
         app.requireRole('admin_country', 'admin_rec', 'admin_continental'),
       ],
+      schema: {
+        summary: 'Admin aggregate statistics (country/REC/continental admins)',
+        tags: ['Dashboard'],
+        security: BearerSecurity,
+      },
     },
     async (req: FastifyRequest, reply: FastifyReply) => {
       try {

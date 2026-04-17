@@ -7,6 +7,7 @@
   "dependencies": {
     "@aris-academy/shared": "*",
     "fastify": "^4.25.0", "@fastify/jwt": "^8.0.0", "@fastify/cors": "^9.0.0",
+    "@fastify/swagger": "^8.14.0", "@fastify/swagger-ui": "^2.1.0",
     "minio": "^8.0.0", "pdfkit": "^0.14.0", "qrcode": "^1.5.3", "zod": "^3.22.4"
   },
   "devDependencies": {

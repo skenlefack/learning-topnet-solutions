@@ -4,7 +4,10 @@
 // GET /sessions/:id/attendance/export — Export attendance as CSV
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { query, queryOne } from '@aris-academy/shared';
+import {
+  query, queryOne,
+  UuidParam, BearerSecurity,
+} from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -40,6 +43,12 @@ export async function attendanceRoutes(app: FastifyInstance) {
   // GET /sessions/:id/attendance — Detailed attendance report
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id/attendance', {
+    schema: {
+      summary: 'Detailed attendance report',
+      tags: ['Attendance'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const user = req.user;
@@ -141,6 +150,12 @@ export async function attendanceRoutes(app: FastifyInstance) {
   // GET /sessions/:id/attendance/export — Export attendance as CSV download
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id/attendance/export', {
+    schema: {
+      summary: 'Export attendance as CSV',
+      tags: ['Attendance'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const user = req.user;

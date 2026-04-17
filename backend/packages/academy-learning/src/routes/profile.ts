@@ -8,6 +8,7 @@ import {
   query,
   queryOne,
   validateBody,
+  BearerSecurity,
 } from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
@@ -28,6 +29,11 @@ export default async function profileRoutes(app: FastifyInstance): Promise<void>
 
   // GET /users/me — return current user profile
   app.get('/users/me', {
+    schema: {
+      summary: 'Get current user profile',
+      tags: ['Profile'],
+      security: BearerSecurity,
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const user = request.user;
@@ -66,6 +72,19 @@ export default async function profileRoutes(app: FastifyInstance): Promise<void>
 
   // PUT /users/me — update current user profile
   app.put('/users/me', {
+    schema: {
+      summary: 'Update current user profile',
+      tags: ['Profile'],
+      security: BearerSecurity,
+      body: {
+        type: 'object' as const,
+        properties: {
+          firstName: { type: 'string', minLength: 1, maxLength: 100 },
+          lastName: { type: 'string', minLength: 1, maxLength: 100 },
+          preferredLanguage: { type: 'string', enum: ['en', 'fr', 'ar', 'pt'] },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const body = validateBody(updateProfileSchema, request.body);
@@ -121,6 +140,12 @@ export default async function profileRoutes(app: FastifyInstance): Promise<void>
 
   // POST /users/me/avatar — upload avatar to MinIO
   app.post('/users/me/avatar', {
+    schema: {
+      summary: 'Upload user avatar',
+      tags: ['Profile'],
+      security: BearerSecurity,
+      consumes: ['multipart/form-data'],
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const user = request.user;

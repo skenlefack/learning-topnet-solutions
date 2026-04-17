@@ -18,6 +18,12 @@ export default defineConfig({
         'packages/academy-live/src/**/*.ts',
       ],
       exclude: ['**/node_modules/**', '**/dist/**', '**/*.test.ts', '**/types/**'],
+      thresholds: {
+        lines: 60,
+        branches: 50,
+        functions: 55,
+        statements: 60,
+      },
     },
     testTimeout: 30000,
     hookTimeout: 120000,

@@ -11,7 +11,9 @@ global:
   smtp_smarthost: "mail.au-ibar.org:587"
   smtp_from: "lms-alerts@au-ibar.org"
   smtp_auth_username: "lms-alerts@au-ibar.org"
-  smtp_auth_password: "SMTP_PASSWORD_SET_BY_SETUP"
+  # Set via: export SMTP_PASSWORD=... then sed -i in setup-vm-academy.sh
+  # Or configure in .env and inject via docker-compose env_file
+  smtp_auth_password: "${SMTP_PASSWORD:-SMTP_PASSWORD_SET_BY_SETUP}"
   smtp_require_tls: true
 
 # ---------------------------------------------------------------------------

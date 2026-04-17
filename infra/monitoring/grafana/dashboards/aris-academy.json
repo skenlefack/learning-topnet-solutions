@@ -524,7 +524,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 50 },
       "id": 106,
-      "title": "Kafka Consumer Lag",
+      "title": "Kafka (Messaging)",
       "type": "row"
     },
     {
@@ -540,22 +540,128 @@
           "unit": "short"
         }
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 51 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 51 },
       "id": 60,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Kafka Consumer Lag (per service)",
+      "title": "Consumer Group Lag",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "kafka_consumer_lag{job=~\"academy-.*\"}",
-          "legendFormat": "{{job}} — {{topic}} [{{partition}}]",
+          "expr": "sum(kafka_consumergroup_lag{topic=~\"academy.*\"}) by (consumergroup, topic)",
+          "legendFormat": "{{consumergroup}} — {{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2
+          },
+          "unit": "ops"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 51 },
+      "id": 61,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Message Rate (per topic)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(kafka_topic_partition_current_offset{topic=~\"academy.*\"}[5m])) by (topic)",
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 100 },
+              { "color": "red", "value": 1000 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 59 },
+      "id": 62,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Total Consumer Lag",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(kafka_consumergroup_lag{topic=~\"academy.*\"})",
+          "legendFormat": "Lag",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 59 },
+      "id": 63,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Active Topics",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(kafka_topic_partitions{topic=~\"academy.*\"})",
+          "legendFormat": "Topics",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 59 },
+      "id": 64,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Active Consumer Groups",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(count by (consumergroup) (kafka_consumergroup_lag{topic=~\"academy.*\"}))",
+          "legendFormat": "Groups",
           "refId": "A"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 59 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 63 },
       "id": 107,
       "title": "System Resources (Node Exporter)",
       "type": "row"
@@ -576,7 +682,7 @@
           "min": 0
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 60 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 64 },
       "id": 70,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "CPU Usage",
@@ -602,7 +708,7 @@
           "unit": "bytes"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 64 },
       "id": 71,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Memory Usage",

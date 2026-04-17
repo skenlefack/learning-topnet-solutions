@@ -11,6 +11,10 @@ import {
   validateBody,
   multiLangTextSchema,
   paginationSchema,
+  BearerSecurity,
+  PaginationQuery,
+  MultiLangTextSchema,
+  UuidParam,
 } from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
@@ -48,6 +52,18 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // GET /community/posts — list top-level posts
   app.get('/community/posts', {
+    schema: {
+      summary: 'List forum posts',
+      tags: ['Community'],
+      security: BearerSecurity,
+      querystring: {
+        type: 'object' as const,
+        properties: {
+          category: { type: 'string' },
+          ...PaginationQuery.properties,
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const raw = validateBody(postQuerySchema, request.query);
@@ -86,6 +102,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // GET /community/posts/:id — get post with replies
   app.get<{ Params: { id: string } }>('/community/posts/:id', {
+    schema: {
+      summary: 'Get a forum post by ID',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const post = await queryOne(
@@ -108,6 +130,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // GET /community/posts/:id/replies
   app.get<{ Params: { id: string } }>('/community/posts/:id/replies', {
+    schema: {
+      summary: 'List replies to a forum post',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const replies = await query(
@@ -127,6 +155,21 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // POST /community/posts — create post or reply
   app.post('/community/posts', {
+    schema: {
+      summary: 'Create a forum post or reply',
+      tags: ['Community'],
+      security: BearerSecurity,
+      body: {
+        type: 'object' as const,
+        properties: {
+          title: MultiLangTextSchema,
+          body: MultiLangTextSchema,
+          category: { type: 'string' },
+          parentId: { type: 'string', format: 'uuid' },
+        },
+        required: ['body'],
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const body = validateBody(createPostSchema, request.body);
@@ -160,6 +203,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // POST /community/posts/:id/upvote
   app.post<{ Params: { id: string } }>('/community/posts/:id/upvote', {
+    schema: {
+      summary: 'Upvote a forum post',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const post = await queryOne(
@@ -178,6 +227,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // DELETE /community/posts/:id
   app.delete<{ Params: { id: string } }>('/community/posts/:id', {
+    schema: {
+      summary: 'Delete a forum post',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const user = request.user;
@@ -209,6 +264,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // GET /community/groups
   app.get('/community/groups', {
+    schema: {
+      summary: 'List study groups',
+      tags: ['Community'],
+      security: BearerSecurity,
+      querystring: PaginationQuery,
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const raw = validateBody(paginationSchema, request.query);
@@ -240,6 +301,22 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // POST /community/groups — create group
   app.post('/community/groups', {
+    schema: {
+      summary: 'Create a study group',
+      tags: ['Community'],
+      security: BearerSecurity,
+      body: {
+        type: 'object' as const,
+        properties: {
+          name: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          maxMembers: { type: 'integer', minimum: 2, maximum: 100 },
+          isPublic: { type: 'boolean' },
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['name'],
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const body = validateBody(createGroupSchema, request.body);
@@ -273,6 +350,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // POST /community/groups/:id/join
   app.post<{ Params: { id: string } }>('/community/groups/:id/join', {
+    schema: {
+      summary: 'Join a study group',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const user = request.user;
@@ -305,6 +388,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // POST /community/groups/:id/leave
   app.post<{ Params: { id: string } }>('/community/groups/:id/leave', {
+    schema: {
+      summary: 'Leave a study group',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const user = request.user;
@@ -328,6 +417,12 @@ export default async function communityRoutes(app: FastifyInstance): Promise<voi
 
   // DELETE /community/groups/:id
   app.delete<{ Params: { id: string } }>('/community/groups/:id', {
+    schema: {
+      summary: 'Delete a study group',
+      tags: ['Community'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     const user = request.user;

@@ -1,93 +1,243 @@
-# E-Learning AU-IBAR
+# ARIS Academy
 
+**LMS multi-tenant certifiant pour AU-IBAR / ARIS 3.0 — 55 pays africains**
 
+Production: [https://learning.au-ibar.org](https://learning.au-ibar.org)
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Architecture
 
 ```
-cd existing_repo
-git remote add origin http://10.202.101.167/ict-au-ibar-development/e-learning-au-ibar.git
-git branch -M main
-git push -uf origin main
+                         ┌──────────────────────────────────────────┐
+                         │              Traefik v3                  │
+                         │         (Let's Encrypt TLS)              │
+                         └──────┬──────────┬──────────┬─────────────┘
+                                │          │          │
+                    ┌───────────▼──┐  ┌────▼────┐  ┌─▼──────────────┐
+                    │   Frontend   │  │   API   │  │   Monitoring   │
+                    │  Next.js 14  │  │ Gateway │  │ Grafana :3000  │
+                    │   :3000      │  │         │  │ Prometheus     │
+                    └──────────────┘  └────┬────┘  └────────────────┘
+                                           │
+              ┌───────────┬────────────┬───┴────────┐
+              │           │            │            │
+        ┌─────▼─────┐ ┌──▼──────┐ ┌───▼─────┐ ┌───▼────┐
+        │  Course   │ │Learning │ │Assess-  │ │  Live  │
+        │  Service  │ │ Service │ │  ment   │ │Service │
+        │  :4001    │ │  :4002  │ │ :4003   │ │ :4004  │
+        └─────┬─────┘ └──┬─────┘ └───┬─────┘ └───┬────┘
+              │          │            │            │
+              └──────────┴─────┬──────┴────────────┘
+                               │
+          ┌──────────┬─────────┼──────────┬──────────┐
+          │          │         │          │          │
+     ┌────▼───┐ ┌───▼──┐ ┌───▼───┐ ┌────▼───┐ ┌───▼──────┐
+     │Postgres│ │Redis │ │ Kafka │ │ MinIO  │ │   BBB    │
+     │  16    │ │  7   │ │(KRaft)│ │  (S3)  │ │(separate │
+     │  RLS   │ │      │ │       │ │        │ │   VM)    │
+     └────────┘ └──────┘ └───────┘ └────────┘ └──────────┘
 ```
 
-## Integrate with your tools
+### Multi-tenant hierarchy (Row-Level Security)
 
-* [Set up project integrations](http://10.202.101.167/ict-au-ibar-development/e-learning-au-ibar/-/settings/integrations)
+```
+Continental (AU) ─► REC (ECOWAS, SADC, ...) ─► Country (55 member states)
+```
 
-## Collaborate with your team
+---
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+## Quick Start (Development)
 
-## Test and Deploy
+### Prerequisites
 
-Use the built-in continuous integration in GitLab.
+- Docker and Docker Compose v2+
+- Node.js 20+ and npm
+- Git
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+### Setup
 
-***
+```bash
+# Clone
+git clone <repository-url>
+cd learn.au-aris.org
 
-# Editing this README
+# Environment
+cp .env.example .env
+# Edit .env with local development values
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# Start infrastructure
+docker compose up -d postgres redis kafka minio
 
-## Suggestions for a good README
+# Install dependencies
+npm install --workspaces
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+# Run database migrations
+npm run migrate --workspace=services/course-service
 
-## Name
-Choose a self-explaining name for your project.
+# Start all services (dev mode)
+npm run dev
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+The frontend will be available at `http://localhost:3000`.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+---
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Project Structure
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```
+learn.au-aris.org/
+├── frontend/                  # Next.js 14 application
+│   ├── app/                   # App Router pages
+│   ├── components/            # React components
+│   ├── lib/                   # Utilities, API client, i18n
+│   ├── public/                # Static assets
+│   └── tests/                 # Frontend tests (Vitest + Playwright)
+├── services/
+│   ├── course-service/        # Course catalog & content (port 4001)
+│   ├── learning-service/      # Enrollments & progress (port 4002)
+│   ├── assessment-service/    # Quizzes & certification (port 4003)
+│   └── live-service/          # BBB integration & attendance (port 4004)
+├── packages/
+│   └── shared/                # @aris-academy/shared (types, auth, plugins)
+├── infra/
+│   ├── docker/                # Dockerfiles
+│   ├── scripts/               # Backup, restore, seed, health-check
+│   ├── monitoring/            # Prometheus, Grafana, AlertManager configs
+│   └── traefik/               # Traefik configuration
+├── db/
+│   └── migrations/            # PostgreSQL migrations (RLS, triggers)
+├── docs/                      # Documentation
+├── docker-compose.yml         # Development stack
+├── docker-compose.prod.yml    # Production overlay
+└── .env.example               # Environment template
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+---
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+## Services
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+| Service      | Port | Stack           | Responsibility                                      |
+|--------------|------|-----------------|-----------------------------------------------------|
+| **course**   | 4001 | Fastify         | Course catalog, content management, multi-lang       |
+| **learning** | 4002 | Fastify         | Enrollments, progress tracking, completion           |
+| **assessment** | 4003 | Fastify       | Quizzes, exams, grading, certification               |
+| **live**     | 4004 | Fastify         | BigBlueButton sessions, webhooks, attendance         |
+| **frontend** | 3000 | Next.js 14      | SSR/CSR UI, Zustand state, i18n (FR/EN/AR/PT)       |
+| **postgres** | 5432 | PostgreSQL 16   | Primary database with RLS multi-tenant               |
+| **redis**    | 6379 | Redis 7         | Sessions, caching, rate-limiting                     |
+| **kafka**    | 9092 | Kafka (KRaft)   | Event bus (enrollments, completions, live events)     |
+| **minio**    | 9000 | MinIO           | S3-compatible object storage (videos, docs, certs)    |
+| **traefik**  | 80/443 | Traefik v3    | Reverse proxy, TLS termination (Let's Encrypt)       |
+
+---
+
+## API Documentation
+
+Each backend service exposes Swagger UI for interactive API exploration:
+
+- Course Service: `http://localhost:4001/docs`
+- Learning Service: `http://localhost:4002/docs`
+- Assessment Service: `http://localhost:4003/docs`
+- Live Service: `http://localhost:4004/docs`
+
+Full API reference: [docs/API.md](docs/API.md)
+
+---
+
+## Testing
+
+The project includes 388 tests across unit, integration, and end-to-end levels.
+
+```bash
+# Run all tests
+npm test --workspaces
+
+# Run frontend tests
+cd frontend && npm test
+
+# Run a specific service's tests
+cd services/course-service && npm test
+
+# Run E2E tests (Playwright)
+cd frontend && npx playwright test
+```
+
+Test framework: **Vitest** (unit/integration) + **Playwright** (E2E)
+
+Full testing guide: [docs/TESTING.md](docs/TESTING.md)
+
+---
+
+## Deployment
+
+### Production (Docker Compose)
+
+```bash
+# On VM-ACADEMY
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+### Infrastructure
+
+| VM           | vCPU | RAM   | Storage | Role                            |
+|--------------|------|-------|---------|---------------------------------|
+| VM-ACADEMY   | 8    | 32 GB | 300 GB  | Platform (all services + infra) |
+| VM-BBB       | 8    | 16 GB | 200 GB  | BigBlueButton (video conferencing) |
+
+Full deployment guide: [docs/deployment.md](docs/deployment.md)
+
+---
+
+## Monitoring
+
+The monitoring stack runs alongside the application:
+
+- **Prometheus** — metrics collection from all services
+- **Grafana** — dashboards and visualization
+- **AlertManager** — alerting rules and notification routing
+- **Exporters** — node-exporter, postgres-exporter, redis-exporter
+
+Each Fastify service exposes a `/metrics` endpoint (Prometheus format).
+
+Operations guide: [docs/OPERATIONS.md](docs/OPERATIONS.md)
+Disaster recovery: [docs/DISASTER-RECOVERY.md](docs/DISASTER-RECOVERY.md)
+
+---
+
+## Languages
+
+ARIS Academy supports four languages across all UI and content:
+
+| Code | Language   |
+|------|------------|
+| `en` | English    |
+| `fr` | French     |
+| `ar` | Arabic     |
+| `pt` | Portuguese |
+
+Content uses `MultiLangText` JSONB fields: `{ "en": "...", "fr": "...", "ar": "...", "pt": "..." }`
+
+---
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+1. Create a feature branch from `main`: `git checkout -b feature/my-feature`
+2. Make your changes, add tests
+3. Run the test suite: `npm test --workspaces`
+4. Ensure linting passes: `npm run lint --workspaces`
+5. Submit a merge request against `main`
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Conventions
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- **Commits**: `type(scope): description` (e.g., `fix(course): handle empty content array`)
+- **Branches**: `feature/`, `fix/`, `docs/`, `refactor/`
+- **Code style**: ESLint + Prettier (configured in each workspace)
+- **i18n**: All user-facing strings must be translated in all 4 languages
+
+---
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Proprietary — African Union Inter-African Bureau for Animal Resources (AU-IBAR).
+All rights reserved.

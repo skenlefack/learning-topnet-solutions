@@ -2,7 +2,10 @@
 // ARIS Academy — Live Session Routes
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { query, queryOne, publishEvent, paginate, TOPICS } from '@aris-academy/shared';
+import {
+  query, queryOne, publishEvent, paginate, TOPICS,
+  UuidParam, PaginationQuery, MultiLangTextSchema, BearerSecurity,
+} from '@aris-academy/shared';
 import { bbbClient } from '../services/bbb-client';
 import { processRecording } from '../services/recording-processor';
 
@@ -45,7 +48,14 @@ export async function sessionRoutes(app: FastifyInstance) {
   // ==========================================================================
   // GET /sessions — List upcoming & live sessions
   // ==========================================================================
-  app.get('/', { preHandler: [app.authenticate] }, async (req: FastifyRequest, reply: FastifyReply) => {
+  app.get('/', {
+    schema: {
+      summary: 'List upcoming & live sessions',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       const user = req.user;
       const sessions = await query(`
@@ -70,7 +80,14 @@ export async function sessionRoutes(app: FastifyInstance) {
   // ==========================================================================
   // GET /sessions/upcoming — Sessions in the next 7 days
   // ==========================================================================
-  app.get('/upcoming', { preHandler: [app.authenticate] }, async (req: FastifyRequest, reply: FastifyReply) => {
+  app.get('/upcoming', {
+    schema: {
+      summary: 'Sessions in the next 7 days',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       const user = req.user;
       const sessions = await query(`
@@ -96,7 +113,15 @@ export async function sessionRoutes(app: FastifyInstance) {
   // ==========================================================================
   // GET /sessions/recordings — All sessions with recordings
   // ==========================================================================
-  app.get('/recordings', { preHandler: [app.authenticate] }, async (req: FastifyRequest, reply: FastifyReply) => {
+  app.get('/recordings', {
+    schema: {
+      summary: 'All sessions with recordings (paginated)',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      querystring: PaginationQuery,
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     const user = req.user;
     const qs = req.query as { page?: string; limit?: string };
     const page = Math.max(parseInt(qs.page || '1', 10), 1);
@@ -125,6 +150,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // GET /sessions/:id — Session detail with attendance stats
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Get session detail',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const session = await queryOne(`
@@ -158,7 +189,26 @@ export async function sessionRoutes(app: FastifyInstance) {
   // ==========================================================================
   // POST /sessions — Schedule a new session
   // ==========================================================================
-  app.post('/', { preHandler: [app.authenticate] }, async (req: FastifyRequest, reply: FastifyReply) => {
+  app.post('/', {
+    schema: {
+      summary: 'Schedule a new session',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      body: {
+        type: 'object' as const,
+        required: ['title', 'scheduledAt'],
+        properties: {
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          courseId: { type: 'string', format: 'uuid' },
+          scheduledAt: { type: 'string', format: 'date-time' },
+          durationMinutes: { type: 'integer', default: 60 },
+          maxParticipants: { type: 'integer', default: 300 },
+        },
+      },
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     const user = req.user;
     if (!['trainer', 'admin_country', 'admin_rec', 'admin_continental'].includes(user.role)) {
       return reply.code(403).send({ success: false, error: 'Insufficient permissions' });
@@ -185,6 +235,23 @@ export async function sessionRoutes(app: FastifyInstance) {
   // PUT /sessions/:id — Update a planned session
   // ==========================================================================
   app.put<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Update a planned session',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object' as const,
+        properties: {
+          title: MultiLangTextSchema,
+          description: MultiLangTextSchema,
+          courseId: { type: 'string', format: 'uuid' },
+          scheduledAt: { type: 'string', format: 'date-time' },
+          durationMinutes: { type: 'integer' },
+          maxParticipants: { type: 'integer' },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -237,6 +304,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // DELETE /sessions/:id — Cancel a session (notify registered participants)
   // ==========================================================================
   app.delete<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Cancel a session',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -289,6 +362,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // GET /sessions/:id/join — Get BBB join URL
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id/join', {
+    schema: {
+      summary: 'Get BBB join URL',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -380,6 +459,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // POST /sessions/:id/start — Start a BBB meeting for a scheduled session
   // ==========================================================================
   app.post<{ Params: { id: string } }>('/:id/start', {
+    schema: {
+      summary: 'Start a BBB meeting',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -451,6 +536,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // GET /sessions/:id/status — Real-time meeting status from BBB
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id/status', {
+    schema: {
+      summary: 'Real-time meeting status',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const session = await queryOne(
@@ -501,6 +592,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // POST /sessions/:id/end — End a session
   // ==========================================================================
   app.post<{ Params: { id: string } }>('/:id/end', {
+    schema: {
+      summary: 'End a session',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -551,6 +648,12 @@ export async function sessionRoutes(app: FastifyInstance) {
   // GET /sessions/:id/attendance — Participant list with durations
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id/attendance', {
+    schema: {
+      summary: 'Participant list with durations',
+      tags: ['Sessions'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -595,7 +698,20 @@ export async function sessionRoutes(app: FastifyInstance) {
   // ==========================================================================
   // POST /webhooks/recording — BBB recording ready callback
   // ==========================================================================
-  app.post('/webhooks/recording', async (req: FastifyRequest, reply: FastifyReply) => {
+  app.post('/webhooks/recording', {
+    schema: {
+      summary: 'BBB recording ready callback',
+      tags: ['Sessions'],
+      body: {
+        type: 'object' as const,
+        properties: {
+          meetingID: { type: 'string' },
+          recordingURL: { type: 'string' },
+          duration: { type: 'integer' },
+        },
+      },
+    },
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     const { meetingID, recordingURL, duration } = req.body as any;
     app.log.info(`[BBB Webhook] Recording ready for ${meetingID}`);
 

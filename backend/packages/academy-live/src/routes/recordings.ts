@@ -3,7 +3,10 @@
 // Manage recorded sessions: list, stream, delete, per-session listings, process
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { query, queryOne, paginate, publishEvent } from '@aris-academy/shared';
+import {
+  query, queryOne, paginate, publishEvent,
+  UuidParam, UuidParamNamed, PaginationQuery, BearerSecurity,
+} from '@aris-academy/shared';
 import { getPresignedUrl, deleteRecordingObject, processRecording } from '../services/recording-processor';
 import { bbbClient } from '../services/bbb-client';
 
@@ -12,7 +15,22 @@ export async function recordingRoutes(app: FastifyInstance) {
   // ==========================================================================
   // GET /recordings — Paginated list of available recordings
   // ==========================================================================
-  app.get('/', { preHandler: [app.authenticate] }, async (req: FastifyRequest, reply: FastifyReply) => {
+  app.get('/', {
+    schema: {
+      summary: 'Paginated list of available recordings',
+      tags: ['Recordings'],
+      security: BearerSecurity,
+      querystring: {
+        type: 'object' as const,
+        properties: {
+          page: { type: 'integer', minimum: 1, default: 1 },
+          limit: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+          courseId: { type: 'string', format: 'uuid' },
+        },
+      },
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
     const user = req.user;
     const qs = req.query as { page?: string; limit?: string; courseId?: string };
     const page = Math.max(parseInt(qs.page || '1', 10), 1);
@@ -47,6 +65,12 @@ export async function recordingRoutes(app: FastifyInstance) {
   // GET /recordings/:id/stream — Presigned MinIO URL for streaming (2h expiry)
   // ==========================================================================
   app.get<{ Params: { id: string } }>('/:id/stream', {
+    schema: {
+      summary: 'Get presigned streaming URL',
+      tags: ['Recordings'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const session = await queryOne(
@@ -86,6 +110,12 @@ export async function recordingRoutes(app: FastifyInstance) {
   // DELETE /recordings/:id — Delete a recording
   // ==========================================================================
   app.delete<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Delete a recording',
+      tags: ['Recordings'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req, reply) => {
     const user = req.user;
@@ -140,6 +170,12 @@ export async function recordingRoutes(app: FastifyInstance) {
   // Queries DB first, falls back to BBB API for any additional recordings
   // ==========================================================================
   app.get<{ Params: { sessionId: string } }>('/session/:sessionId', {
+    schema: {
+      summary: 'Recordings for a specific session',
+      tags: ['Recordings'],
+      security: BearerSecurity,
+      params: UuidParamNamed('sessionId'),
+    },
     preHandler: [app.authenticate],
   }, async (req: FastifyRequest<{ Params: { sessionId: string } }>, reply: FastifyReply) => {
     const { sessionId } = req.params;
@@ -206,6 +242,12 @@ export async function recordingRoutes(app: FastifyInstance) {
   // Downloads recording from BBB, uploads to MinIO, publishes Kafka event
   // ==========================================================================
   app.post<{ Params: { id: string } }>('/:id/process', {
+    schema: {
+      summary: 'Trigger recording processing',
+      tags: ['Recordings'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const user = req.user;

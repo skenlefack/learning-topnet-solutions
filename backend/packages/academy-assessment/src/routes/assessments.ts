@@ -8,7 +8,10 @@
 // ============================================================================
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { query, queryOne, validateBody, uuidSchema, multiLangTextSchema } from '@aris-academy/shared';
+import {
+  query, queryOne, validateBody, uuidSchema, multiLangTextSchema,
+  UuidParam, UuidParamNamed, MultiLangTextSchema, BearerSecurity,
+} from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -49,6 +52,12 @@ export async function assessmentRoutes(app: FastifyInstance) {
   // GET /course/:courseId — list assessments for a course
   // -------------------------------------------------------------------------
   app.get('/course/:courseId', {
+    schema: {
+      summary: 'List assessments for a course',
+      tags: ['Assessments'],
+      security: BearerSecurity,
+      params: UuidParamNamed('courseId'),
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     const assessments = await query(`
@@ -66,8 +75,14 @@ export async function assessmentRoutes(app: FastifyInstance) {
   // GET /:id — get single assessment with stats
   // -------------------------------------------------------------------------
   app.get('/:id', {
+    schema: {
+      summary: 'Get single assessment with stats',
+      tags: ['Assessments'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
-  }, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  }, async (req: any, reply: FastifyReply) => {
     const assessment = await queryOne<any>(`
       SELECT a.*,
         (SELECT COUNT(*)::int FROM academy_core.questions q WHERE q.assessment_id = a.id) AS question_count_actual,
@@ -89,6 +104,27 @@ export async function assessmentRoutes(app: FastifyInstance) {
   // POST / — create assessment (trainer or admin)
   // -------------------------------------------------------------------------
   app.post('/', {
+    schema: {
+      summary: 'Create assessment',
+      tags: ['Assessments'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['courseId', 'title', 'level'],
+        properties: {
+          courseId: { type: 'string', format: 'uuid' },
+          title: MultiLangTextSchema,
+          type: { type: 'string', enum: ['qcm', 'practical', 'mixed', 'oral'], default: 'qcm' },
+          level: { type: 'string', enum: ['beginner', 'intermediate', 'advanced', 'expert'] },
+          passingScore: { type: 'number', minimum: 0, maximum: 100, default: 70 },
+          timeLimitMinutes: { type: 'integer', minimum: 1, maximum: 480, nullable: true },
+          maxAttempts: { type: 'integer', minimum: 1, maximum: 10, default: 3 },
+          shuffleQuestions: { type: 'boolean', default: true },
+          questionCount: { type: 'integer', minimum: 1, nullable: true },
+          isFinal: { type: 'boolean', default: false },
+        },
+      },
+    },
     preHandler: [
       app.authenticate,
       app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental'),
@@ -131,11 +167,31 @@ export async function assessmentRoutes(app: FastifyInstance) {
   // PUT /:id — update assessment
   // -------------------------------------------------------------------------
   app.put('/:id', {
+    schema: {
+      summary: 'Update assessment',
+      tags: ['Assessments'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object',
+        properties: {
+          title: MultiLangTextSchema,
+          type: { type: 'string', enum: ['qcm', 'practical', 'mixed', 'oral'] },
+          level: { type: 'string', enum: ['beginner', 'intermediate', 'advanced', 'expert'] },
+          passingScore: { type: 'number', minimum: 0, maximum: 100 },
+          timeLimitMinutes: { type: 'integer', minimum: 1, maximum: 480, nullable: true },
+          maxAttempts: { type: 'integer', minimum: 1, maximum: 10 },
+          shuffleQuestions: { type: 'boolean' },
+          questionCount: { type: 'integer', minimum: 1, nullable: true },
+          isFinal: { type: 'boolean' },
+        },
+      },
+    },
     preHandler: [
       app.authenticate,
       app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental'),
     ],
-  }, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  }, async (req: any, reply: FastifyReply) => {
     const data = validateBody(updateAssessmentSchema, req.body);
     const assessmentId = req.params.id;
 
@@ -177,11 +233,17 @@ export async function assessmentRoutes(app: FastifyInstance) {
   // DELETE /:id — delete assessment (admin only)
   // -------------------------------------------------------------------------
   app.delete('/:id', {
+    schema: {
+      summary: 'Delete assessment',
+      tags: ['Assessments'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [
       app.authenticate,
       app.requireRole('admin_country', 'admin_rec', 'admin_continental'),
     ],
-  }, async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+  }, async (req: any, reply: FastifyReply) => {
     const assessmentId = req.params.id;
 
     // Check for existing graded attempts

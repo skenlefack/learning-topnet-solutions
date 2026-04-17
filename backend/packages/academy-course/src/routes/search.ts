@@ -4,7 +4,7 @@
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { query, validateBody } from '@aris-academy/shared';
+import { query, validateBody, BearerSecurity } from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schema
@@ -26,6 +26,21 @@ export async function searchRoutes(app: FastifyInstance): Promise<void> {
   // GET /search?q=&lang=&limit= — Global search
   // =========================================================================
   app.get('/search', {
+    schema: {
+      summary: 'Global search',
+      description: 'Full-text search across courses, modules and lessons (ILIKE)',
+      tags: ['Search'],
+      security: BearerSecurity,
+      querystring: {
+        type: 'object',
+        required: ['q'],
+        properties: {
+          q: { type: 'string', minLength: 1, maxLength: 200 },
+          lang: { type: 'string', enum: ['fr', 'en', 'ar', 'pt'], default: 'fr' },
+          limit: { type: 'integer', minimum: 1, maximum: 20, default: 5 },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const { q, lang, limit } = validateBody(searchQuerySchema, request.query);

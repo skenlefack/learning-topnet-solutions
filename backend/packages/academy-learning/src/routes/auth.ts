@@ -4,7 +4,6 @@
 // ============================================================================
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -53,6 +52,20 @@ export default async function authRoutes(app: FastifyInstance) {
 
   app.post(
     '/auth/login',
+    {
+      schema: {
+        summary: 'Authenticate user and obtain JWT',
+        tags: ['Auth'],
+        body: {
+          type: 'object' as const,
+          required: ['email', 'password'],
+          properties: {
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', minLength: 1 },
+          },
+        },
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const parsed = loginSchema.safeParse(req.body);
       if (!parsed.success) {

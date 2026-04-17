@@ -47,8 +47,17 @@ jobs:
       - name: Lint
         run: npx next lint
 
-      - name: Unit tests
-        run: npx vitest run
+      - name: Unit tests with coverage
+        run: npx vitest run --coverage
+
+      - name: Upload frontend coverage
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: frontend
+          directory: frontend/coverage
+          fail_ci_if_error: false
 
       - name: Build
         run: npx next build
@@ -88,6 +97,15 @@ jobs:
         env:
           JWT_SECRET: test-secret-key-for-ci
           NODE_ENV: test
+
+      - name: Upload backend coverage
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: backend
+          directory: backend/coverage
+          fail_ci_if_error: false
 
       - name: Migration dry-run
         run: npx node-pg-migrate up --dry-run --migrations-dir migrations --migration-file-language sql --database-url "postgresql://test:test@localhost:5432/aris_test" 2>&1 || echo "Dry-run check complete (no DB expected in CI)"

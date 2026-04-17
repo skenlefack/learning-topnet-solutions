@@ -5,7 +5,10 @@
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { query, queryOne, transaction, validateBody } from '@aris-academy/shared';
+import {
+  query, queryOne, transaction, validateBody,
+  BearerSecurity,
+} from '@aris-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -38,6 +41,26 @@ export async function questionRoutes(app: FastifyInstance) {
   // POST / — Create a single question
   // =========================================================================
   app.post('/', {
+    schema: {
+      summary: 'Create a single question',
+      tags: ['Questions'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['assessmentId', 'questionText', 'correctAnswer'],
+        properties: {
+          assessmentId: { type: 'string', format: 'uuid' },
+          questionText: { type: 'object', description: 'MultiLang { fr, en, ar, pt }' },
+          questionType: { type: 'string', default: 'single_choice' },
+          options: { type: 'array', items: { type: 'object' } },
+          correctAnswer: {},
+          difficulty: { type: 'integer', minimum: 1, maximum: 5, default: 1 },
+          points: { type: 'integer', minimum: 1, default: 1 },
+          tags: { type: 'array', items: { type: 'string' } },
+          explanation: { type: 'object', description: 'MultiLang { fr, en, ar, pt }' },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     if (!ALLOWED_ROLES.includes(req.user.role)) {
@@ -70,6 +93,19 @@ export async function questionRoutes(app: FastifyInstance) {
   // POST /bulk-import — Import array of questions in a transaction
   // =========================================================================
   app.post('/bulk-import', {
+    schema: {
+      summary: 'Bulk import questions for an assessment',
+      tags: ['Questions'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['assessmentId', 'questions'],
+        properties: {
+          assessmentId: { type: 'string', format: 'uuid' },
+          questions: { type: 'array', items: { type: 'object' }, minItems: 1, maxItems: 500 },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const user = request.user;
@@ -122,6 +158,18 @@ export async function questionRoutes(app: FastifyInstance) {
   // GET /export?assessmentId= — Export all questions for an assessment
   // =========================================================================
   app.get('/export', {
+    schema: {
+      summary: 'Export questions for an assessment',
+      tags: ['Questions'],
+      security: BearerSecurity,
+      querystring: {
+        type: 'object',
+        required: ['assessmentId'],
+        properties: {
+          assessmentId: { type: 'string', format: 'uuid' },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const user = request.user;

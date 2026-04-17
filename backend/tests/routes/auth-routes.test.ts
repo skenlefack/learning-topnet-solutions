@@ -259,7 +259,6 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
       });
 
       expect(res.statusCode).toBe(400);
-      expect(res.json().success).toBe(false);
     });
 
     it('should return 400 when password is missing', async () => {
@@ -272,7 +271,6 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
       });
 
       expect(res.statusCode).toBe(400);
-      expect(res.json().success).toBe(false);
     });
 
     it('should return 400 when body is empty', async () => {

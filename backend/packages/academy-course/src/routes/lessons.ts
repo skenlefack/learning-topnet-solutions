@@ -15,6 +15,10 @@ import {
   multiLangTextSchema,
   uuidSchema,
   auditLog,
+  UuidParam,
+  UuidParamNamed,
+  MultiLangTextSchema,
+  BearerSecurity,
 } from '@aris-academy/shared';
 import { uploadFile, BUCKETS } from '../services/minio';
 import { invalidateResolvedCache } from '../services/course-resolver';
@@ -89,6 +93,12 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // GET /module/:moduleId — List lessons for a module
   // =========================================================================
   app.get<{ Params: { moduleId: string } }>('/module/:moduleId', {
+    schema: {
+      summary: 'List lessons for a module',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      params: UuidParamNamed('moduleId'),
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.moduleId);
@@ -104,6 +114,12 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // GET /:id — Get single lesson
   // =========================================================================
   app.get<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Get lesson by ID',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -122,6 +138,25 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // POST / — Create lesson
   // =========================================================================
   app.post('/', {
+    schema: {
+      summary: 'Create lesson',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['moduleId', 'title', 'type'],
+        properties: {
+          moduleId: { type: 'string', format: 'uuid' },
+          title: MultiLangTextSchema,
+          type: { type: 'string', enum: ['video', 'text', 'quiz', 'practical', 'replay'] },
+          content: { type: 'object', additionalProperties: true },
+          videoUrl: { type: 'string', format: 'uri' },
+          durationMinutes: { type: 'integer', exclusiveMinimum: 0 },
+          sortOrder: { type: 'integer', minimum: 0, default: 0 },
+          isRequired: { type: 'boolean', default: true },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const body = validateBody(createLessonSchema, request.body);
@@ -154,6 +189,24 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // PUT /:id — Update lesson
   // =========================================================================
   app.put<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Update lesson',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      params: UuidParam,
+      body: {
+        type: 'object',
+        properties: {
+          title: MultiLangTextSchema,
+          type: { type: 'string', enum: ['video', 'text', 'quiz', 'practical', 'replay'] },
+          content: { type: 'object', additionalProperties: true },
+          videoUrl: { type: 'string', format: 'uri' },
+          durationMinutes: { type: 'integer', exclusiveMinimum: 0 },
+          sortOrder: { type: 'integer', minimum: 0 },
+          isRequired: { type: 'boolean' },
+        },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -198,6 +251,12 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // DELETE /:id — Delete lesson
   // =========================================================================
   app.delete<{ Params: { id: string } }>('/:id', {
+    schema: {
+      summary: 'Delete lesson',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      params: UuidParam,
+    },
     preHandler: [app.authenticate, app.requireRole('admin_country', 'admin_rec', 'admin_continental')],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -226,6 +285,14 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // POST /:id/upload — Upload video/document to MinIO
   // =========================================================================
   app.post<{ Params: { id: string } }>('/:id/upload', {
+    schema: {
+      summary: 'Upload file to lesson',
+      description: 'Upload a video (mp4, webm, ogg, mov) or document (pdf, pptx, docx) — max 500 MB',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      params: UuidParam,
+      consumes: ['multipart/form-data'],
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request, reply) => {
     validateBody(uuidSchema, request.params.id);
@@ -312,6 +379,16 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
   // POST /reorder — Batch update sort_order for lessons within a module
   // =========================================================================
   app.post('/reorder', {
+    schema: {
+      summary: 'Reorder lessons',
+      tags: ['Lessons'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['lessonIds'],
+        properties: { lessonIds: { type: 'array', items: { type: 'string', format: 'uuid' }, minItems: 1 } },
+      },
+    },
     preHandler: [app.authenticate, app.requireRole('trainer', 'admin_country', 'admin_rec', 'admin_continental')],
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     const { lessonIds } = validateBody(reorderSchema, request.body);

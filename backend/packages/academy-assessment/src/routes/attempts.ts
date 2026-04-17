@@ -3,13 +3,29 @@
 // Start and submit assessment attempts (uses adaptive scoring engine)
 // ============================================================================
 import { FastifyInstance } from 'fastify';
-import { query, queryOne, publishEvent, TOPICS } from '@aris-academy/shared';
+import {
+  query, queryOne, publishEvent, TOPICS,
+  UuidParamNamed, BearerSecurity,
+} from '@aris-academy/shared';
 import { selectQuestions, scoreAttempt } from '../services/scoring-engine';
 import { issueCertification } from './certifications';
 
 export async function attemptRoutes(app: FastifyInstance) {
   // Start an assessment attempt — adaptive question selection
   app.post('/start', {
+    schema: {
+      summary: 'Start an assessment attempt',
+      tags: ['Attempts'],
+      security: BearerSecurity,
+      body: {
+        type: 'object',
+        required: ['assessmentId'],
+        properties: {
+          assessmentId: { type: 'string', format: 'uuid' },
+          enrollmentId: { type: 'string', format: 'uuid' },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     const { assessmentId, enrollmentId } = req.body as any;
@@ -53,6 +69,23 @@ export async function attemptRoutes(app: FastifyInstance) {
 
   // Submit an assessment attempt — detailed scoring
   app.post('/:attemptId/submit', {
+    schema: {
+      summary: 'Submit an assessment attempt',
+      tags: ['Attempts'],
+      security: BearerSecurity,
+      params: UuidParamNamed('attemptId'),
+      body: {
+        type: 'object',
+        required: ['answers'],
+        properties: {
+          answers: {
+            type: 'array',
+            items: { type: 'object' },
+            description: 'Array of answer objects { questionId, selectedIndex }',
+          },
+        },
+      },
+    },
     preHandler: [app.authenticate],
   }, async (req: any, reply) => {
     const { attemptId } = req.params;

@@ -24,6 +24,40 @@ export { default as metricsPlugin } from './plugins/metrics';
 export type { TenantFilterResult } from './plugins/tenant-scope';
 export { default as rateLimitPlugin } from './plugins/rate-limit';
 export { default as requestLoggerPlugin } from './plugins/request-logger';
+export { default as swaggerPlugin } from './plugins/swagger';
+export type { SwaggerPluginOptions } from './plugins/swagger';
 
 // CORS configuration
 export { getCorsConfig } from './plugins/cors-production';
+
+// OpenAPI schemas (re-export with rename to avoid MultiLangText clash with types)
+export {
+  UuidParam,
+  UuidParamNamed,
+  PaginationQuery,
+  MultiLangText as MultiLangTextSchema,
+  SuccessResponse,
+  CreatedResponse,
+  PaginatedResponse,
+  NoContentResponse,
+  NotFoundResponse,
+  ValidationErrorResponse,
+  UnauthorizedResponse,
+  CourseObject,
+  ModuleObject,
+  LessonObject,
+  UserObject,
+  EnrollmentObject,
+  ProgressObject,
+  NotificationObject,
+  ForumPostObject,
+  StudyGroupObject,
+  AssessmentObject,
+  AttemptObject,
+  CertificationObject,
+  QuestionObject,
+  LiveSessionObject,
+  RecordingObject,
+  AttendanceObject,
+  BearerSecurity,
+} from './openapi-schemas';

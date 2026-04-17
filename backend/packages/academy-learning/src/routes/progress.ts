@@ -10,6 +10,7 @@ import { z } from 'zod';
 import {
   query, queryOne, publishEvent, TOPICS,
   getRedis, validateBody, uuidSchema,
+  UuidParamNamed, BearerSecurity,
 } from '@aris-academy/shared';
 import { recalculateProgress, updateStreak } from '../services/progression-engine';
 
@@ -44,7 +45,15 @@ export default async function progressRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get<{ Params: { enrollmentId: string } }>(
     '/progress/:enrollmentId',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Get per-lesson progress for an enrollment',
+        tags: ['Progress'],
+        security: BearerSecurity,
+        params: UuidParamNamed('enrollmentId'),
+      },
+    },
     async (req, reply) => {
       const progress = await query(`
         SELECT
@@ -70,7 +79,26 @@ export default async function progressRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.post(
     '/progress',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Update lesson progress',
+        tags: ['Progress'],
+        security: BearerSecurity,
+        body: {
+          type: 'object' as const,
+          required: ['lessonId', 'enrollmentId'],
+          properties: {
+            lessonId: { type: 'string', format: 'uuid' },
+            enrollmentId: { type: 'string', format: 'uuid' },
+            timeSpentSeconds: { type: 'integer', minimum: 0 },
+            lastPositionSeconds: { type: 'integer', minimum: 0 },
+            isCompleted: { type: 'boolean' },
+            score: { type: 'number', minimum: 0, maximum: 100 },
+          },
+        },
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const body = validateBody(progressBodySchema, req.body);
 
@@ -128,7 +156,24 @@ export default async function progressRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.post(
     '/progress/video-heartbeat',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'High-frequency video playback heartbeat (Redis buffer)',
+        tags: ['Progress'],
+        security: BearerSecurity,
+        body: {
+          type: 'object' as const,
+          required: ['lessonId', 'enrollmentId', 'seconds', 'position'],
+          properties: {
+            lessonId: { type: 'string', format: 'uuid' },
+            enrollmentId: { type: 'string', format: 'uuid' },
+            seconds: { type: 'integer', minimum: 0 },
+            position: { type: 'integer', minimum: 0 },
+          },
+        },
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const body = validateBody(heartbeatBodySchema, req.body);
       const redis = getRedis();
@@ -162,7 +207,15 @@ export default async function progressRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get<{ Params: { lessonId: string } }>(
     '/progress/resume/:lessonId',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Resume video playback position for a lesson',
+        tags: ['Progress'],
+        security: BearerSecurity,
+        params: UuidParamNamed('lessonId'),
+      },
+    },
     async (req, reply) => {
       const redis = getRedis();
       const key = `progress:video:${req.user.sub}:${req.params.lessonId}`;

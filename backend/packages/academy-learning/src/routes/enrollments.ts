@@ -8,6 +8,7 @@ import { z } from 'zod';
 import {
   query, queryOne, publishEvent, TOPICS,
   validateBody, uuidSchema,
+  UuidParam, BearerSecurity,
 } from '@aris-academy/shared';
 import { getNextCourse, calculateTimeEstimate } from '../services/progression-engine';
 
@@ -22,7 +23,14 @@ export default async function enrollmentRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/enrollments',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'List current user enrollments with stats',
+        tags: ['Enrollments'],
+        security: BearerSecurity,
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       try {
         const enrollments = await query(`
@@ -113,7 +121,15 @@ export default async function enrollmentRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get<{ Params: { id: string } }>(
     '/enrollments/:id/next-course',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Suggest the next course after completing this enrollment',
+        tags: ['Enrollments'],
+        security: BearerSecurity,
+        params: UuidParam,
+      },
+    },
     async (req, reply) => {
       const enrollment = await queryOne<any>(
         'SELECT course_id FROM academy_core.enrollments WHERE id = $1 AND user_id = $2',
@@ -133,7 +149,15 @@ export default async function enrollmentRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get<{ Params: { id: string } }>(
     '/enrollments/:id/time-estimate',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Estimated remaining time for an enrollment',
+        tags: ['Enrollments'],
+        security: BearerSecurity,
+        params: UuidParam,
+      },
+    },
     async (req, reply) => {
       const enrollment = await queryOne<any>(
         'SELECT id FROM academy_core.enrollments WHERE id = $1 AND user_id = $2',
@@ -153,7 +177,21 @@ export default async function enrollmentRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.post(
     '/enrollments',
-    { preHandler: [app.authenticate] },
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Enroll in a course (checks prerequisites)',
+        tags: ['Enrollments'],
+        security: BearerSecurity,
+        body: {
+          type: 'object' as const,
+          required: ['courseId'],
+          properties: {
+            courseId: { type: 'string', format: 'uuid' },
+          },
+        },
+      },
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const { courseId } = validateBody(enrollBodySchema, req.body);
 

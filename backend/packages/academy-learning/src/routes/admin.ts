@@ -13,6 +13,11 @@ import { z } from 'zod';
 import {
   query, queryOne, transaction, paginate, validateBody,
   uuidSchema, paginationSchema,
+  BearerSecurity,
+  PaginationQuery,
+  MultiLangTextSchema,
+  UuidParam,
+  UuidParamNamed,
 } from '@aris-academy/shared';
 import crypto from 'crypto';
 
@@ -77,7 +82,14 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/admin/stats',
-    { preHandler: adminGuard(app) },
+    {
+      schema: {
+        summary: 'Get aggregate admin statistics',
+        tags: ['Admin'],
+        security: BearerSecurity,
+      },
+      preHandler: adminGuard(app),
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       try {
         const { clause, params: filterParams } = req.tenantFilter();
@@ -130,7 +142,22 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/admin/users',
-    { preHandler: adminGuard(app) },
+    {
+      schema: {
+        summary: 'List users (paginated, filtered)',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        querystring: {
+          type: 'object' as const,
+          properties: {
+            ...PaginationQuery.properties,
+            search: { type: 'string' },
+            role: { type: 'string', enum: ['learner', 'trainer', 'admin_country', 'admin_rec', 'admin_continental'] },
+          },
+        },
+      },
+      preHandler: adminGuard(app),
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const { page, limit, search, role } = validateBody(userListSchema, req.query);
       const { clause, params: filterParams } = req.tenantFilter();
@@ -170,7 +197,27 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.post(
     '/admin/users',
-    { preHandler: adminGuard(app) },
+    {
+      schema: {
+        summary: 'Create a single user',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        body: {
+          type: 'object' as const,
+          required: ['email', 'firstName', 'lastName', 'role', 'tenantId'],
+          properties: {
+            email: { type: 'string', format: 'email' },
+            firstName: { type: 'string', minLength: 1, maxLength: 100 },
+            lastName: { type: 'string', minLength: 1, maxLength: 100 },
+            role: { type: 'string', enum: ['learner', 'trainer', 'admin_country', 'admin_rec', 'admin_continental'] },
+            tenantId: { type: 'string', format: 'uuid' },
+            preferredLanguage: { type: 'string', enum: ['en', 'fr', 'ar', 'pt'] },
+            isActive: { type: 'boolean' },
+          },
+        },
+      },
+      preHandler: adminGuard(app),
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const data = validateBody(createUserSchema, req.body);
 
@@ -211,10 +258,29 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.put(
     '/admin/users/:id',
-    { preHandler: adminGuard(app) },
-    async (req: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    {
+      schema: {
+        summary: 'Update a user',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        params: UuidParam,
+        body: {
+          type: 'object' as const,
+          properties: {
+            firstName: { type: 'string', minLength: 1, maxLength: 100 },
+            lastName: { type: 'string', minLength: 1, maxLength: 100 },
+            role: { type: 'string', enum: ['learner', 'trainer', 'admin_country', 'admin_rec', 'admin_continental'] },
+            tenantId: { type: 'string', format: 'uuid' },
+            preferredLanguage: { type: 'string', enum: ['en', 'fr', 'ar', 'pt'] },
+            isActive: { type: 'boolean' },
+          },
+        },
+      },
+      preHandler: adminGuard(app),
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
       const data = validateBody(updateUserSchema, req.body);
-      const userId = req.params.id;
+      const userId = (req.params as { id: string }).id;
 
       // Build dynamic SET clause
       const sets: string[] = [];
@@ -254,7 +320,37 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.post(
     '/admin/users/bulk-import',
-    { preHandler: adminGuard(app) },
+    {
+      schema: {
+        summary: 'Bulk import users from CSV/JSON',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        body: {
+          type: 'object' as const,
+          required: ['users'],
+          properties: {
+            users: {
+              type: 'array',
+              minItems: 1,
+              maxItems: 1000,
+              items: {
+                type: 'object' as const,
+                required: ['email', 'first_name', 'last_name', 'tenant_id'],
+                properties: {
+                  email: { type: 'string', format: 'email' },
+                  first_name: { type: 'string' },
+                  last_name: { type: 'string' },
+                  role: { type: 'string', enum: ['learner', 'trainer', 'admin_country', 'admin_rec', 'admin_continental'] },
+                  tenant_id: { type: 'string', format: 'uuid' },
+                  preferred_language: { type: 'string', enum: ['en', 'fr', 'ar', 'pt'] },
+                },
+              },
+            },
+          },
+        },
+      },
+      preHandler: adminGuard(app),
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const { users } = validateBody(bulkImportSchema, req.body);
 
@@ -302,7 +398,14 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/admin/tenants',
-    { preHandler: adminGuard(app) },
+    {
+      schema: {
+        summary: 'List all tenants',
+        tags: ['Admin'],
+        security: BearerSecurity,
+      },
+      preHandler: adminGuard(app),
+    },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const { clause, params: filterParams } = req.tenantFilter();
 
@@ -325,9 +428,17 @@ export default async function adminRoutes(app: FastifyInstance) {
   // -------------------------------------------------------------------------
   app.get(
     '/admin/courses/:courseId/analytics',
-    { preHandler: adminGuard(app) },
-    async (req: FastifyRequest<{ Params: { courseId: string } }>, reply: FastifyReply) => {
-      const { courseId } = req.params;
+    {
+      schema: {
+        summary: 'Get course-level analytics',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        params: UuidParamNamed('courseId'),
+      },
+      preHandler: adminGuard(app),
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { courseId } = req.params as { courseId: string };
 
       try {
         // Enrollment funnel

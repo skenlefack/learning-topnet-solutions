@@ -13,6 +13,7 @@ import {
   metricsPlugin,
   rateLimitPlugin,
   requestLoggerPlugin,
+  swaggerPlugin,
   getCorsConfig,
 } from '@aris-academy/shared';
 import { initBuckets } from './services/minio';
@@ -36,6 +37,7 @@ async function bootstrap() {
   });
 
   // ---------- Plugins ----------
+  await app.register(swaggerPlugin, { serviceName: SERVICE_NAME, servicePort: PORT });
   await app.register(metricsPlugin);
   await app.register(cors, getCorsConfig());
   await app.register(rateLimitPlugin);
