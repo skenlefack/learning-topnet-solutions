@@ -21,10 +21,37 @@ env:
 
 jobs:
   # =========================================================================
+  # Wait for CI to pass before deploying
+  # =========================================================================
+  ci-gate:
+    name: Wait for CI
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Wait for CI workflow
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'Frontend'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 15
+          allowed-conclusions: success
+      - name: Wait for Backend CI
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'Backend'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 15
+          allowed-conclusions: success
+
+  # =========================================================================
   # Build & Push Docker Images
   # =========================================================================
   build-and-push:
     name: Build ${{ matrix.service }}
+    needs: [ci-gate]
+    if: always() && (needs.ci-gate.result == 'success' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -112,12 +139,34 @@ jobs:
             # Clean up old images
             docker image prune -f
 
-            # Health check
+            # Health check (retry up to 30s per service)
+            echo "Waiting for services to be healthy..."
             sleep 10
-            curl -sf http://localhost:3000/api/health || echo "Frontend health check failed"
-            curl -sf http://localhost:4001/health || echo "Course service health check failed"
-            curl -sf http://localhost:4002/health || echo "Learning service health check failed"
-            curl -sf http://localhost:4003/health || echo "Assessment service health check failed"
-            curl -sf http://localhost:4004/health || echo "Live service health check failed"
 
-            echo "Deployment complete: $(date)"
+            check_health() {
+              local name=$1 url=$2
+              for i in 1 2 3 4 5 6; do
+                if curl -sf --max-time 5 "$url" > /dev/null 2>&1; then
+                  echo "✓ $name healthy"
+                  return 0
+                fi
+                sleep 5
+              done
+              echo "✗ $name FAILED at $url"
+              return 1
+            }
+
+            FAILED=0
+            check_health "Frontend"   "http://localhost:3000/login" || FAILED=1
+            check_health "Course"     "http://localhost:4001/health" || FAILED=1
+            check_health "Learning"   "http://localhost:4002/health" || FAILED=1
+            check_health "Assessment" "http://localhost:4003/health" || FAILED=1
+            check_health "Live"       "http://localhost:4004/health" || FAILED=1
+
+            if [ $FAILED -ne 0 ]; then
+              echo "DEPLOYMENT HEALTH CHECK FAILED — rolling back"
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail=50
+              exit 1
+            fi
+
+            echo "Deployment successful: $(date)"

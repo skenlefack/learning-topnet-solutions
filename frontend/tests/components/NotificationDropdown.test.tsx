@@ -115,4 +115,85 @@ describe('NotificationDropdown', () => {
       expect(skeletons.length).toBeGreaterThan(0);
     });
   });
+
+  // ---- Notification list with items ----
+
+  it('renders notification items when list is non-empty', async () => {
+    const { notificationApi } = await import('@/lib/api');
+    (notificationApi.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: [
+        { id: 'n1', type: 'enrollment', title: { fr: 'Inscription' }, body: { fr: 'Bienvenue' }, is_read: false, created_at: new Date().toISOString() },
+        { id: 'n2', type: 'certification', title: { fr: 'Certificat' }, body: { fr: 'Bravo' }, is_read: true, created_at: new Date(Date.now() - 3600000).toISOString() },
+      ],
+    });
+
+    render(<NotificationDropdown />);
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Notifications' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Notifications' }));
+    await waitFor(() => {
+      expect(screen.getByText('Inscription')).toBeInTheDocument();
+      expect(screen.getByText('Certificat')).toBeInTheDocument();
+    });
+  });
+
+  it('shows "Tout lire" button when unread count > 0', async () => {
+    const { notificationApi } = await import('@/lib/api');
+    (notificationApi.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: [{ id: 'n1', type: 'enrollment', title: { fr: 'Test' }, body: { fr: 'Body' }, is_read: false, created_at: new Date().toISOString() }],
+    });
+
+    render(<NotificationDropdown />);
+    await waitFor(() => expect(screen.getByText('3')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Notifications' }));
+    await waitFor(() => {
+      expect(screen.getByText('Tout lire')).toBeInTheDocument();
+    });
+  });
+
+  it('calls markAllRead when "Tout lire" is clicked', async () => {
+    const { notificationApi } = await import('@/lib/api');
+    (notificationApi.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: [{ id: 'n1', type: 'enrollment', title: { fr: 'Test' }, body: { fr: 'Body' }, is_read: false, created_at: new Date().toISOString() }],
+    });
+
+    render(<NotificationDropdown />);
+    await waitFor(() => expect(screen.getByText('3')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Notifications' }));
+    await waitFor(() => expect(screen.getByText('Tout lire')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Tout lire'));
+    await waitFor(() => {
+      expect(notificationApi.markAllRead).toHaveBeenCalledWith('test-token');
+    });
+  });
+
+  it('calls markRead when clicking an unread notification', async () => {
+    const { notificationApi } = await import('@/lib/api');
+    (notificationApi.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: [{ id: 'n1', type: 'enrollment', title: { fr: 'Notif unread' }, body: { fr: 'Body' }, is_read: false, created_at: new Date().toISOString() }],
+    });
+
+    render(<NotificationDropdown />);
+    await waitFor(() => expect(screen.getByText('3')).toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: 'Notifications' }));
+    await waitFor(() => expect(screen.getByText('Notif unread')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Notif unread'));
+    await waitFor(() => {
+      expect(notificationApi.markRead).toHaveBeenCalledWith('test-token', 'n1');
+    });
+  });
+
+  it('renders time ago for recent notifications', async () => {
+    const { notificationApi } = await import('@/lib/api');
+    (notificationApi.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: [{ id: 'n1', type: 'system', title: { fr: 'Sys' }, body: { fr: 'Info' }, is_read: true, created_at: new Date(Date.now() - 120000).toISOString() }],
+    });
+
+    render(<NotificationDropdown />);
+    fireEvent.click(screen.getByRole('button', { name: 'Notifications' }));
+    await waitFor(() => {
+      expect(screen.getByText(/Il y a 2m/)).toBeInTheDocument();
+    });
+  });
 });
