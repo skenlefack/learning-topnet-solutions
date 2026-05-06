@@ -224,67 +224,61 @@ export default function CatalogDetailPage() {
         </div>
       </section>
 
-      {/* Summary & Prerequisites */}
-      {(description || (course.prerequisites && course.prerequisites.length > 0)) && (
-        <section className="bg-white border-b border-[#dee2e6]/50">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Summary */}
-              {description && (
-                <div>
-                  <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-[#1A5632]" />
-                    {t('summary')}
-                  </h2>
-                  <p className="text-sm text-[#495057] leading-relaxed">
-                    {description}
-                  </p>
-                  {course.tags && course.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {course.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#f8f9fa] text-[#495057] border border-[#dee2e6]/60"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Prerequisites */}
-              <div>
-                <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-[#B8952E]" />
-                  {t('prerequisites')}
-                </h2>
-                {course.prerequisites && course.prerequisites.length > 0 ? (
-                  <ul className="space-y-2">
-                    {course.prerequisites.map((prereq: string, idx: number) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-[#495057]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#B8952E] mt-1.5 shrink-0" />
-                        {prereq}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-[#6c757d] italic">
-                    {t('noPrerequisites')}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Content */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Program — Left (2/3) */}
-          <div className="lg:col-span-2">
+          {/* Left column (2/3) — Summary + Prerequisites + Program */}
+          <div className="lg:col-span-2 space-y-8">
+
+            {/* Summary */}
+            {description && (
+              <div>
+                <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-[#1A5632]" />
+                  {t('summary')}
+                </h2>
+                <p className="text-sm text-[#495057] leading-relaxed">
+                  {description}
+                </p>
+                {course.tags && course.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {course.tags.map((tag: string) => (
+                      <span
+                        key={tag}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#f8f9fa] text-[#495057] border border-[#dee2e6]/60"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Prerequisites */}
+            <div>
+              <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-[#B8952E]" />
+                {t('prerequisites')}
+              </h2>
+              {course.prerequisites && course.prerequisites.length > 0 ? (
+                <ul className="space-y-2">
+                  {course.prerequisites.map((prereq: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-[#495057]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#B8952E] mt-1.5 shrink-0" />
+                      {prereq}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-[#6c757d] italic">
+                  {t('noPrerequisites')}
+                </p>
+              )}
+            </div>
+
+            {/* Program */}
+            <div>
             <h2 className="text-lg font-bold text-[#212529] mb-5 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-[#1A5632]" />
               {t('program')}
@@ -347,6 +341,7 @@ export default function CatalogDetailPage() {
                   </motion.div>
                 );
               })}
+            </div>
             </div>
           </div>
 
