@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const AUTH_COOKIE_NAME = 'aris-token';
 
-const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/auth/', '/verify'];
+const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/auth/', '/api/public/', '/verify', '/catalog'];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

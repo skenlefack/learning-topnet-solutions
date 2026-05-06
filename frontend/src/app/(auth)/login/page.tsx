@@ -17,7 +17,9 @@ import {
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useAuthStore } from '@/lib/store';
+import { publicApi } from '@/lib/api';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA
@@ -43,74 +45,19 @@ const CATEGORIES_DATA = [
   { key: 'environment', icon: Leaf, count: 6, color: '#0e591a' },
 ];
 
-const COURSES = [
-  {
-    id: 1,
-    title: 'Surveillance et contrôle de la PPR',
-    category: 'Santé animale',
-    level: 'Intermédiaire',
-    duration: '40h',
-    enrolled: 1243,
-    rating: 4.8,
-    image: '/au-logo.png',
-    color: '#1A5632',
-  },
-  {
-    id: 2,
-    title: 'Épidémiologie des maladies transfrontalières',
-    category: 'Épidémiologie',
-    level: 'Avancé',
-    duration: '60h',
-    enrolled: 876,
-    rating: 4.9,
-    image: '/au-logo.png',
-    color: '#930e2d',
-  },
-  {
-    id: 3,
-    title: 'Systèmes d\'élevage résilients en Afrique',
-    category: 'Production animale',
-    level: 'Débutant',
-    duration: '30h',
-    enrolled: 2105,
-    rating: 4.7,
-    image: '/au-logo.png',
-    color: '#B8952E',
-  },
-  {
-    id: 4,
-    title: 'Gestion durable des pêcheries africaines',
-    category: 'Pêche & Aquaculture',
-    level: 'Intermédiaire',
-    duration: '35h',
-    enrolled: 654,
-    rating: 4.6,
-    image: '/au-logo.png',
-    color: '#0e591a',
-  },
-  {
-    id: 5,
-    title: 'Normes SPS et facilitation du commerce',
-    category: 'Commerce & Marketing',
-    level: 'Avancé',
-    duration: '45h',
-    enrolled: 432,
-    rating: 4.8,
-    image: '/au-logo.png',
-    color: '#154528',
-  },
-  {
-    id: 6,
-    title: 'Bien-être animal : Standards africains',
-    category: 'Bien-être animal',
-    level: 'Débutant',
-    duration: '20h',
-    enrolled: 1567,
-    rating: 4.5,
-    image: '/au-logo.png',
-    color: '#930e2d',
-  },
-];
+const LEVEL_COLORS: Record<string, string> = {
+  beginner: '#1A5632',
+  intermediate: '#B8952E',
+  advanced: '#930e2d',
+  expert: '#154528',
+};
+
+const LEVEL_LABELS: Record<string, string> = {
+  beginner: 'Débutant',
+  intermediate: 'Intermédiaire',
+  advanced: 'Avancé',
+  expert: 'Expert',
+};
 
 const NAV_LINKS = [
   { key: 'home', href: '#' },
@@ -377,11 +324,19 @@ function SearchSection() {
 
 function StatsBar() {
   const t_stats = useTranslations('stats');
+  const [data, setData] = useState<{ courses: number; enrollments: number; certifications: number; countries: number } | null>(null);
+
+  useEffect(() => {
+    publicApi.stats()
+      .then((res) => setData(res.data))
+      .catch(() => setData({ courses: 12, enrollments: 850, certifications: 45, countries: 55 }));
+  }, []);
+
   const stats = [
-    { icon: BookOpen, label: t_stats('courses') },
-    { icon: Users, label: t_stats('learners') },
-    { icon: Globe, label: t_stats('states') },
-    { icon: Award, label: t_stats('certificates') },
+    { icon: BookOpen, value: data?.courses ?? '—', label: t_stats('coursesLabel') },
+    { icon: Users, value: data?.enrollments ?? '—', label: t_stats('learnersLabel') },
+    { icon: Globe, value: data?.countries ?? 55, label: t_stats('statesLabel') },
+    { icon: Award, value: data?.certifications ?? '—', label: t_stats('certificatesLabel') },
   ];
 
   return (
@@ -391,7 +346,10 @@ function StatsBar() {
           {stats.map((s, i) => (
             <div key={i} className="text-center">
               <s.icon className="w-8 h-8 text-[#1A5632] mx-auto mb-2" />
-              <div className="text-sm font-semibold text-[#212529] mt-1">{s.label}</div>
+              <div className="text-2xl font-bold text-[#212529]">
+                {typeof s.value === 'number' ? s.value.toLocaleString('fr-FR') : s.value}
+              </div>
+              <div className="text-sm font-semibold text-[#6c757d] mt-1">{s.label}</div>
             </div>
           ))}
         </div>
@@ -452,8 +410,23 @@ function CategoriesSection() {
 // COURSES
 // ═══════════════════════════════════════════════════════════════════════════
 
+function getLocalText(text: Record<string, string> | string | undefined, lang: string = 'fr'): string {
+  if (!text) return '';
+  if (typeof text === 'string') return text;
+  return text[lang] || text.fr || text.en || Object.values(text)[0] || '';
+}
+
 function CoursesSection({ onLogin }: { onLogin: () => void }) {
   const t_sections = useTranslations('sections');
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    publicApi.courses({ limit: 6, lang: 'fr' })
+      .then((res) => setCourses(res.data || []))
+      .catch(() => setCourses([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <section id="courses" className="py-16 bg-white">
@@ -472,66 +445,92 @@ function CoursesSection({ onLogin }: { onLogin: () => void }) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {COURSES.map((course) => (
-            <motion.div
-              key={course.id}
-              whileHover={{ y: -4 }}
-              className="rounded-xl overflow-hidden bg-white border border-[#dee2e6]/60 hover:shadow-[0_0.5rem_1rem_rgba(0,0,0,0.1)] transition-all group"
-            >
-              {/* Course header */}
-              <div
-                className="h-40 relative flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${course.color}18, ${course.color}08)` }}
-              >
-                <Image
-                  src={course.image}
-                  alt={course.title}
-                  width={64}
-                  height={64}
-                  className="w-16 h-16 object-contain opacity-30"
-                />
-                <div className="absolute top-3 left-3">
-                  <span
-                    className="px-2.5 py-1 rounded-md text-xs font-medium text-white"
-                    style={{ backgroundColor: course.color }}
-                  >
-                    {course.category}
-                  </span>
-                </div>
-                <div className="absolute top-3 right-3">
-                  <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/90 text-[#495057]">
-                    {course.level}
-                  </span>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl overflow-hidden bg-white border border-[#dee2e6]/60 animate-pulse">
+                <div className="h-40 bg-gray-100" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                  <div className="h-9 bg-gray-100 rounded" />
                 </div>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses.map((course) => {
+              const color = LEVEL_COLORS[course.level] || '#1A5632';
+              const title = getLocalText(course.title, 'fr');
+              const tags = course.tags || [];
+              const category = tags[0] || course.level;
 
-              {/* Course body */}
-              <div className="p-5">
-                <h3 className="text-sm font-semibold text-[#212529] mb-3 line-clamp-2 group-hover:text-[#1A5632] transition-colors">
-                  {course.title}
-                </h3>
-                <div className="flex items-center gap-4 text-xs text-[#6c757d] mb-4">
-                  <span className="flex items-center gap-1">
-                    <Play className="w-3.5 h-3.5" /> {course.duration}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5" /> {course.enrolled.toLocaleString('fr-FR')}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="text-[#C8A951]">&#9733;</span> {course.rating}
-                  </span>
-                </div>
-                <button
-                  onClick={onLogin}
-                  className="w-full py-2.5 rounded-lg text-xs font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632] hover:text-white transition-colors"
+              return (
+                <motion.div
+                  key={course.id}
+                  whileHover={{ y: -4 }}
+                  className="rounded-xl overflow-hidden bg-white border border-[#dee2e6]/60 hover:shadow-[0_0.5rem_1rem_rgba(0,0,0,0.1)] transition-all group"
                 >
-                  {t_sections('enrollCourse')}
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  {/* Course header */}
+                  <Link href={`/catalog/${course.slug || course.id}`}>
+                    <div
+                      className="h-40 relative flex items-center justify-center cursor-pointer"
+                      style={{ background: `linear-gradient(135deg, ${color}18, ${color}08)` }}
+                    >
+                      <Image
+                        src={course.thumbnail_url || '/au-logo.png'}
+                        alt={title}
+                        width={64}
+                        height={64}
+                        className="w-16 h-16 object-contain opacity-30"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span
+                          className="px-2.5 py-1 rounded-md text-xs font-medium text-white"
+                          style={{ backgroundColor: color }}
+                        >
+                          {category}
+                        </span>
+                      </div>
+                      <div className="absolute top-3 right-3">
+                        <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/90 text-[#495057]">
+                          {LEVEL_LABELS[course.level] || course.level}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Course body */}
+                  <div className="p-5">
+                    <Link href={`/catalog/${course.slug || course.id}`}>
+                      <h3 className="text-sm font-semibold text-[#212529] mb-3 line-clamp-2 group-hover:text-[#1A5632] transition-colors cursor-pointer">
+                        {title}
+                      </h3>
+                    </Link>
+                    <div className="flex items-center gap-4 text-xs text-[#6c757d] mb-4">
+                      <span className="flex items-center gap-1">
+                        <Play className="w-3.5 h-3.5" /> {course.estimated_hours ? `${course.estimated_hours}h` : '—'}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3.5 h-3.5" /> {(course.enrollment_count || 0).toLocaleString('fr-FR')}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <BookOpen className="w-3.5 h-3.5" /> {course.module_count || 0} modules
+                      </span>
+                    </div>
+                    <button
+                      onClick={onLogin}
+                      className="w-full py-2.5 rounded-lg text-xs font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632] hover:text-white transition-colors"
+                    >
+                      {t_sections('enrollCourse')}
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="sm:hidden mt-8 text-center">
           <button className="inline-flex items-center gap-2 text-sm font-semibold text-[#1A5632]">

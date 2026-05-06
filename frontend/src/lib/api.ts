@@ -37,6 +37,16 @@ async function apiFetch<T>(path: string, options: FetchOptions = {}): Promise<T>
   return res.json();
 }
 
+// === Public API (no auth required) ===
+export const publicApi = {
+  stats: () =>
+    apiFetch<{ success: boolean; data: { courses: number; enrollments: number; certifications: number; countries: number } }>('/api/public/stats'),
+  courses: (params?: { limit?: number; offset?: number; lang?: string; level?: string; search?: string }) =>
+    apiFetch<{ success: boolean; data: any[]; meta: { total: number; limit: number; offset: number } }>('/api/public/courses', { params }),
+  course: (id: string, params?: { lang?: string }) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/public/courses/${id}`, { params }),
+};
+
 // === Course Service ===
 export const courseApi = {
   list: (token: string, params?: { level?: string; search?: string; page?: number; limit?: number; language?: string; sort?: string }) =>

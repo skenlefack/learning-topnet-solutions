@@ -292,7 +292,30 @@
     "courses": "65+ Courses available",
     "learners": "12,000+ Enrolled learners",
     "states": "55 Member States",
-    "certificates": "3,200+ Certificates issued"
+    "certificates": "3,200+ Certificates issued",
+    "coursesLabel": "Courses available",
+    "learnersLabel": "Enrolled learners",
+    "statesLabel": "Member States",
+    "certificatesLabel": "Certificates issued"
+  },
+  "catalog": {
+    "program": "Course Program",
+    "lessons": "lessons",
+    "enrolled": "enrolled",
+    "passingScore": "Passing score",
+    "optional": "Optional",
+    "loginToAccess": "Log in to access lesson content",
+    "enrollTitle": "Ready to start?",
+    "enrollDesc": "Sign up for free to access all content, track your progress and earn your AU-IBAR certification.",
+    "enrollCTA": "Sign up for free",
+    "login": "Log in",
+    "courseInfo": "Course info",
+    "level": "Level",
+    "duration": "Duration",
+    "notFound": "Course not found",
+    "notFoundDesc": "This course does not exist or is no longer available.",
+    "backToHome": "Back to home",
+    "certificationBadge": "Earn your AU-IBAR certification by completing this course and passing the final exam."
   },
   "sections": {
     "competencies": "Areas of expertise",

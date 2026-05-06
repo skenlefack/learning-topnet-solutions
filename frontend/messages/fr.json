@@ -292,7 +292,30 @@
     "courses": "65+ Cours disponibles",
     "learners": "12 000+ Apprenants inscrits",
     "states": "55 États membres",
-    "certificates": "3 200+ Certificats délivrés"
+    "certificates": "3 200+ Certificats délivrés",
+    "coursesLabel": "Cours disponibles",
+    "learnersLabel": "Apprenants inscrits",
+    "statesLabel": "États membres",
+    "certificatesLabel": "Certificats délivrés"
+  },
+  "catalog": {
+    "program": "Programme du cours",
+    "lessons": "leçons",
+    "enrolled": "inscrits",
+    "passingScore": "Score requis",
+    "optional": "Optionnel",
+    "loginToAccess": "Connectez-vous pour accéder au contenu des leçons",
+    "enrollTitle": "Prêt à commencer ?",
+    "enrollDesc": "Inscrivez-vous gratuitement pour accéder à l'intégralité du contenu, suivre votre progression et obtenir votre certification AU-IBAR.",
+    "enrollCTA": "S'inscrire gratuitement",
+    "login": "Se connecter",
+    "courseInfo": "Informations",
+    "level": "Niveau",
+    "duration": "Durée",
+    "notFound": "Cours introuvable",
+    "notFoundDesc": "Ce cours n'existe pas ou n'est plus disponible.",
+    "backToHome": "Retour à l'accueil",
+    "certificationBadge": "Obtenez votre certification AU-IBAR en complétant ce cours et en réussissant l'examen final."
   },
   "sections": {
     "competencies": "Domaines de compétence",

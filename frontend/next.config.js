@@ -31,6 +31,7 @@ const nextConfig = {
     const host = (name, port) =>
       isDev ? `http://localhost:${port}` : `http://${name}:${port}`;
     return [
+      { source: '/api/public/:path*', destination: `${host('academy-course', 4001)}/public/:path*` },
       { source: '/api/courses/:path*', destination: `${host('academy-course', 4001)}/:path*` },
       { source: '/api/learning/:path*', destination: `${host('academy-learning', 4002)}/:path*` },
       { source: '/api/assessment/:path*', destination: `${host('academy-assessment', 4003)}/:path*` },
