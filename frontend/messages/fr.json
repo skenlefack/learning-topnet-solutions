@@ -315,7 +315,10 @@
     "notFound": "Cours introuvable",
     "notFoundDesc": "Ce cours n'existe pas ou n'est plus disponible.",
     "backToHome": "Retour à l'accueil",
-    "certificationBadge": "Obtenez votre certification AU-IBAR en complétant ce cours et en réussissant l'examen final."
+    "certificationBadge": "Obtenez votre certification AU-IBAR en complétant ce cours et en réussissant l'examen final.",
+    "summary": "Résumé du cours",
+    "prerequisites": "Prérequis",
+    "noPrerequisites": "Aucun prérequis — ce cours est ouvert à tous."
   },
   "sections": {
     "competencies": "Domaines de compétence",

@@ -315,7 +315,10 @@
     "notFound": "Course not found",
     "notFoundDesc": "This course does not exist or is no longer available.",
     "backToHome": "Back to home",
-    "certificationBadge": "Earn your AU-IBAR certification by completing this course and passing the final exam."
+    "certificationBadge": "Earn your AU-IBAR certification by completing this course and passing the final exam.",
+    "summary": "Course summary",
+    "prerequisites": "Prerequisites",
+    "noPrerequisites": "No prerequisites — this course is open to everyone."
   },
   "sections": {
     "competencies": "Areas of expertise",

@@ -145,6 +145,33 @@ export default function CatalogDetailPage() {
           <div className="absolute -left-10 bottom-0 w-60 h-60 rounded-full bg-[#C8A951]/[0.06]" />
         </div>
 
+        {/* Course image — faded on the right */}
+        {course.thumbnail_url && (
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 lg:w-2/5 pointer-events-none select-none hidden md:block">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent" style={{ background: `linear-gradient(to right, ${color}f2 0%, transparent 100%)` }} />
+            <Image
+              src={course.thumbnail_url}
+              alt=""
+              width={600}
+              height={400}
+              className="w-full h-full object-cover opacity-20"
+              aria-hidden="true"
+            />
+          </div>
+        )}
+        {!course.thumbnail_url && (
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 lg:w-2/5 pointer-events-none select-none hidden md:flex items-center justify-center">
+            <Image
+              src="/au-logo.png"
+              alt=""
+              width={200}
+              height={200}
+              className="w-48 h-48 object-contain opacity-10"
+              aria-hidden="true"
+            />
+          </div>
+        )}
+
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
           <Link
             href="/login"
@@ -196,6 +223,62 @@ export default function CatalogDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Summary & Prerequisites */}
+      {(description || (course.prerequisites && course.prerequisites.length > 0)) && (
+        <section className="bg-white border-b border-[#dee2e6]/50">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Summary */}
+              {description && (
+                <div>
+                  <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-[#1A5632]" />
+                    {t('summary')}
+                  </h2>
+                  <p className="text-sm text-[#495057] leading-relaxed">
+                    {description}
+                  </p>
+                  {course.tags && course.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {course.tags.map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#f8f9fa] text-[#495057] border border-[#dee2e6]/60"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Prerequisites */}
+              <div>
+                <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-[#B8952E]" />
+                  {t('prerequisites')}
+                </h2>
+                {course.prerequisites && course.prerequisites.length > 0 ? (
+                  <ul className="space-y-2">
+                    {course.prerequisites.map((prereq: string, idx: number) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-[#495057]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#B8952E] mt-1.5 shrink-0" />
+                        {prereq}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-[#6c757d] italic">
+                    {t('noPrerequisites')}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Content */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
