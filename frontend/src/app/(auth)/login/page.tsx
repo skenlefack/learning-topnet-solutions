@@ -59,6 +59,16 @@ const LEVEL_LABELS: Record<string, string> = {
   expert: 'Expert',
 };
 
+// Fallback courses when API is unavailable (matches seed data)
+const FALLBACK_COURSES = [
+  { id: '1', slug: 'surveillance-epidemiologique', title: { fr: 'Surveillance épidémiologique', en: 'Epidemiological Surveillance' }, level: 'beginner', estimated_hours: 12, module_count: 8, enrollment_count: 245, tags: ['surveillance', 'epidemiologie'] },
+  { id: '2', slug: 'surveillance-ppr', title: { fr: 'Surveillance et contrôle de la PPR', en: 'PPR Surveillance and Control' }, level: 'intermediate', estimated_hours: 40, module_count: 5, enrollment_count: 187, tags: ['sante-animale', 'ppr'] },
+  { id: '3', slug: 'aquaculture-durable', title: { fr: 'Aquaculture durable en Afrique', en: 'Sustainable Aquaculture in Africa' }, level: 'beginner', estimated_hours: 30, module_count: 4, enrollment_count: 312, tags: ['peche', 'aquaculture'] },
+  { id: '4', slug: 'normes-sps-commerce', title: { fr: 'Normes SPS et commerce régional africain', en: 'SPS Standards and African Trade' }, level: 'advanced', estimated_hours: 45, module_count: 5, enrollment_count: 98, tags: ['commerce', 'sps'] },
+  { id: '5', slug: 'ressources-genetiques', title: { fr: 'Conservation des ressources génétiques animales', en: 'Animal Genetic Resources Conservation' }, level: 'intermediate', estimated_hours: 35, module_count: 4, enrollment_count: 156, tags: ['genetique', 'biodiversite'] },
+  { id: '6', slug: 'apiculture-sante-abeilles', title: { fr: 'Apiculture et santé des abeilles en Afrique', en: 'Beekeeping and Bee Health in Africa' }, level: 'beginner', estimated_hours: 25, module_count: 4, enrollment_count: 423, tags: ['apiculture', 'abeilles'] },
+];
+
 const NAV_LINKS = [
   { key: 'home', href: '#' },
   { key: 'courses', href: '#courses' },
@@ -423,8 +433,11 @@ function CoursesSection({ onLogin }: { onLogin: () => void }) {
 
   useEffect(() => {
     publicApi.courses({ limit: 6, lang: 'fr' })
-      .then((res) => setCourses(res.data || []))
-      .catch(() => setCourses([]))
+      .then((res) => {
+        const items = res.data || [];
+        setCourses(items.length > 0 ? items : FALLBACK_COURSES);
+      })
+      .catch(() => setCourses(FALLBACK_COURSES))
       .finally(() => setLoading(false));
   }, []);
 
