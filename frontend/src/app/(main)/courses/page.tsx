@@ -23,7 +23,7 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/lib/store';
-import { courseApi, learningApi } from '@/lib/api';
+import { courseApi, learningApi, categoryApi, pathApi } from '@/lib/api';
 import { t, LEVEL_META } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
@@ -75,11 +75,18 @@ export default function CoursesPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [level, setLevel] = useState('');
+  const [category, setCategory] = useState('');
   const [sort, setSort] = useState('popular');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
   const limit = 12;
+
+  // Fetch categories
+  useEffect(() => {
+    categoryApi.list().then((res: any) => setCategories(res.data || [])).catch(() => {});
+  }, []);
 
   // Debounce search (300ms)
   useEffect(() => {
@@ -88,7 +95,7 @@ export default function CoursesPage() {
   }, [search]);
 
   // Reset page on filter change
-  useEffect(() => { setPage(1); }, [debouncedSearch, level, sort, status]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, level, sort, status, category]);
 
   // ---- Data fetching ----
 
@@ -124,17 +131,23 @@ export default function CoursesPage() {
     return map;
   }, [enrollRes]);
 
-  // Client-side status filter
+  // Client-side status + category filter
   const displayed = useMemo(() => {
-    if (!status) return courses;
-    return courses.filter((c: any) => {
-      const enr = enrollMap[c.id];
-      if (status === 'not_started') return !enr;
-      if (status === 'in_progress') return enr && enr.status === 'active' && (enr.progress_percent ?? 0) < 100;
-      if (status === 'completed') return enr?.status === 'completed';
-      return true;
-    });
-  }, [courses, status, enrollMap]);
+    let filtered = courses;
+    if (category) {
+      filtered = filtered.filter((c: any) => c.category_id === category);
+    }
+    if (status) {
+      filtered = filtered.filter((c: any) => {
+        const enr = enrollMap[c.id];
+        if (status === 'not_started') return !enr;
+        if (status === 'in_progress') return enr && enr.status === 'active' && (enr.progress_percent ?? 0) < 100;
+        if (status === 'completed') return enr?.status === 'completed';
+        return true;
+      });
+    }
+    return filtered;
+  }, [courses, status, category, enrollMap]);
 
   // ---- Enroll handler ----
   const handleEnroll = useCallback(async (courseId: string) => {
@@ -198,7 +211,7 @@ export default function CoursesPage() {
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden sm:inline">{t_courses('filters')}</span>
-              {(level || status) && <span className="w-2 h-2 rounded-full bg-brand-gold" />}
+              {(level || status || category) && <span className="w-2 h-2 rounded-full bg-brand-gold" />}
             </button>
 
             {/* Sort */}
@@ -254,6 +267,43 @@ export default function CoursesPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Category */}
+                {categories.length > 0 && (
+                  <div>
+                    <label className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 block">
+                      Catégorie
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        onClick={() => setCategory('')}
+                        className={clsx(
+                          'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
+                          !category
+                            ? 'bg-brand-navy text-white dark:bg-brand-gold dark:text-gray-900'
+                            : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)] hover:bg-gray-200 dark:hover:bg-gray-700',
+                        )}
+                      >
+                        Toutes
+                      </button>
+                      {categories.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setCategory(cat.id)}
+                          className={clsx(
+                            'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
+                            category === cat.id
+                              ? 'text-white dark:text-gray-900'
+                              : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)] hover:bg-gray-200 dark:hover:bg-gray-700',
+                          )}
+                          style={category === cat.id ? { backgroundColor: cat.color || '#1A5632' } : undefined}
+                        >
+                          {t(cat.name, language)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Status */}
                 <div>

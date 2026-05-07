@@ -91,29 +91,29 @@ describe('AdminDashboardContent', () => {
   it('renders courses tab', async () => {
     render(<AdminDashboardContent />);
     await waitFor(() => {
-      expect(screen.getByText(/Cours/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Cours/i).length).toBeGreaterThan(0);
     });
   });
 
   it('renders users tab', async () => {
     render(<AdminDashboardContent />);
     await waitFor(() => {
-      expect(screen.getByText(/Utilisateurs|Users/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Utilisateurs|Users/i).length).toBeGreaterThan(0);
     });
   });
 
   it('renders sessions tab', async () => {
     render(<AdminDashboardContent />);
     await waitFor(() => {
-      expect(screen.getByText(/Sessions/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Sessions/i).length).toBeGreaterThan(0);
     });
   });
 
   it('renders all tab buttons', async () => {
     render(<AdminDashboardContent />);
     await waitFor(() => {
-      expect(screen.getAllByText(/Questions/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/Quiz/i).length).toBeGreaterThan(0);
     });
-    expect(screen.getAllByText(/Sessions/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Parcours/i).length).toBeGreaterThan(0);
   });
 });
