@@ -155,6 +155,87 @@ export async function questionRoutes(app: FastifyInstance) {
   });
 
   // =========================================================================
+  // GET /assessment/:assessmentId — List questions for an assessment
+  // =========================================================================
+  app.get('/assessment/:assessmentId', {
+    schema: {
+      summary: 'List questions for an assessment',
+      tags: ['Questions'],
+      security: BearerSecurity,
+    },
+    preHandler: [app.authenticate],
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const { assessmentId } = request.params as { assessmentId: string };
+    const questions = await query(
+      `SELECT * FROM academy_core.questions WHERE assessment_id = $1 ORDER BY created_at`,
+      [assessmentId],
+    );
+    return reply.send({ success: true, data: questions });
+  });
+
+  // =========================================================================
+  // PUT /:id — Update a single question
+  // =========================================================================
+  app.put('/:id', {
+    schema: {
+      summary: 'Update a question',
+      tags: ['Questions'],
+      security: BearerSecurity,
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
+    const user = (req as any).user;
+    if (!ALLOWED_ROLES.includes(user.role as any)) {
+      return reply.code(403).send({ success: false, error: 'Insufficient permissions' });
+    }
+    const { id } = req.params as { id: string };
+    const body = req.body as any;
+
+    const sets: string[] = [];
+    const params: any[] = [];
+    let idx = 1;
+
+    if (body.questionText) { sets.push(`question_text = $${idx++}::jsonb`); params.push(JSON.stringify(body.questionText)); }
+    if (body.questionType) { sets.push(`question_type = $${idx++}`); params.push(body.questionType); }
+    if (body.options !== undefined) { sets.push(`options = $${idx++}::jsonb`); params.push(JSON.stringify(body.options)); }
+    if (body.correctAnswer !== undefined) { sets.push(`correct_answer = $${idx++}::jsonb`); params.push(JSON.stringify(body.correctAnswer)); }
+    if (body.difficulty !== undefined) { sets.push(`difficulty = $${idx++}`); params.push(body.difficulty); }
+    if (body.points !== undefined) { sets.push(`points = $${idx++}`); params.push(body.points); }
+    if (body.tags) { sets.push(`tags = $${idx++}`); params.push(body.tags); }
+    if (body.explanation !== undefined) { sets.push(`explanation = $${idx++}::jsonb`); params.push(body.explanation ? JSON.stringify(body.explanation) : null); }
+
+    if (sets.length === 0) return reply.code(400).send({ success: false, error: 'No fields to update' });
+
+    params.push(id);
+    const question = await queryOne(
+      `UPDATE academy_core.questions SET ${sets.join(', ')} WHERE id = $${idx} RETURNING *`,
+      params,
+    );
+    if (!question) return reply.code(404).send({ success: false, error: 'Question not found' });
+    return reply.send({ success: true, data: question });
+  });
+
+  // =========================================================================
+  // DELETE /:id — Delete a question
+  // =========================================================================
+  app.delete('/:id', {
+    schema: {
+      summary: 'Delete a question',
+      tags: ['Questions'],
+      security: BearerSecurity,
+    },
+    preHandler: [app.authenticate],
+  }, async (req: FastifyRequest, reply: FastifyReply) => {
+    const user = (req as any).user;
+    if (!ALLOWED_ROLES.includes(user.role as any)) {
+      return reply.code(403).send({ success: false, error: 'Insufficient permissions' });
+    }
+    const { id } = req.params as { id: string };
+    await query('DELETE FROM academy_core.questions WHERE id = $1', [id]);
+    return reply.code(204).send();
+  });
+
+  // =========================================================================
   // GET /export?assessmentId= — Export all questions for an assessment
   // =========================================================================
   app.get('/export', {

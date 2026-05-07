@@ -22,6 +22,8 @@ import { lessonRoutes } from './routes/lessons';
 import { healthRoutes } from './routes/health';
 import { searchRoutes } from './routes/search';
 import { publicRoutes } from './routes/public';
+import { categoryRoutes } from './routes/categories';
+import { pathRoutes } from './routes/paths';
 import { initConsumers } from './consumers';
 import { initBuckets } from './services/minio';
 
@@ -65,6 +67,8 @@ async function bootstrap() {
   // --- Routes ---
   await app.register(healthRoutes, { prefix: '/health' });
   await app.register(publicRoutes, { prefix: '/public' });
+  await app.register(categoryRoutes, { prefix: '/categories' });
+  await app.register(pathRoutes, { prefix: '/paths' });
   await app.register(courseRoutes, { prefix: '/courses' });
   await app.register(moduleRoutes, { prefix: '/modules' });
   await app.register(lessonRoutes, { prefix: '/lessons' });

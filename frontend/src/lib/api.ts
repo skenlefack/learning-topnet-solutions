@@ -47,6 +47,37 @@ export const publicApi = {
     apiFetch<{ success: boolean; data: any }>(`/api/public/courses/${id}`, { params }),
 };
 
+// === Categories API ===
+export const categoryApi = {
+  list: () => apiFetch<{ success: boolean; data: any[] }>('/api/courses/categories'),
+  create: (token: string, data: any) => apiFetch('/api/courses/categories', { token, method: 'POST', body: JSON.stringify(data) }),
+  update: (token: string, id: string, data: any) => apiFetch(`/api/courses/categories/${id}`, { token, method: 'PUT', body: JSON.stringify(data) }),
+  delete: (token: string, id: string) => apiFetch(`/api/courses/categories/${id}`, { token, method: 'DELETE' }),
+};
+
+// === Learning Paths API ===
+export const pathApi = {
+  list: (token: string) => apiFetch<{ success: boolean; data: any[] }>('/api/courses/paths', { token }),
+  listPublic: () => apiFetch<{ success: boolean; data: any[] }>('/api/courses/paths/public'),
+  get: (token: string, id: string) => apiFetch<{ success: boolean; data: any }>(`/api/courses/paths/${id}`, { token }),
+  create: (token: string, data: any) => apiFetch('/api/courses/paths', { token, method: 'POST', body: JSON.stringify(data) }),
+  update: (token: string, id: string, data: any) => apiFetch(`/api/courses/paths/${id}`, { token, method: 'PUT', body: JSON.stringify(data) }),
+  delete: (token: string, id: string) => apiFetch(`/api/courses/paths/${id}`, { token, method: 'DELETE' }),
+  addCourse: (token: string, pathId: string, data: any) => apiFetch(`/api/courses/paths/${pathId}/courses`, { token, method: 'POST', body: JSON.stringify(data) }),
+  removeCourse: (token: string, pathId: string, courseId: string) => apiFetch(`/api/courses/paths/${pathId}/courses/${courseId}`, { token, method: 'DELETE' }),
+  enroll: (token: string, pathId: string) => apiFetch(`/api/courses/paths/${pathId}/enroll`, { token, method: 'POST' }),
+};
+
+// === Quiz/Questions API ===
+export const questionApi = {
+  list: (token: string, assessmentId: string) => apiFetch<{ success: boolean; data: any[] }>(`/api/assessment/questions/assessment/${assessmentId}`, { token }),
+  create: (token: string, data: any) => apiFetch('/api/assessment/questions', { token, method: 'POST', body: JSON.stringify(data) }),
+  update: (token: string, id: string, data: any) => apiFetch(`/api/assessment/questions/${id}`, { token, method: 'PUT', body: JSON.stringify(data) }),
+  delete: (token: string, id: string) => apiFetch(`/api/assessment/questions/${id}`, { token, method: 'DELETE' }),
+  bulkImport: (token: string, data: any) => apiFetch('/api/assessment/questions/bulk-import', { token, method: 'POST', body: JSON.stringify(data) }),
+  export: (token: string, assessmentId: string) => apiFetch(`/api/assessment/questions/export?assessmentId=${assessmentId}`, { token }),
+};
+
 // === Course Service ===
 export const courseApi = {
   list: (token: string, params?: { level?: string; search?: string; page?: number; limit?: number; language?: string; sort?: string }) =>
