@@ -255,7 +255,20 @@
     "signup": "S'inscrire",
     "invalidCredentials": "Identifiants incorrects",
     "networkError": "Erreur réseau. Veuillez réessayer.",
-    "welcome": "Bienvenue, {name} !"
+    "welcome": "Bienvenue, {name} !",
+    "forgotPassword": "Mot de passe oublié ?",
+    "forgotTitle": "Mot de passe oublié",
+    "forgotSubtitle": "Entrez votre email pour recevoir un lien de réinitialisation",
+    "sendResetLink": "Envoyer le lien",
+    "resetEmailSent": "Si cette adresse existe, un email de réinitialisation a été envoyé. Vérifiez votre boîte de réception.",
+    "backToLogin": "Retour à la connexion",
+    "resetTitle": "Nouveau mot de passe",
+    "resetSubtitle": "Choisissez un nouveau mot de passe sécurisé",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Minimum 8 caractères",
+    "resetPassword": "Réinitialiser",
+    "resetSuccess": "Mot de passe modifié avec succès ! Redirection...",
+    "resetFailed": "Lien invalide ou expiré"
   },
   "hero": {
     "slide1Title": "Renforcer les capacités vétérinaires en Afrique",

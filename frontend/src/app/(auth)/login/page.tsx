@@ -716,12 +716,23 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const searchParams = useSearchParams();
   const setAuth = useAuthStore((s) => s.setAuth);
 
+  // Modes: 'login' | 'forgot' | 'reset'
+  const resetToken = searchParams.get('reset');
+  const [mode, setMode] = useState<'login' | 'forgot' | 'reset'>(resetToken ? 'reset' : 'login');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Auto-open modal if reset token in URL
+  useEffect(() => {
+    if (resetToken) setMode('reset');
+  }, [resetToken]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -754,9 +765,57 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     }
   };
 
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+    try {
+      await fetch('/api/learning/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      setSuccess(t_login('resetEmailSent'));
+    } catch {
+      setError(t_login('networkError'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+    try {
+      const res = await fetch('/api/learning/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: resetToken, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || t_login('resetFailed'));
+      } else {
+        setSuccess(t_login('resetSuccess'));
+        setTimeout(() => { setMode('login'); setSuccess(null); }, 2000);
+      }
+    } catch {
+      setError(t_login('networkError'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputClass = "w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-white border border-[#ced4da] text-[#212529] placeholder:text-[#adb5bd] focus:outline-none focus:ring-2 focus:ring-[rgba(26,86,50,0.25)] focus:border-[#1A5632] transition-all";
+
+  const isOpen = open || mode === 'reset';
+
   return (
     <AnimatePresence>
-      {open && (
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -764,7 +823,7 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={mode !== 'reset' ? onClose : undefined} />
 
           {/* Modal */}
           <motion.div
@@ -778,7 +837,7 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
 
             <button
-              onClick={onClose}
+              onClick={() => { if (mode !== 'login') { setMode('login'); setError(null); setSuccess(null); } else onClose(); }}
               className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-[#f8f9fa] transition-colors z-10"
             >
               <X className="w-4 h-4 text-[#6c757d]" />
@@ -788,8 +847,12 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               <div className="flex items-center gap-3 mb-6">
                 <Image src="/au-logo.png" alt="AU-IBAR" width={40} height={40} className="w-10 h-10 object-contain" />
                 <div>
-                  <h2 className="text-lg font-bold text-[#212529]">{t_login('title')}</h2>
-                  <p className="text-xs text-[#6c757d]">{t_login('subtitle')}</p>
+                  <h2 className="text-lg font-bold text-[#212529]">
+                    {mode === 'forgot' ? t_login('forgotTitle') : mode === 'reset' ? t_login('resetTitle') : t_login('title')}
+                  </h2>
+                  <p className="text-xs text-[#6c757d]">
+                    {mode === 'forgot' ? t_login('forgotSubtitle') : mode === 'reset' ? t_login('resetSubtitle') : t_login('subtitle')}
+                  </p>
                 </div>
               </div>
 
@@ -800,68 +863,75 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="modal-email" className="block text-sm font-medium text-[#495057] mb-1.5">
-                    {t_login('email')}
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
-                    <input
-                      id="modal-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t_login('emailPlaceholder')}
-                      required
-                      className="w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-white border border-[#ced4da] text-[#212529] placeholder:text-[#adb5bd] focus:outline-none focus:ring-2 focus:ring-[rgba(26,86,50,0.25)] focus:border-[#1A5632] transition-all"
-                    />
-                  </div>
+              {success && (
+                <div className="flex items-center gap-2 p-3 mb-5 rounded-lg bg-[#1A5632]/5 border border-[#1A5632]/20">
+                  <Mail className="w-4 h-4 text-[#1A5632] shrink-0" />
+                  <p className="text-sm text-[#1A5632]">{success}</p>
                 </div>
+              )}
 
-                <div>
-                  <label htmlFor="modal-password" className="block text-sm font-medium text-[#495057] mb-1.5">
-                    {t_login('password')}
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
-                    <input
-                      id="modal-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      className="w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-white border border-[#ced4da] text-[#212529] placeholder:text-[#adb5bd] focus:outline-none focus:ring-2 focus:ring-[rgba(26,86,50,0.25)] focus:border-[#1A5632] transition-all"
-                    />
+              {/* LOGIN FORM */}
+              {mode === 'login' && (
+                <>
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                      <label htmlFor="modal-email" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('email')}</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                        <input id="modal-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t_login('emailPlaceholder')} required className={inputClass} />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="modal-password" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('password')}</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                        <input id="modal-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className={inputClass} />
+                      </div>
+                    </div>
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                      {loading ? <><Loader2 className="w-4 h-4 animate-spin" />{t_login('submitting')}</> : <>{t_login('submit')}<ArrowRight className="w-4 h-4" /></>}
+                    </button>
+                  </form>
+                  <button onClick={() => { setMode('forgot'); setError(null); setSuccess(null); }} className="mt-3 w-full text-center text-xs text-[#1A5632] font-semibold hover:underline">
+                    {t_login('forgotPassword')}
+                  </button>
+                </>
+              )}
+
+              {/* FORGOT PASSWORD FORM */}
+              {mode === 'forgot' && !success && (
+                <form onSubmit={handleForgot} className="space-y-4">
+                  <div>
+                    <label htmlFor="forgot-email" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('email')}</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                      <input id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t_login('emailPlaceholder')} required className={inputClass} />
+                    </div>
                   </div>
-                </div>
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /></> : <>{t_login('sendResetLink')}<ArrowRight className="w-4 h-4" /></>}
+                  </button>
+                  <button type="button" onClick={() => { setMode('login'); setError(null); }} className="w-full text-center text-xs text-[#6c757d] hover:underline">
+                    {t_login('backToLogin')}
+                  </button>
+                </form>
+              )}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] focus:outline-none focus:ring-2 focus:ring-[rgba(26,86,50,0.25)] focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {t_login('submitting')}
-                    </>
-                  ) : (
-                    <>
-                      {t_login('submit')}
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-
-              <p className="mt-5 text-center text-xs text-[#adb5bd]">
-                {t_login('noAccount')}{' '}
-                <button className="text-[#1A5632] font-semibold hover:underline">
-                  {t_login('signup')}
-                </button>
-              </p>
+              {/* RESET PASSWORD FORM */}
+              {mode === 'reset' && !success && (
+                <form onSubmit={handleReset} className="space-y-4">
+                  <div>
+                    <label htmlFor="new-password" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('newPassword')}</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                      <input id="new-password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder={t_login('newPasswordPlaceholder')} required minLength={8} className={inputClass} />
+                    </div>
+                  </div>
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /></> : <>{t_login('resetPassword')}<ArrowRight className="w-4 h-4" /></>}
+                  </button>
+                </form>
+              )}
             </div>
           </motion.div>
         </motion.div>

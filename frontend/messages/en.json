@@ -255,7 +255,20 @@
     "signup": "Sign up",
     "invalidCredentials": "Invalid credentials",
     "networkError": "Network error. Please try again.",
-    "welcome": "Welcome, {name}!"
+    "welcome": "Welcome, {name}!",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Forgot password",
+    "forgotSubtitle": "Enter your email to receive a reset link",
+    "sendResetLink": "Send reset link",
+    "resetEmailSent": "If this address exists, a reset email has been sent. Check your inbox.",
+    "backToLogin": "Back to sign in",
+    "resetTitle": "New password",
+    "resetSubtitle": "Choose a new secure password",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "Minimum 8 characters",
+    "resetPassword": "Reset password",
+    "resetSuccess": "Password changed successfully! Redirecting...",
+    "resetFailed": "Invalid or expired link"
   },
   "hero": {
     "slide1Title": "Strengthening veterinary capacities in Africa",

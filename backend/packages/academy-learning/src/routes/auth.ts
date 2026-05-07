@@ -3,10 +3,23 @@
 // POST /auth/login — DEV: seed credentials, PRODUCTION: DB + bcrypt
 // ============================================================================
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import crypto from 'crypto';
 import { z } from 'zod';
+import {
+  query,
+  queryOne,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail,
+} from '@aris-academy/shared';
+
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+});
+const forgotSchema = z.object({ email: z.string().email() });
+const resetSchema = z.object({
+  token: z.string().min(1),
+  newPassword: z.string().min(8),
 });
 
 // ---------------------------------------------------------------------------
@@ -188,6 +201,157 @@ export default async function authRoutes(app: FastifyInstance) {
       });
 
       return reply.send({ success: true, token, user });
+    },
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // POST /auth/forgot-password — Request password reset (public)
+  // ─────────────────────────────────────────────────────────────────────────
+  app.post(
+    '/auth/forgot-password',
+    {
+      schema: {
+        summary: 'Request password reset email',
+        tags: ['Auth'],
+        body: {
+          type: 'object' as const,
+          required: ['email'],
+          properties: { email: { type: 'string', format: 'email' } },
+        },
+      },
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const parsed = forgotSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ success: false, error: 'Valid email required' });
+      }
+
+      const email = parsed.data.email.toLowerCase().trim();
+
+      // Always return 200 to prevent email enumeration
+      try {
+        const user = await queryOne<{
+          id: string; email: string; first_name: string;
+          last_name: string; preferred_language: string;
+        }>(
+          'SELECT id, email, first_name, last_name, preferred_language FROM academy_core.users WHERE email = $1 AND is_active = true',
+          [email],
+        );
+
+        if (user) {
+          // Generate token
+          const rawToken = crypto.randomBytes(32).toString('hex');
+          const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+          const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+          // Invalidate previous tokens
+          await query(
+            'UPDATE academy_core.password_reset_tokens SET used_at = NOW() WHERE user_id = $1 AND used_at IS NULL',
+            [user.id],
+          );
+
+          // Store hashed token
+          await query(
+            'INSERT INTO academy_core.password_reset_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)',
+            [user.id, tokenHash, expiresAt.toISOString()],
+          );
+
+          // Send email (non-blocking)
+          sendPasswordResetEmail(
+            { email: user.email, firstName: user.first_name, preferredLanguage: user.preferred_language },
+            rawToken,
+          ).catch((err: any) => app.log.error(`[auth] Reset email failed: ${err.message}`));
+        }
+      } catch (err: any) {
+        app.log.error(`[auth] Forgot password error: ${err.message}`);
+      }
+
+      return reply.send({
+        success: true,
+        message: 'If this email exists, a reset link has been sent.',
+      });
+    },
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // POST /auth/reset-password — Set new password with token (public)
+  // ─────────────────────────────────────────────────────────────────────────
+  app.post(
+    '/auth/reset-password',
+    {
+      schema: {
+        summary: 'Reset password with token',
+        tags: ['Auth'],
+        body: {
+          type: 'object' as const,
+          required: ['token', 'newPassword'],
+          properties: {
+            token: { type: 'string' },
+            newPassword: { type: 'string', minLength: 8 },
+          },
+        },
+      },
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const parsed = resetSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ success: false, error: 'Token and new password (min 8 chars) required' });
+      }
+
+      const { token, newPassword } = parsed.data;
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+      try {
+        // Find valid token
+        const resetRow = await queryOne<{
+          id: string; user_id: string; expires_at: string; used_at: string | null;
+        }>(
+          'SELECT id, user_id, expires_at, used_at FROM academy_core.password_reset_tokens WHERE token_hash = $1',
+          [tokenHash],
+        );
+
+        if (!resetRow) {
+          return reply.code(400).send({ success: false, error: 'Invalid or expired token' });
+        }
+        if (resetRow.used_at) {
+          return reply.code(400).send({ success: false, error: 'Token already used' });
+        }
+        if (new Date(resetRow.expires_at) < new Date()) {
+          return reply.code(400).send({ success: false, error: 'Token expired' });
+        }
+
+        // Hash new password
+        const bcrypt = await import('bcryptjs');
+        const passwordHash = await bcrypt.hash(newPassword, 12);
+
+        // Update password + mark token as used
+        await query(
+          'UPDATE academy_core.users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+          [passwordHash, resetRow.user_id],
+        );
+        await query(
+          'UPDATE academy_core.password_reset_tokens SET used_at = NOW() WHERE id = $1',
+          [resetRow.id],
+        );
+
+        // Send confirmation email (non-blocking)
+        const user = await queryOne<{
+          email: string; first_name: string; preferred_language: string;
+        }>(
+          'SELECT email, first_name, preferred_language FROM academy_core.users WHERE id = $1',
+          [resetRow.user_id],
+        );
+        if (user) {
+          sendPasswordChangedEmail({
+            email: user.email, firstName: user.first_name, preferredLanguage: user.preferred_language,
+          }).catch((err: any) => app.log.error(`[auth] Password changed email failed: ${err.message}`));
+        }
+
+        return reply.send({ success: true, message: 'Password updated successfully' });
+      } catch (err: any) {
+        app.log.error(`[auth] Reset password error: ${err.message}`);
+        return reply.code(500).send({ success: false, error: 'Service error' });
+      }
     },
   );
 }

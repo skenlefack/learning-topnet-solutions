@@ -29,12 +29,17 @@ vi.mock('@aris-academy/shared', async (importOriginal) => {
     queryOne: (...args: any[]) => mockQueryOne(...args),
     paginate: (...args: any[]) => mockPaginate(...args),
     transaction: vi.fn().mockImplementation(async (fn) => fn({
-      query: vi.fn().mockResolvedValue([{ id: 'usr-new' }]),
+      query: vi.fn().mockResolvedValue({ rows: [{ id: 'usr-new', email: 'test@test.com' }], rowCount: 1 }),
     })),
     cacheDel: vi.fn().mockResolvedValue(undefined),
     publishEvent: vi.fn().mockResolvedValue(undefined),
     auditLog: vi.fn().mockResolvedValue(undefined),
     createConsumer: vi.fn().mockResolvedValue({ disconnect: vi.fn() }),
+    sendWelcomeEmail: vi.fn().mockResolvedValue(true),
+    sendEmail: vi.fn().mockResolvedValue(true),
+    sendNotificationEmail: vi.fn().mockResolvedValue(true),
+    sendPasswordResetEmail: vi.fn().mockResolvedValue(true),
+    sendPasswordChangedEmail: vi.fn().mockResolvedValue(true),
   };
 });
 
@@ -219,7 +224,9 @@ describe('Admin Routes — API (Fastify inject)', () => {
     };
 
     it('should return 201 when admin creates user', async () => {
-      mockQueryOne.mockResolvedValue(null); // no existing user
+      mockQueryOne
+        .mockResolvedValueOnce(null) // no existing user (uniqueness check)
+        .mockResolvedValueOnce({ id: 'usr-new', email: 'new.user@test.org', first_name: 'New', last_name: 'User', role: 'learner', tenant_id: '00000000-0000-0000-0000-000000000001', preferred_language: 'fr', is_active: true, created_at: new Date().toISOString() }); // INSERT RETURNING
       mockQuery.mockResolvedValue([]);
 
       const res = await app.inject({

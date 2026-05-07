@@ -8,6 +8,7 @@ import {
   createConsumer, TOPICS,
   query, queryOne,
   cacheDel, publishEvent,
+  sendNotificationEmail,
 } from '@aris-academy/shared';
 import type { AcademyEvent } from '@aris-academy/shared';
 import {
@@ -174,6 +175,22 @@ async function createNotification(
        RETURNING id`,
       [userId, tenantId, type, JSON.stringify(title), JSON.stringify(body), JSON.stringify(data)],
     );
+
+    // Also send email notification (non-blocking)
+    const user = await queryOne<{ email: string; first_name: string; preferred_language: string }>(
+      'SELECT email, first_name, preferred_language FROM academy_core.users WHERE id = $1',
+      [userId],
+    );
+    if (user) {
+      const lang = user.preferred_language || 'fr';
+      const emailTitle = title[lang] || title.fr || title.en || '';
+      const emailBody = body[lang] || body.fr || body.en || '';
+      sendNotificationEmail(
+        { email: user.email, firstName: user.first_name, preferredLanguage: lang },
+        emailTitle,
+        emailBody,
+      ).catch(() => {});
+    }
   } catch (err) {
     console.error('[Learning] Failed to create notification:', err);
   }

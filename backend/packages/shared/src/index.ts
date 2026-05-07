@@ -17,6 +17,9 @@ export * from './utils/pagination';
 // Audit
 export * from './utils/audit';
 
+// Email (Postmark)
+export * from './utils/email';
+
 // Fastify plugins (register with fastify.register())
 export { default as authPlugin } from './plugins/auth';
 export { default as tenantScopePlugin } from './plugins/tenant-scope';

@@ -18,6 +18,7 @@ import {
   MultiLangTextSchema,
   UuidParam,
   UuidParamNamed,
+  sendWelcomeEmail,
 } from '@aris-academy/shared';
 import crypto from 'crypto';
 
@@ -249,6 +250,12 @@ export default async function adminRoutes(app: FastifyInstance) {
         tempPassword,
       ]);
 
+      // Send welcome email (non-blocking)
+      sendWelcomeEmail(
+        { email: user.email, firstName: user.first_name, preferredLanguage: user.preferred_language },
+        tempPassword,
+      ).catch((err: any) => app.log.error(`[admin] Welcome email failed: ${err.message}`));
+
       return reply.code(201).send({ success: true, data: user });
     },
   );
@@ -364,11 +371,16 @@ export default async function adminRoutes(app: FastifyInstance) {
         for (let i = 0; i < users.length; i++) {
           const u = users[i];
           try {
-            await client.query(`
+            const tempPassword = crypto.randomBytes(8).toString('hex');
+            const bcrypt = await import('bcryptjs');
+            const hash = await bcrypt.hash(tempPassword, 12);
+
+            const res = await client.query(`
               INSERT INTO academy_core.users
                 (email, first_name, last_name, role, tenant_id, preferred_language, is_active, password_hash)
               VALUES ($1, $2, $3, $4, $5, $6, true, $7)
               ON CONFLICT (email) DO NOTHING
+              RETURNING email
             `, [
               u.email.toLowerCase(),
               u.first_name,
@@ -376,9 +388,16 @@ export default async function adminRoutes(app: FastifyInstance) {
               u.role,
               u.tenant_id,
               u.preferred_language,
-              crypto.randomBytes(16).toString('hex'),
+              hash,
             ]);
-            imported++;
+            if (res.rowCount && res.rowCount > 0) {
+              imported++;
+              // Send welcome email (non-blocking, don't fail import on email error)
+              sendWelcomeEmail(
+                { email: u.email, firstName: u.first_name, preferredLanguage: u.preferred_language },
+                tempPassword,
+              ).catch(() => {});
+            }
           } catch (err: any) {
             failed++;
             errors.push({ row: i + 1, email: u.email, error: err.message });
