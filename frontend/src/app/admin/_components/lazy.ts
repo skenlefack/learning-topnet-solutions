@@ -31,3 +31,18 @@ export const CourseAnalytics = dynamic(
   () => import('./CourseAnalytics'),
   { ssr: false }
 );
+
+export const CategoryManager = dynamic(
+  () => import('./CategoryManager'),
+  { ssr: false }
+);
+
+export const PathManager = dynamic(
+  () => import('./PathManager'),
+  { ssr: false }
+);
+
+export const QuizBuilder = dynamic(
+  () => import('./QuizBuilder'),
+  { ssr: false }
+);

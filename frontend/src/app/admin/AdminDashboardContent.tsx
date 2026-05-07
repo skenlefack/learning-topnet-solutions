@@ -9,7 +9,7 @@ import {
   Users, BookOpen, Award, Video, TrendingUp,
   Search, Plus, Edit3, Trash2, ChevronLeft, ChevronRight,
   ToggleLeft, ToggleRight, Upload, Download,
-  Calendar, ArrowUpDown, X, Check,
+  Calendar, ArrowUpDown, X, Check, Palette, Route, ListChecks,
 } from 'lucide-react';
 import clsx from 'clsx';
 import {
@@ -26,6 +26,9 @@ import {
   UserFormModal,
   BulkUserImportModal,
   CourseAnalytics,
+  CategoryManager,
+  PathManager,
+  QuizBuilder,
 } from './_components/lazy';
 
 // ---------------------------------------------------------------------------
@@ -42,7 +45,7 @@ const fadeUp = {
 // Types
 // ---------------------------------------------------------------------------
 
-type AdminTab = 'dashboard' | 'courses' | 'users' | 'questions' | 'sessions';
+type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions';
 
 const CHART_COLORS = ['#2E7D32', '#C8A951', '#7B1639', '#a855f7', '#ef4444', '#3b82f6'];
 
@@ -68,9 +71,11 @@ export default function AdminDashboardContent() {
 
   const TABS: { key: AdminTab; label: string; icon: typeof Users }[] = [
     { key: 'dashboard', label: t('tabDashboard'), icon: TrendingUp },
+    { key: 'categories', label: 'Catégories', icon: Palette },
     { key: 'courses', label: t('tabCourses'), icon: BookOpen },
+    { key: 'paths', label: 'Parcours', icon: Route },
+    { key: 'quiz', label: 'Quiz', icon: ListChecks },
     { key: 'users', label: t('tabUsers'), icon: Users },
-    { key: 'questions', label: t('tabQuestions'), icon: BookOpen },
     { key: 'sessions', label: t('tabSessions'), icon: Video },
   ];
 
@@ -112,9 +117,11 @@ export default function AdminDashboardContent() {
 
       {/* Tab content */}
       {tab === 'dashboard' && <DashboardTab />}
+      {tab === 'categories' && <CategoryManager />}
       {tab === 'courses' && <CoursesTab />}
+      {tab === 'paths' && <PathManager />}
+      {tab === 'quiz' && <QuizBuilder />}
       {tab === 'users' && <UsersTab />}
-      {tab === 'questions' && <QuestionsTab />}
       {tab === 'sessions' && <SessionsTab />}
     </motion.div>
   );
