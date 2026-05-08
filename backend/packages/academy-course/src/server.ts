@@ -67,8 +67,8 @@ async function bootstrap() {
   // --- Routes ---
   await app.register(healthRoutes, { prefix: '/health' });
   await app.register(publicRoutes, { prefix: '/public' });
-  await app.register(categoryRoutes, { prefix: '/categories' });
-  await app.register(pathRoutes, { prefix: '/paths' });
+  await app.register(categoryRoutes, { prefix: '/courses/categories' });
+  await app.register(pathRoutes, { prefix: '/courses/paths' });
   await app.register(courseRoutes, { prefix: '/courses' });
   await app.register(moduleRoutes, { prefix: '/modules' });
   await app.register(lessonRoutes, { prefix: '/lessons' });
