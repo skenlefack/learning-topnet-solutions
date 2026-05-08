@@ -33,6 +33,8 @@ import { lessonApi, learningApi, courseApi } from '@/lib/api';
 import { t, formatDuration } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
+import DocumentViewer from '../_components/DocumentViewer';
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -235,7 +237,16 @@ export default function LessonPlayerPage() {
                 onComplete={markComplete}
               />
             )}
-            {lesson.type === 'text' && (
+            {lesson.type === 'text' && lesson.content?.documentUrl && (
+              <DocumentViewer
+                url={lesson.content.documentUrl}
+                pdfPreviewUrl={lesson.content.pdfPreviewUrl}
+                mimeType={lesson.content.documentType}
+                filename={lesson.content.documentName}
+                onProgress={(p: number) => { if (p >= 90 && !isCompleted) markComplete(); }}
+              />
+            )}
+            {lesson.type === 'text' && !lesson.content?.documentUrl && (
               <TextRenderer
                 lesson={lesson}
                 lang={language}

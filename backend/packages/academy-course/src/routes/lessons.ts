@@ -6,6 +6,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import path from 'path';
+import { isConvertible, convertToPdf } from '../services/document-converter';
 import {
   query,
   queryOne,
@@ -59,9 +60,18 @@ const reorderSchema = z.object({
 const ALLOWED_VIDEO_TYPES = new Set([
   'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
 ]);
+const ALLOWED_AUDIO_TYPES = new Set([
+  'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/webm',
+]);
 const ALLOWED_DOC_TYPES = new Set([
-  'application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',  // .pptx
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',     // .docx
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',           // .xlsx
+  'application/vnd.oasis.opendocument.text',        // .odt
+  'application/vnd.oasis.opendocument.spreadsheet',  // .ods
+  'application/vnd.oasis.opendocument.presentation', // .odp
+  'text/html',                                       // .html
 ]);
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
 
@@ -315,12 +325,13 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
 
     const mimeType = file.mimetype;
     const isVideo = ALLOWED_VIDEO_TYPES.has(mimeType);
+    const isAudio = ALLOWED_AUDIO_TYPES.has(mimeType);
     const isDoc = ALLOWED_DOC_TYPES.has(mimeType);
 
-    if (!isVideo && !isDoc) {
+    if (!isVideo && !isAudio && !isDoc) {
       return reply.code(400).send({
         success: false,
-        error: `Unsupported file type: ${mimeType}. Allowed: video (mp4, webm, ogg, mov), documents (pdf, pptx, docx)`,
+        error: `Unsupported file type: ${mimeType}. Allowed: video, audio, pdf, office documents, html`,
       });
     }
 
@@ -341,17 +352,43 @@ export async function lessonRoutes(app: FastifyInstance): Promise<void> {
     }
 
     const buffer = Buffer.concat(chunks);
-    const ext = path.extname(file.filename) || (isVideo ? '.mp4' : '.pdf');
-    const bucket = isVideo ? BUCKETS.VIDEOS : BUCKETS.DOCUMENTS;
+    const ext = path.extname(file.filename) || (isVideo ? '.mp4' : isAudio ? '.mp3' : '.pdf');
+    const bucket = (isVideo || isAudio) ? BUCKETS.VIDEOS : BUCKETS.DOCUMENTS;
     const key = `${request.params.id}/${randomUUID()}${ext}`;
 
+    // Upload original file
     const url = await uploadFile(bucket, key, buffer, mimeType);
 
+    // For Office documents, also convert to PDF and upload the preview
+    let pdfPreviewUrl: string | undefined;
+    if (isConvertible(mimeType)) {
+      try {
+        const pdfBuffer = await convertToPdf(buffer, file.filename);
+        if (pdfBuffer) {
+          const pdfKey = `${request.params.id}/${randomUUID()}.pdf`;
+          pdfPreviewUrl = await uploadFile(BUCKETS.DOCUMENTS, pdfKey, pdfBuffer, 'application/pdf');
+          app.log.info(`[upload] Converted ${file.filename} to PDF preview`);
+        }
+      } catch (err: any) {
+        app.log.warn(`[upload] PDF conversion failed for ${file.filename}: ${err.message}`);
+      }
+    }
+
     // Update lesson with the file URL
-    const column = isVideo ? 'video_url' : "content";
-    const value = isVideo
-      ? url
-      : JSON.stringify({ ...(lesson.content || {}), documentUrl: url });
+    const column = (isVideo || isAudio) ? 'video_url' : 'content';
+    let value: string;
+    if (isVideo || isAudio) {
+      value = url;
+    } else {
+      const existingContent = typeof lesson.content === 'object' ? lesson.content : {};
+      value = JSON.stringify({
+        ...existingContent,
+        documentUrl: url,
+        documentType: mimeType,
+        documentName: file.filename,
+        pdfPreviewUrl: pdfPreviewUrl || (mimeType === 'application/pdf' ? url : undefined),
+      });
+    }
 
     const updated = await queryOne(
       `UPDATE academy_core.lessons SET ${column} = $2 WHERE id = $1 RETURNING *`,

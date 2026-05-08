@@ -27,6 +27,8 @@ RUN npm run build --workspace=packages/${SERVICE_NAME} || \
 # --- Production ---
 FROM base AS production
 ENV NODE_ENV=production
+# LibreOffice for document conversion (DOCX/PPTX/XLSX → PDF)
+RUN apk add --no-cache libreoffice-writer libreoffice-calc libreoffice-impress font-noto font-noto-cjk 2>/dev/null || true
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 academy
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/packages/shared ./packages/shared
