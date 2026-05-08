@@ -16,6 +16,14 @@ http:
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
       priority: 1
 
+    # --- API: Public (HTTP, no auth) ----------------------------------------
+    academy-api-public-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/public`)"
+      entryPoints: ["web"]
+      service: academy-course-svc
+      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress"]
+      priority: 15
+
     # --- API: Course (HTTP) ------------------------------------------------
     academy-api-course-http:
       rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
@@ -65,6 +73,15 @@ http:
       service: academy-frontend
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
       priority: 1
+      tls:
+        certResolver: letsencrypt
+
+    academy-api-public-https:
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/public`)"
+      entryPoints: ["websecure"]
+      service: academy-course-svc
+      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress"]
+      priority: 15
       tls:
         certResolver: letsencrypt
 
@@ -165,26 +182,26 @@ http:
   # Middlewares
   # =========================================================================
   middlewares:
-    # --- Strip prefixes (one per service for clarity) ----------------------
+    # --- Strip prefixes (remove /api only, keep service path) ---------------
     api-strip-courses:
       stripPrefix:
         prefixes:
-          - "/api/courses"
+          - "/api"
 
     api-strip-learning:
       stripPrefix:
         prefixes:
-          - "/api/learning"
+          - "/api"
 
     api-strip-assessment:
       stripPrefix:
         prefixes:
-          - "/api/assessment"
+          - "/api"
 
     api-strip-live:
       stripPrefix:
         prefixes:
-          - "/api/live"
+          - "/api"
 
     # --- CORS --------------------------------------------------------------
     cors:
