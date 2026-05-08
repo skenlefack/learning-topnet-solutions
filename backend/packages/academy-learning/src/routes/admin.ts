@@ -553,4 +553,193 @@ export default async function adminRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  // =========================================================================
+  // GET /admin/paths/analytics — Learning paths overview analytics
+  // =========================================================================
+  app.get(
+    '/admin/paths/analytics',
+    {
+      schema: { summary: 'Learning paths analytics overview', tags: ['Admin'], security: BearerSecurity },
+      preHandler: adminGuard(app),
+    },
+    async (_req: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const paths = await query(`
+          SELECT
+            lp.id, lp.title, lp.slug, lp.estimated_hours, lp.is_published,
+            (SELECT COUNT(*) FROM academy_core.learning_path_courses lpc WHERE lpc.path_id = lp.id) AS course_count,
+            (SELECT COUNT(*) FROM academy_core.learning_path_enrollments lpe WHERE lpe.path_id = lp.id) AS total_enrolled,
+            (SELECT COUNT(*) FROM academy_core.learning_path_enrollments lpe WHERE lpe.path_id = lp.id AND lpe.status = 'completed') AS total_completed,
+            (SELECT COALESCE(AVG(lpe.progress_percent), 0) FROM academy_core.learning_path_enrollments lpe WHERE lpe.path_id = lp.id) AS avg_progress
+          FROM academy_core.learning_paths lp
+          ORDER BY lp.created_at DESC
+        `);
+
+        const summary = await queryOne(`
+          SELECT
+            COUNT(*) AS total_paths,
+            COUNT(*) FILTER (WHERE is_published) AS published_paths,
+            (SELECT COUNT(*) FROM academy_core.learning_path_enrollments) AS total_enrollments,
+            (SELECT COUNT(*) FROM academy_core.learning_path_enrollments WHERE status = 'completed') AS total_completions
+          FROM academy_core.learning_paths
+        `);
+
+        return reply.send({
+          success: true,
+          data: {
+            summary: {
+              totalPaths: parseInt(summary?.total_paths || '0', 10),
+              publishedPaths: parseInt(summary?.published_paths || '0', 10),
+              totalEnrollments: parseInt(summary?.total_enrollments || '0', 10),
+              totalCompletions: parseInt(summary?.total_completions || '0', 10),
+              completionRate: summary?.total_enrollments > 0
+                ? Math.round((summary.total_completions / summary.total_enrollments) * 100) : 0,
+            },
+            paths: paths.map((p: any) => ({
+              ...p,
+              course_count: parseInt(p.course_count || '0', 10),
+              total_enrolled: parseInt(p.total_enrolled || '0', 10),
+              total_completed: parseInt(p.total_completed || '0', 10),
+              avg_progress: Math.round(parseFloat(p.avg_progress || '0')),
+            })),
+          },
+        });
+      } catch (err: any) {
+        app.log.warn(`[admin] Paths analytics error: ${err.message}`);
+        return reply.code(500).send({ success: false, error: 'Failed to load analytics' });
+      }
+    },
+  );
+
+  // =========================================================================
+  // GET /admin/engagement — Daily engagement trends (last 30 days)
+  // =========================================================================
+  app.get(
+    '/admin/engagement',
+    {
+      schema: { summary: 'Daily engagement trends', tags: ['Admin'], security: BearerSecurity },
+      preHandler: adminGuard(app),
+    },
+    async (_req: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // Enrollments per day
+        const enrollmentTrend = await query(`
+          SELECT DATE(created_at) AS day, COUNT(*) AS count
+          FROM academy_core.enrollments
+          WHERE created_at >= NOW() - INTERVAL '30 days'
+          GROUP BY DATE(created_at)
+          ORDER BY day
+        `);
+
+        // Completions per day
+        const completionTrend = await query(`
+          SELECT DATE(completed_at) AS day, COUNT(*) AS count
+          FROM academy_core.enrollments
+          WHERE completed_at IS NOT NULL AND completed_at >= NOW() - INTERVAL '30 days'
+          GROUP BY DATE(completed_at)
+          ORDER BY day
+        `);
+
+        // Active learners per day (from progress_tracking)
+        const activeLearners = await query(`
+          SELECT DATE(updated_at) AS day, COUNT(DISTINCT user_id) AS count
+          FROM academy_core.progress_tracking
+          WHERE updated_at >= NOW() - INTERVAL '30 days'
+          GROUP BY DATE(updated_at)
+          ORDER BY day
+        `);
+
+        // Certifications per day
+        const certTrend = await query(`
+          SELECT DATE(issued_at) AS day, COUNT(*) AS count
+          FROM academy_core.certifications
+          WHERE issued_at IS NOT NULL AND issued_at >= NOW() - INTERVAL '30 days'
+          GROUP BY DATE(issued_at)
+          ORDER BY day
+        `);
+
+        return reply.send({
+          success: true,
+          data: {
+            enrollments: enrollmentTrend.map((r: any) => ({ day: r.day, count: parseInt(r.count, 10) })),
+            completions: completionTrend.map((r: any) => ({ day: r.day, count: parseInt(r.count, 10) })),
+            activeLearners: activeLearners.map((r: any) => ({ day: r.day, count: parseInt(r.count, 10) })),
+            certifications: certTrend.map((r: any) => ({ day: r.day, count: parseInt(r.count, 10) })),
+          },
+        });
+      } catch (err: any) {
+        app.log.warn(`[admin] Engagement error: ${err.message}`);
+        return reply.send({ success: true, data: { enrollments: [], completions: [], activeLearners: [], certifications: [] } });
+      }
+    },
+  );
+
+  // =========================================================================
+  // GET /admin/reports/export — Export enrollment data as JSON (for CSV gen)
+  // =========================================================================
+  app.get(
+    '/admin/reports/export',
+    {
+      schema: {
+        summary: 'Export enrollment report',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        querystring: {
+          type: 'object',
+          properties: {
+            courseId: { type: 'string' },
+            pathId: { type: 'string' },
+            status: { type: 'string' },
+          },
+        },
+      },
+      preHandler: adminGuard(app),
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { courseId, pathId, status } = req.query as any;
+
+      try {
+        let rows;
+        if (pathId) {
+          rows = await query(`
+            SELECT u.email, u.first_name, u.last_name, u.role,
+                   t.name AS tenant_name, t.code AS tenant_code,
+                   lpe.status, lpe.progress_percent, lpe.started_at, lpe.completed_at,
+                   lp.title AS path_title
+            FROM academy_core.learning_path_enrollments lpe
+            JOIN academy_core.users u ON u.id = lpe.user_id
+            JOIN academy_core.tenants t ON t.id = u.tenant_id
+            JOIN academy_core.learning_paths lp ON lp.id = lpe.path_id
+            WHERE lpe.path_id = $1
+            ORDER BY u.last_name
+          `, [pathId]);
+        } else {
+          const conditions = ['1=1'];
+          const params: any[] = [];
+          let idx = 1;
+          if (courseId) { conditions.push(`e.course_id = $${idx++}`); params.push(courseId); }
+          if (status) { conditions.push(`e.status = $${idx++}`); params.push(status); }
+
+          rows = await query(`
+            SELECT u.email, u.first_name, u.last_name, u.role,
+                   t.name AS tenant_name, t.code AS tenant_code,
+                   e.status, e.progress_percent, e.started_at, e.completed_at,
+                   c.title AS course_title
+            FROM academy_core.enrollments e
+            JOIN academy_core.users u ON u.id = e.user_id
+            JOIN academy_core.tenants t ON t.id = u.tenant_id
+            JOIN academy_core.courses c ON c.id = e.course_id
+            WHERE ${conditions.join(' AND ')}
+            ORDER BY u.last_name
+          `, params);
+        }
+
+        return reply.send({ success: true, data: rows, meta: { total: rows.length } });
+      } catch (err: any) {
+        app.log.warn(`[admin] Report export error: ${err.message}`);
+        return reply.code(500).send({ success: false, error: 'Export failed' });
+      }
+    },
+  );
 }

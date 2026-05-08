@@ -251,4 +251,10 @@ export const adminApi = {
     apiFetch<{ data: any[] }>('/api/learning/admin/tenants', { token }),
   courseAnalytics: (token: string, courseId: string) =>
     apiFetch(`/api/learning/admin/courses/${courseId}/analytics`, { token }),
+  pathsAnalytics: (token: string) =>
+    apiFetch('/api/learning/admin/paths/analytics', { token }),
+  engagement: (token: string) =>
+    apiFetch('/api/learning/admin/engagement', { token }),
+  exportReport: (token: string, params?: { courseId?: string; pathId?: string; status?: string }) =>
+    apiFetch('/api/learning/admin/reports/export', { token, params }),
 };

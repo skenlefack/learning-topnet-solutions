@@ -9,7 +9,7 @@ import {
   Users, BookOpen, Award, Video, TrendingUp,
   Search, Plus, Edit3, Trash2, ChevronLeft, ChevronRight,
   ToggleLeft, ToggleRight, Upload, Download,
-  Calendar, ArrowUpDown, X, Check, Palette, Route, ListChecks,
+  Calendar, ArrowUpDown, X, Check, Palette, Route, ListChecks, BarChart3,
 } from 'lucide-react';
 import clsx from 'clsx';
 import {
@@ -29,6 +29,7 @@ import {
   CategoryManager,
   PathManager,
   QuizBuilder,
+  AnalyticsDashboard,
 } from './_components/lazy';
 
 // ---------------------------------------------------------------------------
@@ -45,7 +46,7 @@ const fadeUp = {
 // Types
 // ---------------------------------------------------------------------------
 
-type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions';
+type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions' | 'analytics';
 
 const CHART_COLORS = ['#2E7D32', '#C8A951', '#7B1639', '#a855f7', '#ef4444', '#3b82f6'];
 
@@ -77,6 +78,7 @@ export default function AdminDashboardContent() {
     { key: 'quiz', label: 'Quiz', icon: ListChecks },
     { key: 'users', label: t('tabUsers'), icon: Users },
     { key: 'sessions', label: t('tabSessions'), icon: Video },
+    { key: 'analytics', label: 'Analytique', icon: BarChart3 },
   ];
 
   return (
@@ -123,6 +125,7 @@ export default function AdminDashboardContent() {
       {tab === 'quiz' && <QuizBuilder />}
       {tab === 'users' && <UsersTab />}
       {tab === 'sessions' && <SessionsTab />}
+      {tab === 'analytics' && <AnalyticsDashboard />}
     </motion.div>
   );
 }

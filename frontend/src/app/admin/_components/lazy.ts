@@ -46,3 +46,8 @@ export const QuizBuilder = dynamic(
   () => import('./QuizBuilder'),
   { ssr: false }
 );
+
+export const AnalyticsDashboard = dynamic(
+  () => import('./AnalyticsDashboard'),
+  { ssr: false }
+);
