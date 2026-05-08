@@ -182,7 +182,7 @@ http:
   # Middlewares
   # =========================================================================
   middlewares:
-    # --- Strip prefixes (remove /api only, keep service path) ---------------
+    # --- Strip prefixes (per service) ----------------------------------------
     api-strip-courses:
       stripPrefix:
         prefixes:
@@ -191,17 +191,17 @@ http:
     api-strip-learning:
       stripPrefix:
         prefixes:
-          - "/api"
+          - "/api/learning"
 
     api-strip-assessment:
       stripPrefix:
         prefixes:
-          - "/api"
+          - "/api/assessment"
 
     api-strip-live:
       stripPrefix:
         prefixes:
-          - "/api"
+          - "/api/live"
 
     # --- CORS --------------------------------------------------------------
     cors:
