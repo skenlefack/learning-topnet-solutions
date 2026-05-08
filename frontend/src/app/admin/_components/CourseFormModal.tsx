@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
-import { courseApi } from '@/lib/api';
+import { courseApi, categoryApi } from '@/lib/api';
 import MultiLangInput from './MultiLangInput';
 
 // ---------------------------------------------------------------------------
@@ -53,6 +53,7 @@ interface CourseFormData {
   description: MultiLangText;
   slug: string;
   level: string;
+  categoryId?: string;
   estimatedHours?: number;
   passingScore: number;
   tags: string[];
@@ -124,6 +125,11 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
     status: 'draft',
   });
   const [tagInput, setTagInput] = useState('');
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    categoryApi.list().then((res: any) => setCategories(res.data || [])).catch(() => {});
+  }, []);
 
   // Step 2: Modules
   const [modules, setModules] = useState<ModuleDraft[]>([]);
@@ -135,7 +141,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
   useEffect(() => {
     if (!open) {
       setStep(0);
-      setForm({ title: {}, description: {}, slug: '', level: 'beginner', estimatedHours: undefined, passingScore: 70, tags: [], status: 'draft' });
+      setForm({ title: {}, description: {}, slug: '', level: 'beginner', categoryId: undefined, estimatedHours: undefined, passingScore: 70, tags: [], status: 'draft' });
       setModules([]);
       setActiveModuleIdx(0);
       setTagInput('');
@@ -148,6 +154,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
         description: editCourse.description || {},
         slug: editCourse.slug || '',
         level: editCourse.level || 'beginner',
+        categoryId: editCourse.category_id || undefined,
         estimatedHours: editCourse.estimated_hours ?? undefined,
         passingScore: editCourse.passing_score ?? 70,
         tags: editCourse.tags || [],
@@ -277,6 +284,7 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
         description: form.description,
         slug: form.slug,
         level: form.level,
+        categoryId: form.categoryId || null,
         status: form.status,
         estimatedHours: form.estimatedHours || undefined,
         passingScore: form.passingScore,
@@ -507,6 +515,29 @@ export default function CourseFormModal({ open, onClose, onSuccess, editCourse }
                       </select>
                     </div>
 
+                    <div>
+                      <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Catégorie</label>
+                      <select
+                        value={form.categoryId || ''}
+                        onChange={e => setForm(prev => ({ ...prev, categoryId: e.target.value || undefined }))}
+                        className={clsx(
+                          'w-full px-3 py-2 rounded-lg text-sm',
+                          'bg-white dark:bg-surface-dark-card border border-[var(--border)]',
+                          'text-[var(--text-primary)]',
+                          'focus:outline-none focus:ring-2 focus:ring-brand-navy/20',
+                        )}
+                      >
+                        <option value="">— Aucune catégorie —</option>
+                        {categories.map((cat: any) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name?.fr || cat.name?.en || cat.slug}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">{t('estimatedHours')}</label>
                       <input

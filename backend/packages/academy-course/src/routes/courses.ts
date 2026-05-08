@@ -42,6 +42,7 @@ const createCourseSchema = z.object({
   description: multiLangTextSchema.optional(),
   slug: z.string().min(3).max(255).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
   level: courseLevelSchema,
+  categoryId: z.string().uuid().nullable().optional(),
   status: z.enum(['draft', 'published']).default('draft'),
   estimatedHours: z.number().positive().optional(),
   passingScore: z.number().int().min(0).max(100).default(70),
@@ -286,17 +287,17 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
 
     const course = await queryOne(
       `INSERT INTO academy_core.courses
-         (tenant_id, tenant_level, title, description, slug, level, status,
+         (tenant_id, tenant_level, title, description, slug, level, category_id, status,
           estimated_hours, passing_score, tags, created_by,
           published_at)
-       VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7::course_status, $8, $9, $10, $11,
-               CASE WHEN $7::course_status = 'published'::course_status THEN NOW() ELSE NULL END)
+       VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8::course_status, $9, $10, $11, $12,
+               CASE WHEN $8::course_status = 'published'::course_status THEN NOW() ELSE NULL END)
        RETURNING *`,
       [
         user.tenantId, user.tenantLevel,
         JSON.stringify(body.title),
         body.description ? JSON.stringify(body.description) : null,
-        body.slug, body.level, body.status,
+        body.slug, body.level, body.categoryId || null, body.status,
         body.estimatedHours ?? null, body.passingScore,
         body.tags, user.sub,
       ],
@@ -346,17 +347,18 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
          title = COALESCE($2::jsonb, title),
          description = COALESCE($3::jsonb, description),
          level = COALESCE($4, level),
-         status = COALESCE($5, status),
-         estimated_hours = COALESCE($6, estimated_hours),
-         passing_score = COALESCE($7, passing_score),
-         tags = COALESCE($8, tags),
-         published_at = CASE WHEN $5 = 'published' AND published_at IS NULL THEN NOW() ELSE published_at END
+         category_id = $5,
+         status = COALESCE($6, status),
+         estimated_hours = COALESCE($7, estimated_hours),
+         passing_score = COALESCE($8, passing_score),
+         tags = COALESCE($9, tags),
+         published_at = CASE WHEN $6 = 'published' AND published_at IS NULL THEN NOW() ELSE published_at END
        WHERE id = $1 RETURNING *`,
       [
         request.params.id,
         body.title ? JSON.stringify(body.title) : null,
         body.description ? JSON.stringify(body.description) : null,
-        body.level ?? null, body.status ?? null,
+        body.level ?? null, (body as any).categoryId || null, body.status ?? null,
         body.estimatedHours ?? null, body.passingScore ?? null,
         body.tags ?? null,
       ],

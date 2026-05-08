@@ -9,6 +9,7 @@ import { useAuthStore } from '@/lib/store';
 import { learningApi, courseApi, liveApi, assessmentApi, pathApi } from '@/lib/api';
 
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { Calendar, Clock, Video, Route, BookOpen, ArrowRight } from 'lucide-react';
 import SectionErrorBoundary from '@/app/_components/SectionErrorBoundary';
 import HeroBanner from './HeroBanner';
@@ -82,6 +83,18 @@ function PlanningPanel({ liveSessions, enrollments }: { liveSessions: any[]; enr
 // ---------------------------------------------------------------------------
 
 function PathsSection({ paths }: { paths: any[] }) {
+  const { token } = useAuthStore();
+
+  const handleEnroll = async (pathId: string) => {
+    if (!token) return;
+    try {
+      await pathApi.enroll(token, pathId);
+      toast.success('Inscrit au parcours !');
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur');
+    }
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -118,6 +131,12 @@ function PathsSection({ paths }: { paths: any[] }) {
                 </div>
               </div>
             </div>
+            <button
+              onClick={() => handleEnroll(path.id)}
+              className="mt-3 w-full py-2 rounded-lg text-xs font-semibold bg-brand-navy text-white hover:bg-brand-navy-deep dark:bg-brand-gold dark:text-gray-900 dark:hover:bg-brand-gold-dark transition-colors flex items-center justify-center gap-1"
+            >
+              S'inscrire <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
         ))}
       </div>
