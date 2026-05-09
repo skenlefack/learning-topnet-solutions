@@ -111,6 +111,14 @@ export default function AnalyticsDashboard() {
           {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
           Exporter CSV
         </button>
+        <a
+          href={token ? adminApi.exportExcel(token) : '#'}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/30"
+          download
+        >
+          <Download className="w-3.5 h-3.5" />
+          Excel
+        </a>
       </div>
 
       {/* Engagement trend cards */}

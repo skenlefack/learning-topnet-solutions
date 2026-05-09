@@ -856,4 +856,150 @@ export default async function adminRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  // =========================================================================
+  // GET /admin/reports/excel — Generate Excel report (binary download)
+  // =========================================================================
+  app.get(
+    '/admin/reports/excel',
+    {
+      schema: {
+        summary: 'Download enrollment report as Excel',
+        tags: ['Admin'],
+        security: BearerSecurity,
+        querystring: {
+          type: 'object',
+          properties: {
+            courseId: { type: 'string' },
+            status: { type: 'string' },
+          },
+        },
+      },
+      preHandler: adminGuard(app),
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const { courseId, status } = req.query as any;
+      try {
+        const ExcelJS = (await import('exceljs')).default;
+        const wb = new ExcelJS.Workbook();
+        wb.creator = 'AU-IBAR Learning';
+        wb.created = new Date();
+
+        const ws = wb.addWorksheet('Enrollments');
+
+        // Header style
+        const headerFill: any = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A5632' } };
+        const headerFont: any = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+
+        ws.columns = [
+          { header: 'Email', key: 'email', width: 30 },
+          { header: 'Prénom', key: 'first_name', width: 18 },
+          { header: 'Nom', key: 'last_name', width: 18 },
+          { header: 'Rôle', key: 'role', width: 18 },
+          { header: 'Tenant', key: 'tenant', width: 20 },
+          { header: 'Cours', key: 'course', width: 35 },
+          { header: 'Statut', key: 'status', width: 12 },
+          { header: 'Progression', key: 'progress', width: 12 },
+          { header: 'Inscrit le', key: 'started_at', width: 18 },
+          { header: 'Complété le', key: 'completed_at', width: 18 },
+        ];
+
+        // Style headers
+        ws.getRow(1).eachCell(c => { c.fill = headerFill; c.font = headerFont; });
+
+        const conditions = ['1=1'];
+        const params: any[] = [];
+        let idx = 1;
+        if (courseId) { conditions.push(`e.course_id = $${idx++}`); params.push(courseId); }
+        if (status) { conditions.push(`e.status = $${idx++}`); params.push(status); }
+
+        const rows = await query(`
+          SELECT u.email, u.first_name, u.last_name, u.role,
+                 t.name AS tenant_name, t.code AS tenant_code,
+                 e.status, e.progress_percent, e.started_at, e.completed_at,
+                 c.title AS course_title
+          FROM academy_core.enrollments e
+          JOIN academy_core.users u ON u.id = e.user_id
+          JOIN academy_core.tenants t ON t.id = u.tenant_id
+          JOIN academy_core.courses c ON c.id = e.course_id
+          WHERE ${conditions.join(' AND ')}
+          ORDER BY u.last_name
+        `, params);
+
+        for (const r of rows) {
+          ws.addRow({
+            email: r.email,
+            first_name: r.first_name,
+            last_name: r.last_name,
+            role: r.role,
+            tenant: r.tenant_code || (typeof r.tenant_name === 'object' ? r.tenant_name.fr || r.tenant_name.en : r.tenant_name),
+            course: typeof r.course_title === 'object' ? r.course_title.fr || r.course_title.en : r.course_title,
+            status: r.status,
+            progress: `${Math.round(r.progress_percent || 0)}%`,
+            started_at: r.started_at ? new Date(r.started_at).toLocaleDateString('fr-FR') : '',
+            completed_at: r.completed_at ? new Date(r.completed_at).toLocaleDateString('fr-FR') : '',
+          });
+        }
+
+        const buffer = await wb.xlsx.writeBuffer();
+
+        reply.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        reply.header('Content-Disposition', `attachment; filename=rapport-inscriptions-${new Date().toISOString().slice(0, 10)}.xlsx`);
+        return reply.send(Buffer.from(buffer as ArrayBuffer));
+      } catch (err: any) {
+        app.log.error(`[admin] Excel export error: ${err.message}`);
+        return reply.code(500).send({ success: false, error: 'Excel export failed' });
+      }
+    },
+  );
+
+  // =========================================================================
+  // GET /admin/tenants/compare — Compare metrics across tenants
+  // =========================================================================
+  app.get(
+    '/admin/tenants/compare',
+    {
+      schema: { summary: 'Compare tenant metrics', tags: ['Admin'], security: BearerSecurity },
+      preHandler: adminGuard(app),
+    },
+    async (_req: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const tenants = await query(`
+          SELECT
+            t.id, t.name, t.code, t.level,
+            (SELECT COUNT(*) FROM academy_core.users u WHERE u.tenant_id = t.id AND u.is_active = true) AS user_count,
+            (SELECT COUNT(*) FROM academy_core.enrollments e
+             JOIN academy_core.users u ON u.id = e.user_id WHERE u.tenant_id = t.id) AS enrollment_count,
+            (SELECT COUNT(*) FROM academy_core.enrollments e
+             JOIN academy_core.users u ON u.id = e.user_id WHERE u.tenant_id = t.id AND e.status = 'completed') AS completed_count,
+            (SELECT COALESCE(AVG(e.progress_percent), 0) FROM academy_core.enrollments e
+             JOIN academy_core.users u ON u.id = e.user_id WHERE u.tenant_id = t.id) AS avg_progress,
+            (SELECT COUNT(*) FROM academy_core.certifications c
+             JOIN academy_core.users u ON u.id = c.user_id WHERE u.tenant_id = t.id AND c.status = 'issued') AS cert_count,
+            (SELECT COUNT(*) FROM academy_core.live_attendance la
+             JOIN academy_core.users u ON u.id = la.user_id WHERE u.tenant_id = t.id) AS live_attendance
+          FROM academy_core.tenants t
+          ORDER BY t.level, t.name->>'fr'
+        `);
+
+        return reply.send({
+          success: true,
+          data: tenants.map((t: any) => ({
+            ...t,
+            user_count: parseInt(t.user_count || '0', 10),
+            enrollment_count: parseInt(t.enrollment_count || '0', 10),
+            completed_count: parseInt(t.completed_count || '0', 10),
+            avg_progress: Math.round(parseFloat(t.avg_progress || '0')),
+            cert_count: parseInt(t.cert_count || '0', 10),
+            live_attendance: parseInt(t.live_attendance || '0', 10),
+            completion_rate: parseInt(t.enrollment_count || '0', 10) > 0
+              ? Math.round((parseInt(t.completed_count || '0', 10) / parseInt(t.enrollment_count || '0', 10)) * 100) : 0,
+          })),
+        });
+      } catch (err: any) {
+        app.log.error(`[admin] Tenants compare error: ${err.message}`);
+        return reply.code(500).send({ success: false, error: 'Failed to load tenant comparison' });
+      }
+    },
+  );
 }

@@ -30,6 +30,7 @@ import {
   PathManager,
   QuizBuilder,
   AnalyticsDashboard,
+  TenantComparison,
 } from './_components/lazy';
 
 // ---------------------------------------------------------------------------
@@ -46,7 +47,7 @@ const fadeUp = {
 // Types
 // ---------------------------------------------------------------------------
 
-type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions' | 'analytics';
+type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions' | 'analytics' | 'tenants';
 
 const CHART_COLORS = ['#2E7D32', '#C8A951', '#7B1639', '#a855f7', '#ef4444', '#3b82f6'];
 
@@ -79,6 +80,7 @@ export default function AdminDashboardContent() {
     { key: 'users', label: t('tabUsers'), icon: Users },
     { key: 'sessions', label: t('tabSessions'), icon: Video },
     { key: 'analytics', label: 'Analytique', icon: BarChart3 },
+    { key: 'tenants', label: 'Tenants', icon: Users },
   ];
 
   return (
@@ -126,6 +128,7 @@ export default function AdminDashboardContent() {
       {tab === 'users' && <UsersTab />}
       {tab === 'sessions' && <SessionsTab />}
       {tab === 'analytics' && <AnalyticsDashboard />}
+      {tab === 'tenants' && <TenantComparison />}
     </motion.div>
   );
 }

@@ -279,4 +279,8 @@ export const adminApi = {
     apiFetch('/api/learning/admin/engagement', { token }),
   exportReport: (token: string, params?: { courseId?: string; pathId?: string; status?: string }) =>
     apiFetch('/api/learning/admin/reports/export', { token, params }),
+  exportExcel: (token: string, params?: { courseId?: string; status?: string }) =>
+    `/api/learning/admin/reports/excel?${new URLSearchParams(Object.entries(params || {}).filter(([, v]) => v) as [string, string][]).toString()}`,
+  tenantsCompare: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/learning/admin/tenants/compare', { token }),
 };

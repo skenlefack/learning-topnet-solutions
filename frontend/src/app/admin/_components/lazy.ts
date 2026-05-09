@@ -51,3 +51,8 @@ export const AnalyticsDashboard = dynamic(
   () => import('./AnalyticsDashboard'),
   { ssr: false }
 );
+
+export const TenantComparison = dynamic(
+  () => import('./TenantComparison'),
+  { ssr: false }
+);
