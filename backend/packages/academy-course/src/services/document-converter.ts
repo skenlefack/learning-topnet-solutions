@@ -1,90 +1,55 @@
 // ============================================================================
-// ARIS Academy — Document Converter
-// Converts Office documents (DOCX, PPTX, XLSX) to PDF using LibreOffice
-// Falls back to serving original file if conversion fails
+// ARIS Academy — Document Converter Client
+// Calls the converter microservice (LibreOffice headless container)
+// Falls back gracefully if converter is unavailable
 // ============================================================================
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
+
+const CONVERTER_URL = process.env.CONVERTER_URL || 'http://converter:4010';
 
 const SUPPORTED_CONVERSIONS: Record<string, boolean> = {
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': true,  // .docx
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': true, // .pptx
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': true,         // .xlsx
-  'application/vnd.oasis.opendocument.text': true,        // .odt
-  'application/vnd.oasis.opendocument.spreadsheet': true,  // .ods
-  'application/vnd.oasis.opendocument.presentation': true, // .odp
-  'application/msword': true,                              // .doc
-  'application/vnd.ms-excel': true,                        // .xls
-  'application/vnd.ms-powerpoint': true,                   // .ppt
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': true,
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': true,
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': true,
+  'application/vnd.oasis.opendocument.text': true,
+  'application/vnd.oasis.opendocument.spreadsheet': true,
+  'application/vnd.oasis.opendocument.presentation': true,
+  'application/msword': true,
+  'application/vnd.ms-excel': true,
+  'application/vnd.ms-powerpoint': true,
 };
 
-/**
- * Check if a MIME type can be converted to PDF
- */
 export function isConvertible(mimeType: string): boolean {
   return !!SUPPORTED_CONVERSIONS[mimeType];
 }
 
 /**
- * Convert a document buffer to PDF using LibreOffice headless
- * Returns the PDF buffer, or null if conversion fails
+ * Convert a document to PDF via the converter microservice.
+ * Returns PDF buffer or null if conversion fails/unavailable.
  */
 export async function convertToPdf(
   inputBuffer: Buffer,
   originalFilename: string,
 ): Promise<Buffer | null> {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aris-convert-'));
-  const inputPath = path.join(tmpDir, originalFilename);
-  const outputDir = tmpDir;
-
   try {
-    // Write input file
-    fs.writeFileSync(inputPath, inputBuffer);
+    const url = `${CONVERTER_URL}/convert?filename=${encodeURIComponent(originalFilename)}`;
 
-    // Convert using LibreOffice
-    execSync(
-      `libreoffice --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`,
-      { timeout: 60000, stdio: 'pipe' },
-    );
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: inputBuffer,
+      signal: AbortSignal.timeout(120000),
+    });
 
-    // Find output PDF
-    const baseName = path.basename(originalFilename, path.extname(originalFilename));
-    const pdfPath = path.join(outputDir, `${baseName}.pdf`);
-
-    if (!fs.existsSync(pdfPath)) {
-      console.warn('[converter] PDF output not found after conversion');
+    if (!response.ok) {
+      const err = await response.text().catch(() => 'Unknown error');
+      console.warn(`[converter] Conversion failed (${response.status}): ${err}`);
       return null;
     }
 
-    const pdfBuffer = fs.readFileSync(pdfPath);
-    return pdfBuffer;
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   } catch (err: any) {
-    console.warn(`[converter] Conversion failed: ${err.message}`);
+    console.warn(`[converter] Service unavailable: ${err.message}`);
     return null;
-  } finally {
-    // Cleanup
-    try {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
-    } catch {}
   }
-}
-
-/**
- * Get the file extension for a MIME type
- */
-export function getExtension(mimeType: string): string {
-  const map: Record<string, string> = {
-    'application/pdf': '.pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
-    'video/mp4': '.mp4',
-    'video/webm': '.webm',
-    'audio/mpeg': '.mp3',
-    'audio/wav': '.wav',
-    'text/html': '.html',
-  };
-  return map[mimeType] || '';
 }

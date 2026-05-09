@@ -143,6 +143,7 @@ services:
       MINIO_PORT: 9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-academy_minio_secret}
+      CONVERTER_URL: http://converter:4010
     ports:
       - "4001:4001"
     networks:
@@ -341,6 +342,24 @@ services:
     entrypoint: ["/bin/sh", "/init-minio.sh"]
     networks:
       - academy-net
+
+  # =========================================================================
+  # DOCUMENT CONVERTER (LibreOffice headless — separate lightweight container)
+  # =========================================================================
+
+  converter:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.converter
+    container_name: academy-converter
+    restart: unless-stopped
+    networks:
+      - academy-net
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4010/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 # =========================================================================
 # VOLUMES & NETWORKS

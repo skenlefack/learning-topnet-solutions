@@ -1,0 +1,95 @@
+###############################################################################
+# ARIS Academy — Document Converter Service
+# Lightweight Alpine container with LibreOffice headless for DOCX/PPTX/XLSX → PDF
+###############################################################################
+
+FROM alpine:3.21
+
+RUN apk add --no-cache \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    font-noto \
+    nodejs \
+    npm \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+# Minimal Express server for conversion API
+COPY <<'EOF' server.js
+const http = require('http');
+const { execSync } = require('fs');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { randomUUID } = require('crypto');
+
+const PORT = 4010;
+
+const server = http.createServer(async (req, res) => {
+  // Health check
+  if (req.method === 'GET' && req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: 'ok', service: 'document-converter' }));
+  }
+
+  // POST /convert — multipart not needed, raw binary body
+  if (req.method === 'POST' && req.url.startsWith('/convert')) {
+    const url = new URL(req.url, `http://localhost:${PORT}`);
+    const filename = url.searchParams.get('filename') || 'document.docx';
+
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
+
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'conv-'));
+    const inputPath = path.join(tmpDir, filename);
+    fs.writeFileSync(inputPath, buffer);
+
+    try {
+      require('child_process').execSync(
+        `libreoffice --headless --convert-to pdf --outdir "${tmpDir}" "${inputPath}"`,
+        { timeout: 120000, stdio: 'pipe' }
+      );
+
+      const baseName = path.basename(filename, path.extname(filename));
+      const pdfPath = path.join(tmpDir, `${baseName}.pdf`);
+
+      if (!fs.existsSync(pdfPath)) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'Conversion failed: PDF not generated' }));
+      }
+
+      const pdfBuffer = fs.readFileSync(pdfPath);
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdfBuffer.length,
+        'Content-Disposition': `attachment; filename="${baseName}.pdf"`,
+      });
+      res.end(pdfBuffer);
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    } finally {
+      try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+    }
+    return;
+  }
+
+  res.writeHead(404);
+  res.end('Not found');
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`[converter] Document conversion service running on port ${PORT}`);
+});
+EOF
+
+EXPOSE 4010
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -sf http://localhost:4010/health || exit 1
+
+CMD ["node", "server.js"]
