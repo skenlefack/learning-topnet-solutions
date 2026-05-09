@@ -19,6 +19,7 @@ import { assessmentRoutes } from './routes/assessments';
 import { attemptRoutes } from './routes/attempts';
 import { certificationRoutes } from './routes/certifications';
 import { questionRoutes } from './routes/questions';
+import { pathExamRoutes } from './routes/path-exam';
 import { initConsumers } from './consumers';
 import { initBucket } from './services/certificate-generator';
 
@@ -50,6 +51,7 @@ async function bootstrap() {
   await app.register(attemptRoutes, { prefix: '/attempts' });
   await app.register(certificationRoutes);
   await app.register(questionRoutes, { prefix: '/questions' });
+  await app.register(pathExamRoutes);
 
   // Health check
   app.get('/health', async () => ({

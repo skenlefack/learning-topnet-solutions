@@ -78,6 +78,14 @@ export const questionApi = {
   export: (token: string, assessmentId: string) => apiFetch(`/api/assessment/questions/export?assessmentId=${assessmentId}`, { token }),
 };
 
+// === Path Exam API ===
+export const pathExamApi = {
+  start: (token: string, pathId: string) =>
+    apiFetch<{ success: boolean; data: any }>('/api/assessment/path-exam/start', { token, method: 'POST', body: JSON.stringify({ pathId }) }),
+  submit: (token: string, attemptId: string, answers: Record<string, any>) =>
+    apiFetch<{ success: boolean; data: any }>('/api/assessment/path-exam/submit', { token, method: 'POST', body: JSON.stringify({ attemptId, answers }) }),
+};
+
 // === Resources API ===
 export const resourceApi = {
   list: (token: string, params?: { courseId?: string; type?: string; limit?: number; offset?: number }) =>
