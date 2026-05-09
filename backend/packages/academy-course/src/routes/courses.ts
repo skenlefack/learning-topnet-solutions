@@ -53,6 +53,7 @@ const updateCourseSchema = z.object({
   title: multiLangTextSchema.optional(),
   description: multiLangTextSchema.optional(),
   level: courseLevelSchema.optional(),
+  categoryId: z.string().uuid().nullable().optional(),
   status: z.enum(['draft', 'published', 'archived']).optional(),
   estimatedHours: z.number().positive().optional(),
   passingScore: z.number().int().min(0).max(100).optional(),
