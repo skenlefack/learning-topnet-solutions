@@ -23,6 +23,8 @@ import {
   CheckCircle2,
   Unlock,
   Settings,
+  FileText,
+  BarChart3,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslations } from 'next-intl';
@@ -55,9 +57,12 @@ const NAV_KEYS = [
   { href: '/', key: 'dashboard', icon: LayoutDashboard },
   { href: '/courses', key: 'courses', icon: BookOpen },
   { href: '/live', key: 'live', icon: Video },
+  { href: '/resources', key: 'resources', icon: FileText },
   { href: '/certificates', key: 'certificates', icon: Award },
   { href: '/community', key: 'community', icon: Users },
 ] as const;
+
+const TRAINER_ROLES = ['trainer', 'admin_country', 'admin_rec', 'admin_continental'];
 
 const CERT_LEVEL_KEYS: { key: CertLevel; i18nKey: string; icon: React.ReactNode; color: string }[] = [
   { key: 'beginner', i18nKey: 'beginner', icon: <Sprout className="w-4 h-4" />, color: 'text-green-500' },
@@ -90,6 +95,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
   const isAdmin = user ? ADMIN_ROLES.includes(user.role) : false;
+  const isTrainer = user ? TRAINER_ROLES.includes(user.role) : false;
   const t = useTranslations('nav');
   const tLevels = useTranslations('levels');
 
@@ -176,6 +182,26 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               </Link>
             );
           })}
+
+          {/* Trainer link — visible for trainers and admins */}
+          {isTrainer && (() => {
+            const isActive = pathname.startsWith('/trainer');
+            return (
+              <Link
+                href="/trainer"
+                onClick={onClose}
+                className={clsx(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all mt-2',
+                  isActive
+                    ? 'bg-brand-navy/5 dark:bg-brand-navy/20 text-brand-navy dark:text-white border-s-[3px] border-brand-gold -ms-px'
+                    : 'text-[var(--text-secondary)] hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-[var(--text-primary)]',
+                )}
+              >
+                <BarChart3 className={clsx('w-[18px] h-[18px]', isActive && 'text-brand-navy dark:text-brand-gold')} />
+                {t('trainer')}
+              </Link>
+            );
+          })()}
 
           {/* Admin link — visible only for admin roles */}
           {isAdmin && (() => {

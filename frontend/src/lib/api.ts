@@ -78,6 +78,20 @@ export const questionApi = {
   export: (token: string, assessmentId: string) => apiFetch(`/api/assessment/questions/export?assessmentId=${assessmentId}`, { token }),
 };
 
+// === Resources API ===
+export const resourceApi = {
+  list: (token: string, params?: { courseId?: string; type?: string; limit?: number; offset?: number }) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/courses/resources', { token, params }),
+};
+
+// === Trainer API ===
+export const trainerApi = {
+  myCourses: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/learning/admin/trainer/courses', { token }),
+  courseAnalytics: (token: string, courseId: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/learning/admin/trainer/courses/${courseId}/analytics`, { token }),
+};
+
 // === Course Service ===
 export const courseApi = {
   list: (token: string, params?: { level?: string; search?: string; page?: number; limit?: number; language?: string; sort?: string }) =>

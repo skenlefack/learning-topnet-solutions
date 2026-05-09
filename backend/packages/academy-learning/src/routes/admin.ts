@@ -742,4 +742,118 @@ export default async function adminRoutes(app: FastifyInstance) {
       }
     },
   );
+
+  // =========================================================================
+  // TRAINER DASHBOARD — scoped to courses created by the logged-in trainer
+  // =========================================================================
+
+  // GET /admin/trainer/courses — list courses created by current user
+  app.get(
+    '/admin/trainer/courses',
+    {
+      schema: { summary: 'List trainer own courses', tags: ['Trainer'], security: BearerSecurity },
+      preHandler: [app.authenticate],
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const user = req.user;
+      try {
+        const courses = await query(`
+          SELECT c.id, c.title, c.slug, c.level, c.status, c.estimated_hours,
+            c.created_at, c.published_at,
+            (SELECT COUNT(*) FROM academy_core.enrollments e WHERE e.course_id = c.id) AS enrollment_count,
+            (SELECT COUNT(*) FROM academy_core.enrollments e WHERE e.course_id = c.id AND e.status = 'completed') AS completed_count,
+            (SELECT COALESCE(AVG(e.progress_percent), 0) FROM academy_core.enrollments e WHERE e.course_id = c.id) AS avg_progress
+          FROM academy_core.courses c
+          WHERE c.created_by = $1
+          ORDER BY c.created_at DESC
+        `, [user.sub]);
+
+        return reply.send({
+          success: true,
+          data: courses.map((c: any) => ({
+            ...c,
+            enrollment_count: parseInt(c.enrollment_count || '0', 10),
+            completed_count: parseInt(c.completed_count || '0', 10),
+            avg_progress: Math.round(parseFloat(c.avg_progress || '0')),
+          })),
+        });
+      } catch (err: any) {
+        return reply.code(500).send({ success: false, error: err.message });
+      }
+    },
+  );
+
+  // GET /admin/trainer/courses/:courseId/analytics — analytics scoped to trainer
+  app.get(
+    '/admin/trainer/courses/:courseId/analytics',
+    {
+      schema: { summary: 'Course analytics for trainer', tags: ['Trainer'], security: BearerSecurity },
+      preHandler: [app.authenticate],
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const user = req.user;
+      const { courseId } = req.params as { courseId: string };
+
+      try {
+        // Verify trainer owns this course
+        const course = await queryOne(
+          'SELECT id, title FROM academy_core.courses WHERE id = $1 AND created_by = $2',
+          [courseId, user.sub],
+        );
+        if (!course && !['admin_country', 'admin_rec', 'admin_continental'].includes(user.role)) {
+          return reply.code(403).send({ success: false, error: 'Not your course' });
+        }
+
+        // Enrollment funnel
+        const funnel = await queryOne(`
+          SELECT
+            COUNT(*) AS total,
+            COUNT(*) FILTER (WHERE status = 'active' AND progress_percent > 0) AS in_progress,
+            COUNT(*) FILTER (WHERE status = 'completed') AS completed
+          FROM academy_core.enrollments WHERE course_id = $1
+        `, [courseId]);
+
+        // Recent enrollments (last 7 days)
+        const recentEnrollments = await query(`
+          SELECT u.first_name, u.last_name, u.email, e.progress_percent, e.status, e.created_at
+          FROM academy_core.enrollments e
+          JOIN academy_core.users u ON u.id = e.user_id
+          WHERE e.course_id = $1
+          ORDER BY e.created_at DESC LIMIT 10
+        `, [courseId]);
+
+        // Module completion rates
+        const moduleRates = await query(`
+          SELECT m.id, m.title, m.sort_order,
+            (SELECT COUNT(DISTINCT pt.user_id) FROM academy_core.progress_tracking pt
+             JOIN academy_core.lessons l ON l.id = pt.lesson_id
+             WHERE l.module_id = m.id AND pt.is_completed = true) AS completed_users,
+            (SELECT COUNT(*) FROM academy_core.lessons l WHERE l.module_id = m.id) AS lesson_count
+          FROM academy_core.modules m
+          WHERE m.course_id = $1
+          ORDER BY m.sort_order
+        `, [courseId]);
+
+        return reply.send({
+          success: true,
+          data: {
+            course: course || { id: courseId },
+            funnel: {
+              total: parseInt(funnel?.total || '0', 10),
+              inProgress: parseInt(funnel?.in_progress || '0', 10),
+              completed: parseInt(funnel?.completed || '0', 10),
+            },
+            recentEnrollments,
+            moduleRates: moduleRates.map((m: any) => ({
+              ...m,
+              completed_users: parseInt(m.completed_users || '0', 10),
+              lesson_count: parseInt(m.lesson_count || '0', 10),
+            })),
+          },
+        });
+      } catch (err: any) {
+        return reply.code(500).send({ success: false, error: err.message });
+      }
+    },
+  );
 }
