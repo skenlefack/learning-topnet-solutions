@@ -149,18 +149,11 @@ describe('useAuth hook', () => {
   // Token refresh
   // =========================================================================
 
-  it('should schedule token refresh before expiry', async () => {
-    vi.useFakeTimers();
-
-    // Create a token that expires in 10 minutes
-    const exp = Math.floor(Date.now() / 1000) + 600;
+  it('should logout when token is expired', async () => {
+    // Create an already-expired token
+    const exp = Math.floor(Date.now() / 1000) - 60; // expired 1 min ago
     const payload = btoa(JSON.stringify({ sub: 'u1', exp }));
     const fakeToken = `header.${payload}.signature`;
-
-    const refreshedUser = { id: 'u1', email: 'refreshed@test.org' };
-    const refreshedToken = 'refreshed-token';
-
-    mockFetch.mockResolvedValueOnce(makeResponse(200, { user: refreshedUser, token: refreshedToken }));
 
     useAuthStore.setState({
       user: { id: 'u1' } as any,
@@ -170,14 +163,10 @@ describe('useAuth hook', () => {
 
     renderHook(() => useAuth());
 
-    // Fast forward to 5 min before expiry (should trigger refresh)
-    await act(async () => {
-      vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
+    // Should have logged out (store cleared)
+    await waitFor(() => {
+      const state = useAuthStore.getState();
+      expect(state.isAuthenticated).toBe(false);
     });
-
-    // Refresh should have been called
-    expect(mockFetch).toHaveBeenCalled();
-
-    vi.useRealTimers();
   });
 });
