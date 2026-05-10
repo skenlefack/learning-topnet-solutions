@@ -22,7 +22,7 @@ export function useAuth() {
 
   // Login via mock API
   const login = useCallback(async (email: string, password: string) => {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch('/api/learning/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
