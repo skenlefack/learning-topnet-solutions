@@ -979,7 +979,7 @@ export default async function adminRoutes(app: FastifyInstance) {
             (SELECT COUNT(*) FROM academy_core.live_attendance la
              JOIN academy_core.users u ON u.id = la.user_id WHERE u.tenant_id = t.id) AS live_attendance
           FROM academy_core.tenants t
-          ORDER BY t.level, t.name->>'fr'
+          ORDER BY t.level, t.name
         `);
 
         return reply.send({
