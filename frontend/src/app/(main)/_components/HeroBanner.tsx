@@ -46,7 +46,7 @@ export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerPr
         {/* Text content */}
         <div className="space-y-2">
           <p className="text-green-100/70 text-sm">
-            {firstName ? `Bienvenue, ${firstName}` : 'Bienvenue sur ARIS Academy'}
+            {firstName ? `Bienvenue, ${firstName}` : 'Bienvenue sur AU-IBAR Learning'}
           </p>
           <h1 className="text-2xl lg:text-3xl font-bold text-white">
             Continuez votre parcours de certification

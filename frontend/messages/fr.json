@@ -593,7 +593,7 @@
     "validDesc": "Ce certificat a été vérifié et est actuellement valide.",
     "expiredDesc": "Ce certificat était valide mais a dépassé sa date d'expiration.",
     "revokedDesc": "Ce certificat a été révoqué par un administrateur.",
-    "notFoundDesc": "Aucun certificat correspondant à ce numéro n'a été trouvé dans le système ARIS Academy.",
+    "notFoundDesc": "Aucun certificat correspondant à ce numéro n'a été trouvé dans le système AU-IBAR Learning.",
     "detailsTitle": "Détails du certificat",
     "statusLabel": "Statut",
     "scanLabel": "Scannez pour vérifier ce certificat",

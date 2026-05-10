@@ -62,9 +62,9 @@ export async function generateMetadata({
 
   return {
     title: `${holderName} — ${courseTitle} | AU-IBAR Certification`,
-    description: `Verified ARIS Academy certification (${cert.level}) for ${holderName}. Certificate ${cert.certificate_number}, issued ${new Date(cert.issued_at).toLocaleDateString('en')}.`,
+    description: `Verified AU-IBAR Learning certification (${cert.level}) for ${holderName}. Certificate ${cert.certificate_number}, issued ${new Date(cert.issued_at).toLocaleDateString('en')}.`,
     openGraph: {
-      title: `ARIS Certification — ${holderName}`,
+      title: `AU-IBAR Certification — ${holderName}`,
       description: `${courseTitle} (${cert.level}) — Verified by AU-IBAR Learning`,
       siteName: 'AU-IBAR Learning',
       type: 'website',

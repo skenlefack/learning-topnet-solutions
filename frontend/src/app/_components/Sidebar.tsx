@@ -137,7 +137,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           <Link href="/" className="flex items-center gap-2.5 group" onClick={onClose}>
             <Image
               src="/au-logo.png"
-              alt="ARIS Academy"
+              alt="AU-IBAR Learning"
               width={36}
               height={36}
               className="w-9 h-9 object-contain"
@@ -145,10 +145,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             />
             <div className="leading-none">
               <span className="font-display text-lg text-brand-navy dark:text-white tracking-tight">
-                ARIS
+                AU-IBAR
               </span>
               <span className="block text-[9px] font-semibold tracking-[0.2em] text-brand-gold uppercase mt-0.5">
-                Academy
+                Learning
               </span>
             </div>
           </Link>

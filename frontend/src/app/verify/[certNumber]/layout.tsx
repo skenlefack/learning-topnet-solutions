@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Verify Certificate | AU-IBAR Learning',
-  description: 'Verify the authenticity of an ARIS Academy certification',
+  description: 'Verify the authenticity of an AU-IBAR Learning certification',
 };
 
 export default function VerifyLayout({ children }: { children: React.ReactNode }) {
