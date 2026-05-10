@@ -4,7 +4,9 @@
     "courses": "دوراتي",
     "live": "جلسات مباشرة",
     "certificates": "الشهادات",
+    "resources": "الموارد",
     "community": "المجتمع",
+    "trainer": "دوراتي (مدرب)",
     "admin": "الإدارة",
     "progression": "التقدم",
     "tenant": "المستأجر"
@@ -169,7 +171,7 @@
   },
   "community": {
     "title": "المجتمع",
-    "subtitle": "تبادل وتعلم وتقدم مع مجتمع ARIS",
+    "subtitle": "تبادل وتعلم وتقدم مع مجتمع AU-IBAR",
     "discussions": "مناقشات",
     "leaderboard": "لوحة المتصدرين",
     "studyGroups": "مجموعات الدراسة"

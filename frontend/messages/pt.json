@@ -4,7 +4,9 @@
     "courses": "Meus Cursos",
     "live": "Sessões ao Vivo",
     "certificates": "Certificações",
+    "resources": "Recursos",
     "community": "Comunidade",
+    "trainer": "Meus Cursos (Formador)",
     "admin": "Administração",
     "progression": "Progressão",
     "tenant": "Inquilino"
@@ -169,7 +171,7 @@
   },
   "community": {
     "title": "Comunidade",
-    "subtitle": "Troque, aprenda e progrida com a comunidade ARIS",
+    "subtitle": "Troque, aprenda e progrida com a comunidade AU-IBAR",
     "discussions": "Discussões",
     "leaderboard": "Classificação",
     "studyGroups": "Grupos de estudo"
