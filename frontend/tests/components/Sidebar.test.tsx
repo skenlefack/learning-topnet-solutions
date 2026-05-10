@@ -52,10 +52,10 @@ describe('Sidebar', () => {
 
   // ---- Brand ----
 
-  it('shows ARIS brand text', () => {
+  it('shows AU-IBAR brand text', () => {
     render(<Sidebar open={true} onClose={onClose} />);
-    expect(screen.getByText('ARIS')).toBeInTheDocument();
-    expect(screen.getByText('Academy')).toBeInTheDocument();
+    expect(screen.getByText('AU-IBAR')).toBeInTheDocument();
+    expect(screen.getByText('Learning')).toBeInTheDocument();
   });
 
   // ---- Active state ----

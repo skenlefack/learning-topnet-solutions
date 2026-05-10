@@ -134,7 +134,7 @@ test.describe('Full Certification Journey', () => {
     await page.waitForLoadState('networkidle');
 
     // Certification panel should be visible on dashboard
-    await expect(page.locator('text=Certifications ARIS')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('text=Certifications AU-IBAR')).toBeVisible({ timeout: 10_000 });
 
     // Should show level progression
     const levels = page.locator('text=/Foundation|Intermediate|Advanced|Expert/');

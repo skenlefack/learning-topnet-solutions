@@ -63,7 +63,7 @@ test.describe('Dashboard', () => {
   });
 
   test('shows certification panel', async ({ page }) => {
-    await expect(page.locator('text=Certifications ARIS')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('text=Certifications AU-IBAR')).toBeVisible({ timeout: 10_000 });
   });
 
   test('sidebar navigation is functional', async ({ page }) => {

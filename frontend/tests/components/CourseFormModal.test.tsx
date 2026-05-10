@@ -32,6 +32,9 @@ vi.mock('@/lib/api', () => ({
     create: vi.fn().mockResolvedValue({ success: true }),
     update: vi.fn().mockResolvedValue({ success: true }),
   },
+  categoryApi: {
+    list: vi.fn().mockResolvedValue({ success: true, data: [] }),
+  },
 }));
 
 vi.mock('@/hooks/useAuth', () => ({

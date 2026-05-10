@@ -60,11 +60,11 @@ describe('CertificationPanel', () => {
     expect(screen.getByText(/déc\. 2025/i)).toBeInTheDocument();
   });
 
-  it('renders "Certifications ARIS" heading', () => {
+  it('renders "Certifications AU-IBAR" heading', () => {
     render(
       <CertificationPanel certifications={[]} enrollments={[]} isLoading={false} />,
     );
-    expect(screen.getByText('Certifications ARIS')).toBeInTheDocument();
+    expect(screen.getByText('Certifications AU-IBAR')).toBeInTheDocument();
   });
 
   it('shows certification count when certifications exist', () => {

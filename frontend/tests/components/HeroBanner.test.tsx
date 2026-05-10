@@ -96,6 +96,6 @@ describe('HeroBanner', () => {
       />,
     );
     // When user is null, firstName is empty, so fallback text is shown
-    expect(screen.getByText('Bienvenue sur ARIS Academy')).toBeInTheDocument();
+    expect(screen.getByText('Bienvenue sur AU-IBAR Learning')).toBeInTheDocument();
   });
 });

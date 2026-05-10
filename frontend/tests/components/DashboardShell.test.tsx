@@ -56,9 +56,9 @@ describe('DashboardShell', () => {
     expect(screen.getByTestId('child-content')).toBeInTheDocument();
   });
 
-  it('renders sidebar with ARIS branding', () => {
+  it('renders sidebar with AU-IBAR branding', () => {
     render(<DashboardShell><div>content</div></DashboardShell>);
-    expect(screen.getByText('ARIS')).toBeInTheDocument();
+    expect(screen.getAllByText('AU-IBAR').length).toBeGreaterThan(0);
   });
 
   it('renders header with menu toggle button', () => {
