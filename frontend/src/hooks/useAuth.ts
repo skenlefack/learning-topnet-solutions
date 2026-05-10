@@ -9,14 +9,15 @@ import { useAuthStore } from '@/lib/store';
 
 export function useAuth() {
   const router = useRouter();
-  const { user, token, isAuthenticated, setAuth, logout: storeLogout } = useAuthStore();
+  const { user, token, isAuthenticated, _hydrated, setAuth, logout: storeLogout } = useAuthStore();
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated (only after store hydration from localStorage)
   useEffect(() => {
+    if (!_hydrated) return; // Wait for localStorage to be loaded
     if (!isAuthenticated || !token) {
       router.replace('/login');
     }
-  }, [isAuthenticated, token, router]);
+  }, [isAuthenticated, token, _hydrated, router]);
 
   // Login
   const login = useCallback(async (email: string, password: string) => {

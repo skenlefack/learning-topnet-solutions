@@ -1,6 +1,6 @@
 // ============================================================================
 // AU-IBAR Learning — Auth Store (Zustand)
-// SSO via ARIS Credential Service
+// Persisted to localStorage with hydration tracking
 // ============================================================================
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -21,6 +21,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  _hydrated: boolean;
   setAuth: (user: User, token: string) => void;
   logout: () => void;
   theme: 'light' | 'dark';
@@ -35,6 +36,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      _hydrated: false,
       setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
       theme: 'light',
@@ -42,6 +44,11 @@ export const useAuthStore = create<AuthState>()(
       language: 'fr',
       setLanguage: (lang) => set({ language: lang }),
     }),
-    { name: 'aris-academy-auth' }
+    {
+      name: 'aris-academy-auth',
+      onRehydrateStorage: () => () => {
+        useAuthStore.setState({ _hydrated: true });
+      },
+    },
   )
 );

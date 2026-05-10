@@ -69,9 +69,16 @@ describe('useAuth hook', () => {
   // Redirect when not authenticated
   // =========================================================================
 
-  it('should redirect to /login when not authenticated', () => {
+  it('should redirect to /login when not authenticated and hydrated', () => {
+    useAuthStore.setState({ _hydrated: true, isAuthenticated: false, token: null } as any);
     renderHook(() => useAuth());
     expect(mockReplace).toHaveBeenCalledWith('/login');
+  });
+
+  it('should not redirect before hydration', () => {
+    useAuthStore.setState({ _hydrated: false, isAuthenticated: false, token: null } as any);
+    renderHook(() => useAuth());
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 
   it('should not redirect when authenticated', () => {
@@ -79,7 +86,8 @@ describe('useAuth hook', () => {
       user: { id: 'u1', email: 'test@test.org' } as any,
       token: 'valid-token',
       isAuthenticated: true,
-    });
+      _hydrated: true,
+    } as any);
 
     renderHook(() => useAuth());
     expect(mockReplace).not.toHaveBeenCalled();
