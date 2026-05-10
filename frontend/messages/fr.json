@@ -338,6 +338,8 @@
   "sections": {
     "competencies": "Domaines de compétence",
     "competenciesDesc": "Explorez nos 9 domaines de formation couvrant l'ensemble des ressources animales du continent africain",
+    "categoriesTitle": "Catégories de cours",
+    "categoriesDesc": "Parcourez nos catégories de formation développées par les experts AU-IBAR",
     "coursesAvailable": "cours disponibles",
     "latestCourses": "Derniers cours publiés",
     "expertDeveloped": "Formations certifiantes développées par des experts AU-IBAR",

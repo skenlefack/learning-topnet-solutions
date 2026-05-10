@@ -19,7 +19,7 @@ import clsx from 'clsx';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store';
-import { publicApi } from '@/lib/api';
+import { publicApi, categoryApi } from '@/lib/api';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA
@@ -373,39 +373,52 @@ function StatsBar() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function CategoriesSection() {
-  const t_cat = useTranslations('categories');
   const t_sections = useTranslations('sections');
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    categoryApi.list()
+      .then((res: any) => setCategories(res.data || []))
+      .catch(() => {});
+  }, []);
 
   return (
     <section id="categories" className="py-16 bg-[#f8f9fa]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-2xl lg:text-3xl font-bold text-[#212529] mb-3">
-            {t_sections('competencies')}
+            {t_sections('categoriesTitle')}
           </h2>
           <p className="text-[#6c757d] max-w-2xl mx-auto">
-            {t_sections('competenciesDesc')}
+            {t_sections('categoriesDesc')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CATEGORIES_DATA.map((cat) => (
+          {categories.map((cat) => (
             <motion.button
-              key={cat.key}
+              key={cat.id}
               whileHover={{ y: -3 }}
               className="flex items-center gap-4 p-5 rounded-xl bg-white border border-[#dee2e6]/60 hover:shadow-[0_0.5rem_1rem_rgba(0,0,0,0.08)] transition-shadow text-left group"
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: cat.color + '10' }}
+                style={{ backgroundColor: (cat.color || '#1A5632') + '15' }}
               >
-                <cat.icon className="w-6 h-6" style={{ color: cat.color }} />
+                <BookOpen className="w-6 h-6" style={{ color: cat.color || '#1A5632' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold text-[#212529] group-hover:text-[#1A5632] transition-colors">
-                  {t_cat(cat.key)}
+                  {getLocalText(cat.name, 'fr')}
                 </div>
-                <div className="text-xs text-[#6c757d] mt-0.5">{cat.count} {t_sections('coursesAvailable')}</div>
+                <div className="text-xs text-[#6c757d] mt-0.5">
+                  {cat.course_count || 0} {t_sections('coursesAvailable')}
+                </div>
+                {cat.description && (
+                  <div className="text-xs text-[#adb5bd] mt-1 line-clamp-1">
+                    {getLocalText(cat.description, 'fr')}
+                  </div>
+                )}
               </div>
               <ArrowRight className="w-4 h-4 text-[#adb5bd] group-hover:text-[#1A5632] transition-colors shrink-0" />
             </motion.button>
