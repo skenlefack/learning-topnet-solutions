@@ -200,7 +200,8 @@ export default function CourseDetailPage() {
         variants={fadeUp}
         className={clsx(
           'relative overflow-hidden rounded-2xl',
-          'bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy-deep',
+          'bg-gradient-to-br from-gray-50 to-white dark:from-surface-dark-card dark:to-surface-dark-card',
+          'border border-[var(--border)]',
         )}
       >
         <div className="relative z-10 px-6 py-8 lg:px-8 lg:py-10">
@@ -212,13 +213,13 @@ export default function CourseDetailPage() {
           >
             {t_levels(course?.level ?? 'beginner')}
           </span>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+          <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-primary)] mb-2">
             {t(course.title, language)}
           </h1>
-          <p className="text-green-100/80 max-w-2xl text-sm lg:text-base mb-4">
+          <p className="text-[var(--text-secondary)] max-w-2xl text-sm lg:text-base mb-4">
             {t(course.description, language)}
           </p>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-green-100/70">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--text-secondary)]">
             {course.estimated_hours && (
               <span className="flex items-center gap-1.5">
                 <Clock className="w-4 h-4" />
@@ -238,8 +239,8 @@ export default function CourseDetailPage() {
           </div>
         </div>
         {/* Decorative */}
-        <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-brand-gold/10 animate-float" />
-        <div className="absolute -right-4 -bottom-8 w-28 h-28 rounded-full bg-white/5" />
+        <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-brand-navy/[0.03] dark:bg-brand-gold/[0.05] animate-float" />
+        <div className="absolute -right-4 -bottom-8 w-28 h-28 rounded-full bg-brand-gold/[0.04]" />
 
         {/* Thumbnail overlay */}
         {course.thumbnail_url && (

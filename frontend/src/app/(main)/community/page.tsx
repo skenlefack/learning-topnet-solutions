@@ -38,16 +38,16 @@ export default function CommunityPage() {
       {/* ── Hero header ── */}
       <motion.div
         variants={fadeUp}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy-deep px-6 py-8 lg:px-8 lg:py-10"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-white dark:from-surface-dark-card dark:to-surface-dark-card border border-[var(--border)] px-6 py-8 lg:px-8 lg:py-10"
       >
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-brand-gold/[0.06]" />
-          <div className="absolute -left-8 bottom-0 w-48 h-48 rounded-full bg-white/[0.03]" />
+          <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-brand-navy/[0.03] dark:bg-brand-gold/[0.04]" />
+          <div className="absolute -left-8 bottom-0 w-48 h-48 rounded-full bg-brand-gold/[0.04]" />
         </div>
 
         <div className="relative z-10">
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">{t('title')}</h1>
-          <p className="text-sm text-green-100/70 mt-1 max-w-xl">{t('subtitle')}</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-xl">{t('subtitle')}</p>
 
           {/* Tabs inside hero */}
           <div className="flex gap-2 mt-6">
@@ -58,8 +58,8 @@ export default function CommunityPage() {
                 className={clsx(
                   'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
                   tab === item.key
-                    ? 'bg-brand-gold text-gray-900'
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 border border-white/10',
+                    ? 'bg-brand-navy text-white dark:bg-brand-gold dark:text-gray-900'
+                    : 'bg-white text-[var(--text-secondary)] hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-[var(--border)]',
                 )}
               >
                 <item.icon className="w-4 h-4" />

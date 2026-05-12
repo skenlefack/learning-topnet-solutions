@@ -88,20 +88,21 @@ function DashboardHome() {
         variants={fadeUp}
         className={clsx(
           'relative overflow-hidden rounded-2xl px-6 py-8 lg:px-8 lg:py-10',
-          'bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy-deep',
+          'bg-gradient-to-br from-gray-50 to-white dark:from-surface-dark-card dark:to-surface-dark-card',
+          'border border-[var(--border)]',
         )}
       >
         <div className="relative z-10">
-          <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
-            {t('welcome')} <span className="font-display">{t('brandName')}</span>
+          <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-primary)] mb-2">
+            {t('welcome')} <span className="font-display text-brand-navy dark:text-brand-gold">{t('brandName')}</span>
           </h1>
-          <p className="text-green-100/80 max-w-lg text-sm lg:text-base">
+          <p className="text-[var(--text-secondary)] max-w-lg text-sm lg:text-base">
             {t('subtitle')}
           </p>
         </div>
         {/* Decorative circles */}
-        <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-brand-gold/10 animate-float" />
-        <div className="absolute -right-4 -bottom-8 w-28 h-28 rounded-full bg-white/5" />
+        <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-brand-navy/[0.03] dark:bg-brand-gold/[0.05] animate-float" />
+        <div className="absolute -right-4 -bottom-8 w-28 h-28 rounded-full bg-brand-gold/[0.04]" />
       </motion.div>
 
       {/* Stats grid */}

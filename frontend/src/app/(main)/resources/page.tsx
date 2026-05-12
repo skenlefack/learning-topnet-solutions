@@ -87,29 +87,29 @@ export default function ResourcesPage() {
       {/* ── Hero header with embedded search ── */}
       <motion.div
         variants={fadeUp}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy-deep px-6 py-8 lg:px-8 lg:py-10"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-white dark:from-surface-dark-card dark:to-surface-dark-card border border-[var(--border)] px-6 py-8 lg:px-8 lg:py-10"
       >
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-brand-gold/[0.06]" />
-          <div className="absolute -left-8 bottom-0 w-48 h-48 rounded-full bg-white/[0.03]" />
+          <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-brand-navy/[0.03] dark:bg-brand-gold/[0.04]" />
+          <div className="absolute -left-8 bottom-0 w-48 h-48 rounded-full bg-brand-gold/[0.04]" />
         </div>
 
         <div className="relative z-10 space-y-5">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-white">{t('title')}</h1>
-            <p className="text-sm text-green-100/70 mt-1">{t('subtitle')}</p>
+            <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">{t('subtitle')}</p>
           </div>
 
           {/* Search bar */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-secondary)]" />
               <input
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder={t('searchPlaceholder')}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-brand-gold/40 focus:border-brand-gold/40 transition-all"
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm bg-white dark:bg-gray-800/50 border border-[var(--border)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-brand-navy/20 dark:focus:ring-brand-gold/20 focus:border-brand-navy dark:focus:border-brand-gold transition-all"
               />
             </div>
             <div className="flex gap-1.5">
@@ -120,8 +120,8 @@ export default function ResourcesPage() {
                   className={clsx(
                     'px-4 py-3 rounded-xl text-sm font-medium transition-all',
                     typeFilter === tab.key
-                      ? 'bg-brand-gold text-gray-900'
-                      : 'bg-white/10 text-white/80 hover:bg-white/20 border border-white/10',
+                      ? 'bg-brand-navy text-white dark:bg-brand-gold dark:text-gray-900'
+                      : 'bg-white text-[var(--text-secondary)] hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-[var(--border)]',
                   )}
                 >
                   {tab.label}
