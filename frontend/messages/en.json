@@ -270,7 +270,20 @@
     "newPasswordPlaceholder": "Minimum 8 characters",
     "resetPassword": "Reset password",
     "resetSuccess": "Password changed successfully! Redirecting...",
-    "resetFailed": "Invalid or expired link"
+    "resetFailed": "Invalid or expired link",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Sign up to access training courses",
+    "firstName": "First name",
+    "firstNamePlaceholder": "Your first name",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name",
+    "registerSubmit": "Sign up",
+    "registering": "Signing up...",
+    "registerSuccess": "Account created successfully!",
+    "registerError": "Registration error",
+    "emailExists": "This email address is already in use",
+    "hasAccount": "Already have an account?",
+    "signinLink": "Sign in"
   },
   "hero": {
     "slide1Title": "Strengthening veterinary capacities in Africa",
@@ -324,6 +337,7 @@
     "enrollDesc": "Sign up for free to access all content, track your progress and earn your AU-IBAR certification.",
     "enrollCTA": "Sign up for free",
     "login": "Log in",
+    "signup": "Sign up",
     "courseInfo": "Course info",
     "level": "Level",
     "duration": "Duration",
@@ -376,7 +390,8 @@
     "courses": "Courses",
     "categories": "Categories",
     "about": "About",
-    "login": "Sign in"
+    "login": "Sign in",
+    "signup": "Sign up"
   },
   "admin": {
     "title": "Administration",

@@ -270,7 +270,20 @@
     "newPasswordPlaceholder": "Mínimo 8 caracteres",
     "resetPassword": "Redefinir",
     "resetSuccess": "Senha alterada com sucesso! Redirecionando...",
-    "resetFailed": "Link inválido ou expirado"
+    "resetFailed": "Link inválido ou expirado",
+    "registerTitle": "Criar uma conta",
+    "registerSubtitle": "Registe-se para aceder às formações",
+    "firstName": "Nome",
+    "firstNamePlaceholder": "O seu nome",
+    "lastName": "Apelido",
+    "lastNamePlaceholder": "O seu apelido",
+    "registerSubmit": "Registar-se",
+    "registering": "A registar...",
+    "registerSuccess": "Conta criada com sucesso!",
+    "registerError": "Erro no registo",
+    "emailExists": "Este email já está em uso",
+    "hasAccount": "Já tem conta?",
+    "signinLink": "Iniciar sessão"
   },
   "hero": {
     "slide1Title": "Reforçar as capacidades veterinárias em África",
@@ -324,6 +337,7 @@
     "enrollDesc": "Inscreva-se gratuitamente para aceder a todo o conteúdo, acompanhar o seu progresso e obter a sua certificação AU-IBAR.",
     "enrollCTA": "Inscrever-se gratuitamente",
     "login": "Entrar",
+    "signup": "Registar-se",
     "courseInfo": "Informações",
     "level": "Nível",
     "duration": "Duração",
@@ -374,7 +388,8 @@
     "courses": "Cursos",
     "categories": "Categorias",
     "about": "Sobre",
-    "login": "Iniciar sessão"
+    "login": "Iniciar sessão",
+    "signup": "Registar-se"
   },
   "admin": {
     "title": "Administração",

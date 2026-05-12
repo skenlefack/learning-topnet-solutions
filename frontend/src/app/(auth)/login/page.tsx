@@ -12,7 +12,7 @@ import {
   Loader2, Mail, Lock, AlertTriangle, ArrowRight, Search,
   ChevronLeft, ChevronRight, X, Menu, Play, Users, BookOpen,
   Award, Globe, Heart, ShieldCheck, Microscope, Leaf, Fish,
-  TrendingUp, Boxes, Bug, Beef,
+  TrendingUp, Boxes, Bug, Beef, User,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
@@ -80,7 +80,7 @@ const NAV_LINKS = [
 // NAVBAR
 // ═══════════════════════════════════════════════════════════════════════════
 
-function Navbar({ onLogin }: { onLogin: () => void }) {
+function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => void }) {
   const t_nav = useTranslations('landingNav');
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -131,6 +131,12 @@ function Navbar({ onLogin }: { onLogin: () => void }) {
             {/* Actions */}
             <div className="flex items-center gap-3">
               <button
+                onClick={onSignup}
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
+              >
+                {t_nav('signup')}
+              </button>
+              <button
                 onClick={onLogin}
                 className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
               >
@@ -167,6 +173,12 @@ function Navbar({ onLogin }: { onLogin: () => void }) {
                   </a>
                 ))}
                 <button
+                  onClick={() => { setMobileOpen(false); onSignup(); }}
+                  className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632]"
+                >
+                  {t_nav('signup')}
+                </button>
+                <button
                   onClick={() => { setMobileOpen(false); onLogin(); }}
                   className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold bg-[#1A5632] text-white"
                 >
@@ -185,7 +197,7 @@ function Navbar({ onLogin }: { onLogin: () => void }) {
 // HERO SLIDER
 // ═══════════════════════════════════════════════════════════════════════════
 
-function HeroSlider({ onLogin }: { onLogin: () => void }) {
+function HeroSlider({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => void }) {
   const t_hero = useTranslations('hero');
   const [current, setCurrent] = useState(0);
 
@@ -257,7 +269,7 @@ function HeroSlider({ onLogin }: { onLogin: () => void }) {
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={onLogin}
+                  onClick={onSignup}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold border border-white/30 text-white hover:bg-white/10 transition-colors"
                 >
                   {t_hero('freeSignup')}
@@ -723,18 +735,20 @@ function Footer() {
 // LOGIN MODAL
 // ═══════════════════════════════════════════════════════════════════════════
 
-function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: () => void; initialMode?: 'login' | 'register' }) {
   const t_login = useTranslations('login');
   const router = useRouter();
   const searchParams = useSearchParams();
   const setAuth = useAuthStore((s) => s.setAuth);
 
-  // Modes: 'login' | 'forgot' | 'reset'
+  // Modes: 'login' | 'register' | 'forgot' | 'reset'
   const resetToken = searchParams.get('reset');
-  const [mode, setMode] = useState<'login' | 'forgot' | 'reset'>(resetToken ? 'reset' : 'login');
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(resetToken ? 'reset' : (initialMode || 'login'));
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -744,6 +758,15 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   useEffect(() => {
     if (resetToken) setMode('reset');
   }, [resetToken]);
+
+  // Sync initialMode when modal opens
+  useEffect(() => {
+    if (open && initialMode && !resetToken) {
+      setMode(initialMode);
+      setError(null);
+      setSuccess(null);
+    }
+  }, [open, initialMode, resetToken]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -769,6 +792,43 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       setAuth(data.user, data.token);
       document.cookie = `aris-token=${data.token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
       toast.success(t_login('welcome', { name: data.user.firstName }));
+      const redirect = searchParams.get('redirect') || '/';
+      router.replace(redirect);
+    } catch {
+      toast.error(t_login('networkError'));
+      setError(t_login('networkError'));
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/learning/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+        credentials: 'include',
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 409) {
+          setError(t_login('emailExists'));
+        } else {
+          setError(data.error || t_login('registerError'));
+        }
+        setLoading(false);
+        return;
+      }
+
+      setAuth(data.user, data.token);
+      document.cookie = `aris-token=${data.token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
+      toast.success(t_login('registerSuccess'));
       const redirect = searchParams.get('redirect') || '/';
       router.replace(redirect);
     } catch {
@@ -850,7 +910,7 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
 
             <button
-              onClick={() => { if (mode !== 'login') { setMode('login'); setError(null); setSuccess(null); } else onClose(); }}
+              onClick={() => { if (mode === 'forgot') { setMode('login'); setError(null); setSuccess(null); } else onClose(); }}
               className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-[#f8f9fa] transition-colors z-10"
             >
               <X className="w-4 h-4 text-[#6c757d]" />
@@ -861,10 +921,10 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                 <Image src="/au-logo.png" alt="AU-IBAR" width={40} height={40} className="w-10 h-10 object-contain" />
                 <div>
                   <h2 className="text-lg font-bold text-[#212529]">
-                    {mode === 'forgot' ? t_login('forgotTitle') : mode === 'reset' ? t_login('resetTitle') : t_login('title')}
+                    {mode === 'register' ? t_login('registerTitle') : mode === 'forgot' ? t_login('forgotTitle') : mode === 'reset' ? t_login('resetTitle') : t_login('title')}
                   </h2>
                   <p className="text-xs text-[#6c757d]">
-                    {mode === 'forgot' ? t_login('forgotSubtitle') : mode === 'reset' ? t_login('resetSubtitle') : t_login('subtitle')}
+                    {mode === 'register' ? t_login('registerSubtitle') : mode === 'forgot' ? t_login('forgotSubtitle') : mode === 'reset' ? t_login('resetSubtitle') : t_login('subtitle')}
                   </p>
                 </div>
               </div>
@@ -908,6 +968,59 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
                   <button onClick={() => { setMode('forgot'); setError(null); setSuccess(null); }} className="mt-3 w-full text-center text-xs text-[#1A5632] font-semibold hover:underline">
                     {t_login('forgotPassword')}
                   </button>
+                  <div className="mt-4 pt-4 border-t border-[#dee2e6]/60 text-center">
+                    <span className="text-xs text-[#6c757d]">{t_login('noAccount')} </span>
+                    <button onClick={() => { setMode('register'); setError(null); setSuccess(null); }} className="text-xs text-[#1A5632] font-semibold hover:underline">
+                      {t_login('signup')}
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* REGISTER FORM */}
+              {mode === 'register' && (
+                <>
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor="reg-firstName" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('firstName')}</label>
+                        <div className="relative">
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                          <input id="reg-firstName" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t_login('firstNamePlaceholder')} required className={inputClass} />
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor="reg-lastName" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('lastName')}</label>
+                        <div className="relative">
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                          <input id="reg-lastName" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t_login('lastNamePlaceholder')} required className={inputClass} />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="reg-email" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('email')}</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                        <input id="reg-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t_login('emailPlaceholder')} required className={inputClass} />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="reg-password" className="block text-sm font-medium text-[#495057] mb-1.5">{t_login('password')}</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#adb5bd]" />
+                        <input id="reg-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t_login('newPasswordPlaceholder')} required minLength={8} className={inputClass} />
+                      </div>
+                    </div>
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                      {loading ? <><Loader2 className="w-4 h-4 animate-spin" />{t_login('registering')}</> : <>{t_login('registerSubmit')}<ArrowRight className="w-4 h-4" /></>}
+                    </button>
+                  </form>
+                  <div className="mt-4 pt-4 border-t border-[#dee2e6]/60 text-center">
+                    <span className="text-xs text-[#6c757d]">{t_login('hasAccount')} </span>
+                    <button onClick={() => { setMode('login'); setError(null); setSuccess(null); }} className="text-xs text-[#1A5632] font-semibold hover:underline">
+                      {t_login('signinLink')}
+                    </button>
+                  </div>
                 </>
               )}
 
@@ -958,13 +1071,19 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function LandingPage() {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const openLogin = useCallback(() => setLoginOpen(true), []);
+  const searchParams = useSearchParams();
+  const urlMode = searchParams.get('mode') === 'register' ? 'register' : 'login';
+  const hasRedirect = !!searchParams.get('redirect') || !!searchParams.get('reset');
+
+  const [loginOpen, setLoginOpen] = useState(hasRedirect);
+  const [modalMode, setModalMode] = useState<'login' | 'register'>(urlMode);
+  const openLogin = useCallback(() => { setModalMode('login'); setLoginOpen(true); }, []);
+  const openSignup = useCallback(() => { setModalMode('register'); setLoginOpen(true); }, []);
 
   return (
     <div className="min-h-screen bg-[#efece7]">
-      <Navbar onLogin={openLogin} />
-      <HeroSlider onLogin={openLogin} />
+      <Navbar onLogin={openLogin} onSignup={openSignup} />
+      <HeroSlider onLogin={openLogin} onSignup={openSignup} />
       <SearchSection />
       <StatsBar />
       <CategoriesSection />
@@ -972,7 +1091,7 @@ function LandingPage() {
       <AboutSection onLogin={openLogin} />
       <Footer />
       <Suspense fallback={null}>
-        <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+        <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} initialMode={modalMode} />
       </Suspense>
     </div>
   );

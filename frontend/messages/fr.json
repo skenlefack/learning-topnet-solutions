@@ -270,7 +270,20 @@
     "newPasswordPlaceholder": "Minimum 8 caractères",
     "resetPassword": "Réinitialiser",
     "resetSuccess": "Mot de passe modifié avec succès ! Redirection...",
-    "resetFailed": "Lien invalide ou expiré"
+    "resetFailed": "Lien invalide ou expiré",
+    "registerTitle": "Créer un compte",
+    "registerSubtitle": "Inscrivez-vous pour accéder aux formations",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Votre prénom",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Votre nom de famille",
+    "registerSubmit": "S'inscrire",
+    "registering": "Inscription en cours...",
+    "registerSuccess": "Compte créé avec succès !",
+    "registerError": "Erreur lors de l'inscription",
+    "emailExists": "Cette adresse email est déjà utilisée",
+    "hasAccount": "Déjà un compte ?",
+    "signinLink": "Se connecter"
   },
   "hero": {
     "slide1Title": "Renforcer les capacités vétérinaires en Afrique",
@@ -324,6 +337,7 @@
     "enrollDesc": "Inscrivez-vous gratuitement pour accéder à l'intégralité du contenu, suivre votre progression et obtenir votre certification AU-IBAR.",
     "enrollCTA": "S'inscrire gratuitement",
     "login": "Se connecter",
+    "signup": "S'inscrire",
     "courseInfo": "Informations",
     "level": "Niveau",
     "duration": "Durée",
@@ -376,7 +390,8 @@
     "courses": "Cours",
     "categories": "Catégories",
     "about": "À propos",
-    "login": "Se connecter"
+    "login": "Se connecter",
+    "signup": "S'inscrire"
   },
   "admin": {
     "title": "Administration",

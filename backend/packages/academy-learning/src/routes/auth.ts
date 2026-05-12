@@ -16,6 +16,12 @@ const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
+const registerSchema = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  email: z.string().email(),
+  password: z.string().min(8),
+});
 const forgotSchema = z.object({ email: z.string().email() });
 const resetSchema = z.object({
   token: z.string().min(1),
@@ -351,6 +357,127 @@ export default async function authRoutes(app: FastifyInstance) {
       } catch (err: any) {
         app.log.error(`[auth] Reset password error: ${err.message}`);
         return reply.code(500).send({ success: false, error: 'Service error' });
+      }
+    },
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // POST /auth/register — Self-registration (public)
+  // ─────────────────────────────────────────────────────────────────────────
+  app.post(
+    '/auth/register',
+    {
+      schema: {
+        summary: 'Register a new learner account',
+        tags: ['Auth'],
+        body: {
+          type: 'object' as const,
+          required: ['firstName', 'lastName', 'email', 'password'],
+          properties: {
+            firstName: { type: 'string', minLength: 1, maxLength: 100 },
+            lastName: { type: 'string', minLength: 1, maxLength: 100 },
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', minLength: 8 },
+          },
+        },
+      },
+    },
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const parsed = registerSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return reply.code(400).send({ success: false, error: 'All fields are required (password min 8 chars)' });
+      }
+
+      const { firstName, lastName, email, password } = parsed.data;
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // ── DEV / STAGING ──────────────────────────────────────────────────
+      if (process.env.NODE_ENV !== 'production') {
+        const user = {
+          id: `usr_${normalizedEmail.replace(/[^a-z0-9]/g, '_')}`,
+          email: normalizedEmail,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          role: 'learner',
+          tenantId: 'au-ibar',
+          tenantLevel: 'continental',
+          preferredLanguage: 'fr',
+        };
+
+        const token = app.jwt.sign({
+          sub: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          tenantId: user.tenantId,
+          tenantLevel: user.tenantLevel,
+          preferredLanguage: user.preferredLanguage,
+        });
+
+        return reply.send({ success: true, token, user });
+      }
+
+      // ── PRODUCTION ─────────────────────────────────────────────────────
+      try {
+        const bcrypt = await import('bcryptjs');
+
+        // Check if email already exists
+        const existing = await queryOne<{ id: string }>(
+          'SELECT id FROM academy_core.users WHERE email = $1',
+          [normalizedEmail],
+        );
+        if (existing) {
+          return reply.code(409).send({ success: false, error: 'Email already registered' });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        // Default tenant: AU-IBAR Continental
+        const defaultTenantId = '00000000-0000-0000-0000-000000000001';
+
+        const newUser = await queryOne<{
+          id: string; email: string; first_name: string; last_name: string;
+          role: string; tenant_id: string; preferred_language: string;
+        }>(
+          `INSERT INTO academy_core.users (email, first_name, last_name, role, tenant_id, password_hash, preferred_language)
+           VALUES ($1, $2, $3, 'learner', $4, $5, 'fr')
+           RETURNING id, email, first_name, last_name, role, tenant_id, preferred_language`,
+          [normalizedEmail, firstName.trim(), lastName.trim(), defaultTenantId, passwordHash],
+        );
+
+        if (!newUser) {
+          return reply.code(500).send({ success: false, error: 'Registration failed' });
+        }
+
+        const token = app.jwt.sign({
+          sub: newUser.id,
+          email: newUser.email,
+          firstName: newUser.first_name,
+          lastName: newUser.last_name,
+          role: newUser.role,
+          tenantId: newUser.tenant_id,
+          tenantLevel: 'continental',
+          preferredLanguage: newUser.preferred_language,
+        });
+
+        return reply.send({
+          success: true,
+          token,
+          user: {
+            id: newUser.id,
+            email: newUser.email,
+            firstName: newUser.first_name,
+            lastName: newUser.last_name,
+            role: newUser.role,
+            tenantId: newUser.tenant_id,
+            tenantLevel: 'continental',
+            preferredLanguage: newUser.preferred_language,
+          },
+        });
+      } catch (err: any) {
+        app.log.error(`[auth] Register error: ${err.message}`);
+        return reply.code(500).send({ success: false, error: 'Registration service unavailable' });
       }
     },
   );

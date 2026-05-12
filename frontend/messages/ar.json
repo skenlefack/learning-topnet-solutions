@@ -270,7 +270,20 @@
     "newPasswordPlaceholder": "8 أحرف على الأقل",
     "resetPassword": "إعادة التعيين",
     "resetSuccess": "تم تغيير كلمة المرور بنجاح! جارٍ إعادة التوجيه...",
-    "resetFailed": "رابط غير صالح أو منتهي الصلاحية"
+    "resetFailed": "رابط غير صالح أو منتهي الصلاحية",
+    "registerTitle": "إنشاء حساب",
+    "registerSubtitle": "سجّل للوصول إلى الدورات التدريبية",
+    "firstName": "الاسم الأول",
+    "firstNamePlaceholder": "اسمك الأول",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "اسم عائلتك",
+    "registerSubmit": "التسجيل",
+    "registering": "جاري التسجيل...",
+    "registerSuccess": "تم إنشاء الحساب بنجاح!",
+    "registerError": "خطأ في التسجيل",
+    "emailExists": "هذا البريد الإلكتروني مستخدم بالفعل",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "signinLink": "تسجيل الدخول"
   },
   "hero": {
     "slide1Title": "تعزيز القدرات البيطرية في أفريقيا",
@@ -324,6 +337,7 @@
     "enrollDesc": "سجّل مجاناً للوصول إلى كل المحتوى ومتابعة تقدمك والحصول على شهادة AU-IBAR.",
     "enrollCTA": "التسجيل مجاناً",
     "login": "تسجيل الدخول",
+    "signup": "التسجيل",
     "courseInfo": "معلومات",
     "level": "المستوى",
     "duration": "المدة",
@@ -374,7 +388,8 @@
     "courses": "الدورات",
     "categories": "الفئات",
     "about": "حول",
-    "login": "تسجيل الدخول"
+    "login": "تسجيل الدخول",
+    "signup": "التسجيل"
   },
   "admin": {
     "title": "الإدارة",

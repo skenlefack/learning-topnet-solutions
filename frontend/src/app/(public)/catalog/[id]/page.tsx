@@ -126,12 +126,20 @@ export default function CatalogDetailPage() {
               <span className="text-sm font-bold text-[#1A5632] ml-1">Learning</span>
             </div>
           </Link>
-          <Link
-            href={`/login?redirect=/courses/${course.id}`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
-          >
-            {t('login')}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/login?redirect=/courses/${course.id}&mode=register`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
+            >
+              {t('signup')}
+            </Link>
+            <Link
+              href={`/login?redirect=/courses/${course.id}`}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
+            >
+              {t('login')}
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -358,11 +366,17 @@ export default function CatalogDetailPage() {
                   {t('enrollDesc')}
                 </p>
                 <Link
-                  href={`/login?redirect=/courses/${course.id}`}
+                  href={`/login?redirect=/courses/${course.id}&mode=register`}
                   className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
                 >
                   {t('enrollCTA')}
                   <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href={`/login?redirect=/courses/${course.id}`}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold text-[#6c757d] hover:text-[#1A5632] transition-colors"
+                >
+                  {t('login')}
                 </Link>
               </div>
 
