@@ -130,8 +130,7 @@ export default function LivePage() {
     ]).then(([sessRes, upRes, recRes]: any[]) => {
       const liveSessions = (sessRes.data || []).filter((s: Session) => s.status === 'live');
       setSessions(liveSessions);
-      const upcomingList = upRes.data || [];
-      setUpcoming(upcomingList.length > 0 ? upcomingList : MOCK_SESSIONS);
+      setUpcoming(upRes.data || []);
       setRecordings(recRes.data || []);
       // If there are live sessions, default to live tab
       if (liveSessions.length > 0) setTab('live');
