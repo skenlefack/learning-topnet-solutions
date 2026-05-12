@@ -4,20 +4,14 @@
 // Checks authentication, redirects to login, handles token refresh + login/logout
 // ============================================================================
 import { useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store';
 
 export function useAuth() {
-  const router = useRouter();
-  const { user, token, isAuthenticated, _hydrated, setAuth, logout: storeLogout } = useAuthStore();
+  const { user, token, isAuthenticated, setAuth, logout: storeLogout } = useAuthStore();
 
-  // Redirect if not authenticated (only after store hydration from localStorage)
-  useEffect(() => {
-    if (!_hydrated) return; // Wait for localStorage to be loaded
-    if (!isAuthenticated || !token) {
-      router.replace('/login');
-    }
-  }, [isAuthenticated, token, _hydrated, router]);
+  // Note: redirect is handled by the Edge middleware (middleware.ts)
+  // which checks the aris-token cookie server-side. No client-side
+  // redirect needed here — it caused race conditions on navigation.
 
   // Login
   const login = useCallback(async (email: string, password: string) => {
@@ -37,32 +31,28 @@ export function useAuth() {
     return data;
   }, [setAuth]);
 
-  // Logout — clear store + cookie
+  // Logout — clear store + cookie + redirect
   const logout = useCallback(() => {
     storeLogout();
     document.cookie = 'aris-token=; path=/; max-age=0; samesite=lax';
-    router.replace('/login');
-  }, [storeLogout, router]);
+    window.location.href = '/login';
+  }, [storeLogout]);
 
   // Token expiry check — logout only when token is actually expired
   useEffect(() => {
     if (!token) return;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload.exp) return; // No expiry claim — skip
       const expiresAt = payload.exp * 1000;
       const timeUntilExpiry = expiresAt - Date.now();
 
       if (timeUntilExpiry <= 0) {
-        // Token already expired — logout
         logout();
         return;
       }
 
-      // Schedule logout when token expires (JWT has 24h validity)
-      const timer = setTimeout(() => {
-        logout();
-      }, timeUntilExpiry);
-
+      const timer = setTimeout(logout, timeUntilExpiry);
       return () => clearTimeout(timer);
     } catch {
       // Invalid token format — ignore
