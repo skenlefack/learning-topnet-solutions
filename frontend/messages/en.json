@@ -360,7 +360,8 @@
     "seeAll": "See all",
     "enrollCourse": "Enroll in course",
     "searchPlaceholder": "Search for a course, topic...",
-    "search": "Search"
+    "search": "Search",
+    "noCourses": "No courses available at this time."
   },
   "about": {
     "title": "Excellence in service of Africa's development",

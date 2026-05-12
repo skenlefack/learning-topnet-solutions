@@ -358,7 +358,8 @@
     "seeAll": "Ver tudo",
     "enrollCourse": "Inscrever-se no curso",
     "searchPlaceholder": "Pesquisar um curso, tema...",
-    "search": "Pesquisar"
+    "search": "Pesquisar",
+    "noCourses": "Nenhum curso disponível de momento."
   },
   "about": {
     "title": "Excelência ao serviço do desenvolvimento de África",

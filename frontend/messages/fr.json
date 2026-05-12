@@ -360,7 +360,8 @@
     "seeAll": "Voir tout",
     "enrollCourse": "S'inscrire au cours",
     "searchPlaceholder": "Rechercher un cours, un sujet...",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "noCourses": "Aucun cours disponible pour le moment."
   },
   "about": {
     "title": "L'excellence au service du développement de l'Afrique",

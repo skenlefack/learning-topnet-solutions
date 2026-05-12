@@ -459,10 +459,9 @@ function CoursesSection({ onLogin }: { onLogin: () => void }) {
   useEffect(() => {
     publicApi.courses({ limit: 6, lang: 'fr' })
       .then((res) => {
-        const items = res.data || [];
-        setCourses(items.length > 0 ? items : FALLBACK_COURSES);
+        setCourses(res.data || []);
       })
-      .catch(() => setCourses(FALLBACK_COURSES))
+      .catch(() => setCourses([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -495,6 +494,11 @@ function CoursesSection({ onLogin }: { onLogin: () => void }) {
                 </div>
               </div>
             ))}
+          </div>
+        ) : courses.length === 0 ? (
+          <div className="text-center py-12">
+            <BookOpen className="w-12 h-12 text-[#dee2e6] mx-auto mb-4" />
+            <p className="text-[#6c757d] text-sm">{t_sections('noCourses')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
