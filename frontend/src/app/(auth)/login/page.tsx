@@ -12,7 +12,7 @@ import {
   Loader2, Mail, Lock, AlertTriangle, ArrowRight, Search,
   ChevronLeft, ChevronRight, X, Menu, Play, Users, BookOpen,
   Award, Globe, Heart, ShieldCheck, Microscope, Leaf, Fish,
-  TrendingUp, Boxes, Bug, Beef, User,
+  TrendingUp, Boxes, Bug, Beef, User, Layers,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
@@ -346,18 +346,18 @@ function SearchSection() {
 
 function StatsBar() {
   const t_stats = useTranslations('stats');
-  const [data, setData] = useState<{ courses: number; enrollments: number; certifications: number; countries: number } | null>(null);
+  const [data, setData] = useState<{ courses: number; enrollments: number; certifications: number; paths: number } | null>(null);
 
   useEffect(() => {
     publicApi.stats()
       .then((res) => setData(res.data))
-      .catch(() => setData({ courses: 12, enrollments: 850, certifications: 45, countries: 55 }));
+      .catch(() => setData({ courses: 0, enrollments: 0, certifications: 0, paths: 0 }));
   }, []);
 
   const stats = [
     { icon: BookOpen, value: data?.courses ?? '—', label: t_stats('coursesLabel') },
     { icon: Users, value: data?.enrollments ?? '—', label: t_stats('learnersLabel') },
-    { icon: Globe, value: data?.countries ?? 55, label: t_stats('statesLabel') },
+    { icon: Layers, value: data?.paths ?? '—', label: t_stats('pathsLabel') },
     { icon: Award, value: data?.certifications ?? '—', label: t_stats('certificatesLabel') },
   ];
 

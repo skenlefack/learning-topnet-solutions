@@ -24,7 +24,7 @@ export async function publicRoutes(app: FastifyInstance) {
                 courses: { type: 'number' },
                 enrollments: { type: 'number' },
                 certifications: { type: 'number' },
-                countries: { type: 'number' },
+                paths: { type: 'number' },
               },
             },
           },
@@ -33,11 +33,11 @@ export async function publicRoutes(app: FastifyInstance) {
     },
   }, async (_request, reply) => {
     try {
-      const [coursesRes, enrollmentsRes, certsRes, countriesRes] = await Promise.all([
+      const [coursesRes, enrollmentsRes, certsRes, pathsRes] = await Promise.all([
         queryOne<{ count: string }>(`SELECT COUNT(*) FROM academy_core.courses WHERE status = 'published'`),
         queryOne<{ count: string }>(`SELECT COUNT(*) FROM academy_core.enrollments`),
         queryOne<{ count: string }>(`SELECT COUNT(*) FROM academy_core.certifications WHERE status = 'issued'`),
-        queryOne<{ count: string }>(`SELECT COUNT(*) FROM academy_core.tenants WHERE level = 'country'`),
+        queryOne<{ count: string }>(`SELECT COUNT(*) FROM academy_core.learning_paths`),
       ]);
 
       return reply.send({
@@ -46,14 +46,14 @@ export async function publicRoutes(app: FastifyInstance) {
           courses: parseInt(coursesRes?.count || '0', 10),
           enrollments: parseInt(enrollmentsRes?.count || '0', 10),
           certifications: parseInt(certsRes?.count || '0', 10),
-          countries: parseInt(countriesRes?.count || '0', 10),
+          paths: parseInt(pathsRes?.count || '0', 10),
         },
       });
     } catch (err: any) {
       app.log.warn(`[public/stats] DB unavailable: ${err.message}`);
       return reply.send({
         success: true,
-        data: { courses: 0, enrollments: 0, certifications: 0, countries: 0 },
+        data: { courses: 0, enrollments: 0, certifications: 0, paths: 0 },
       });
     }
   });
