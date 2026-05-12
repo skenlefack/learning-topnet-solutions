@@ -137,6 +137,19 @@
     "cameraError": "Impossible d'accéder à la caméra. Vérifiez les permissions.",
     "instruction": "Placez le QR code du certificat dans le cadre"
   },
+  "resourcesPage": {
+    "title": "Ressources",
+    "subtitle": "Documents, vidéos et fichiers publiés par les formateurs",
+    "searchPlaceholder": "Rechercher une ressource...",
+    "all": "Tout",
+    "videos": "Vidéos",
+    "documents": "Documents",
+    "noResources": "Aucune ressource disponible",
+    "noResourcesDesc": "Les ressources publiées par les formateurs apparaîtront ici.",
+    "noResults": "Aucune ressource trouvée pour « {query} »",
+    "open": "Ouvrir",
+    "download": "Télécharger"
+  },
   "live": {
     "title": "Sessions Live",
     "subtitle": "Rejoignez des sessions en direct ou regardez les replays",

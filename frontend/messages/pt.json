@@ -137,6 +137,19 @@
     "cameraError": "Não foi possível aceder à câmara. Verifique as permissões.",
     "instruction": "Coloque o código QR do certificado dentro da moldura"
   },
+  "resourcesPage": {
+    "title": "Recursos",
+    "subtitle": "Documentos, vídeos e ficheiros publicados pelos formadores",
+    "searchPlaceholder": "Pesquisar um recurso...",
+    "all": "Tudo",
+    "videos": "Vídeos",
+    "documents": "Documentos",
+    "noResources": "Nenhum recurso disponível",
+    "noResourcesDesc": "Os recursos publicados pelos formadores aparecerão aqui.",
+    "noResults": "Nenhum recurso encontrado para \"{query}\"",
+    "open": "Abrir",
+    "download": "Descarregar"
+  },
   "live": {
     "title": "Sessões ao Vivo",
     "subtitle": "Participe em sessões ao vivo ou veja as repetições",

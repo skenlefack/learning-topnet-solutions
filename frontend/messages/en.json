@@ -137,6 +137,19 @@
     "cameraError": "Unable to access the camera. Check permissions.",
     "instruction": "Place the certificate QR code within the frame"
   },
+  "resourcesPage": {
+    "title": "Resources",
+    "subtitle": "Documents, videos and files published by trainers",
+    "searchPlaceholder": "Search a resource...",
+    "all": "All",
+    "videos": "Videos",
+    "documents": "Documents",
+    "noResources": "No resources available",
+    "noResourcesDesc": "Resources published by trainers will appear here.",
+    "noResults": "No resources found for \"{query}\"",
+    "open": "Open",
+    "download": "Download"
+  },
   "live": {
     "title": "Live Sessions",
     "subtitle": "Join live sessions or watch replays",
