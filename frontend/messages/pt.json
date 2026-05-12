@@ -211,6 +211,18 @@
     "hours": "Há {count}h",
     "days": "Há {count}d"
   },
+  "leaderboardTab": {
+    "all": "Tudo",
+    "monthly": "Este mês",
+    "weekly": "Esta semana",
+    "rank": "Posição",
+    "learner": "Aprendiz",
+    "score": "Pontuação",
+    "coursesCompleted": "Cursos",
+    "noData": "Nenhum dado de classificação disponível",
+    "noDataDesc": "A classificação aparecerá quando os aprendizes completarem cursos.",
+    "you": "(você)"
+  },
   "studyGroups": {
     "createBtn": "Criar um grupo",
     "newGroup": "Novo grupo de estudo",

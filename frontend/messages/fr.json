@@ -211,6 +211,18 @@
     "hours": "Il y a {count}h",
     "days": "Il y a {count}j"
   },
+  "leaderboardTab": {
+    "all": "Tout",
+    "monthly": "Ce mois",
+    "weekly": "Cette semaine",
+    "rank": "Rang",
+    "learner": "Apprenant",
+    "score": "Score",
+    "coursesCompleted": "Cours",
+    "noData": "Aucune donnée de classement disponible",
+    "noDataDesc": "Le classement apparaîtra quand des apprenants auront complété des cours.",
+    "you": "(vous)"
+  },
   "studyGroups": {
     "createBtn": "Créer un groupe",
     "newGroup": "Nouveau groupe d'étude",

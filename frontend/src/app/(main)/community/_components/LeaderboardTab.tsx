@@ -6,17 +6,15 @@
 import { useState, useEffect } from 'react';
 import { Trophy, Medal, TrendingUp } from 'lucide-react';
 import clsx from 'clsx';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { learningApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 export default function LeaderboardTab() {
   const { token, user } = useAuth();
   const { language } = useAuthStore();
+  const t = useTranslations('leaderboardTab');
   const [entries, setEntries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('all');
@@ -26,23 +24,14 @@ export default function LeaderboardTab() {
     setLoading(true);
     learningApi.leaderboard(token, { period, limit: 50 })
       .then((res: any) => setEntries(res.data || []))
-      .catch(() => {
-        // Mock data fallback
-        setEntries([
-          { rank: 1, user_id: '1', first_name: 'Amina', last_name: 'Osei', score: 2450, courses_completed: 8, country: 'Ghana' },
-          { rank: 2, user_id: '2', first_name: 'Jean', last_name: 'Mbeki', score: 2280, courses_completed: 7, country: 'Cameroun' },
-          { rank: 3, user_id: '3', first_name: 'Fatima', last_name: 'Ali', score: 2100, courses_completed: 6, country: 'Kenya' },
-          { rank: 4, user_id: '4', first_name: 'David', last_name: 'Okonkwo', score: 1850, courses_completed: 5, country: 'Nigeria' },
-          { rank: 5, user_id: '5', first_name: 'Sofia', last_name: 'Santos', score: 1720, courses_completed: 5, country: 'Mozambique' },
-        ]);
-      })
+      .catch(() => setEntries([]))
       .finally(() => setLoading(false));
   }, [token, period]);
 
   const PERIODS = [
-    { value: 'all', label: 'Tout' },
-    { value: 'monthly', label: 'Ce mois' },
-    { value: 'weekly', label: 'Cette semaine' },
+    { value: 'all', label: t('all') },
+    { value: 'monthly', label: t('monthly') },
+    { value: 'weekly', label: t('weekly') },
   ];
 
   const getRankIcon = (rank: number) => {
@@ -84,19 +73,22 @@ export default function LeaderboardTab() {
             ))}
           </div>
         ) : entries.length === 0 ? (
-          <div className="p-8 text-center text-[var(--text-secondary)]">
-            <TrendingUp className="w-10 h-10 mx-auto opacity-30 mb-2" />
-            <p className="text-sm">Aucune donnee de classement disponible.</p>
+          <div className="p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+              <TrendingUp className="w-8 h-8 text-[var(--text-secondary)] opacity-40" />
+            </div>
+            <p className="font-semibold text-[var(--text-primary)]">{t('noData')}</p>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">{t('noDataDesc')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)] bg-gray-50 dark:bg-gray-800/50">
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase w-16">Rang</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase">Apprenant</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase">Score</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase">Cours</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase w-16">{t('rank')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-[var(--text-secondary)] uppercase">{t('learner')}</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase">{t('score')}</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase">{t('coursesCompleted')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
@@ -130,7 +122,7 @@ export default function LeaderboardTab() {
                               isCurrentUser ? 'text-brand-navy dark:text-brand-gold' : 'text-[var(--text-primary)]',
                             )}>
                               {entry.first_name} {entry.last_name}
-                              {isCurrentUser && <span className="text-[10px] ml-1">(vous)</span>}
+                              {isCurrentUser && <span className="text-[10px] ml-1">{t('you')}</span>}
                             </span>
                             {entry.country && (
                               <span className="block text-[10px] text-[var(--text-secondary)]">{entry.country}</span>

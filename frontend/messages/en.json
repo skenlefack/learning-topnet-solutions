@@ -211,6 +211,18 @@
     "hours": "{count}h ago",
     "days": "{count}d ago"
   },
+  "leaderboardTab": {
+    "all": "All",
+    "monthly": "This month",
+    "weekly": "This week",
+    "rank": "Rank",
+    "learner": "Learner",
+    "score": "Score",
+    "coursesCompleted": "Courses",
+    "noData": "No ranking data available",
+    "noDataDesc": "The leaderboard will appear when learners complete courses.",
+    "you": "(you)"
+  },
   "studyGroups": {
     "createBtn": "Create a group",
     "newGroup": "New study group",
