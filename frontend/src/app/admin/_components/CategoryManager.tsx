@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { categoryApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import MultiLangInput from './MultiLangInput';
 
 const ICON_OPTIONS = ['ShieldCheck', 'Microscope', 'Beef', 'Fish', 'TrendingUp', 'Heart', 'Boxes', 'Bug', 'Leaf', 'BookOpen', 'Globe', 'Award'];
 const COLOR_OPTIONS = ['#1A5632', '#930e2d', '#B8952E', '#0e591a', '#154528', '#7B1639', '#2E7D32', '#a855f7'];
@@ -29,9 +30,8 @@ export default function CategoryManager() {
   const [showForm, setShowForm] = useState(false);
 
   // Form state
-  const [nameFr, setNameFr] = useState('');
-  const [nameEn, setNameEn] = useState('');
-  const [descFr, setDescFr] = useState('');
+  const [name, setName] = useState<Record<string, string>>({});
+  const [description, setDescription] = useState<Record<string, string>>({});
   const [slug, setSlug] = useState('');
   const [icon, setIcon] = useState('BookOpen');
   const [color, setColor] = useState('#1A5632');
@@ -48,15 +48,16 @@ export default function CategoryManager() {
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
   const resetForm = () => {
-    setNameFr(''); setNameEn(''); setDescFr(''); setSlug(''); setIcon('BookOpen'); setColor('#1A5632');
+    setName({}); setDescription({}); setSlug(''); setIcon('BookOpen'); setColor('#1A5632');
     setEditing(null); setShowForm(false);
   };
 
   const openEdit = (cat: any) => {
     setEditing(cat);
-    setNameFr(getLocalText(cat.name, 'fr'));
-    setNameEn(getLocalText(cat.name, 'en'));
-    setDescFr(getLocalText(cat.description, 'fr'));
+    const n = typeof cat.name === 'object' && cat.name ? cat.name : { fr: getLocalText(cat.name, 'fr') };
+    const d = typeof cat.description === 'object' && cat.description ? cat.description : {};
+    setName(n);
+    setDescription(d);
     setSlug(cat.slug);
     setIcon(cat.icon || 'BookOpen');
     setColor(cat.color || '#1A5632');
@@ -64,11 +65,17 @@ export default function CategoryManager() {
   };
 
   const handleSave = async () => {
-    if (!token || !nameFr.trim()) return;
+    const nameFr = (name.fr || '').trim();
+    if (!token || !nameFr) return;
     setSaving(true);
+    // Filter out empty lang values
+    const cleanName: Record<string, string> = {};
+    for (const [k, v] of Object.entries(name)) { if (v?.trim()) cleanName[k] = v.trim(); }
+    const cleanDesc: Record<string, string> = {};
+    for (const [k, v] of Object.entries(description)) { if (v?.trim()) cleanDesc[k] = v.trim(); }
     const payload = {
-      name: { fr: nameFr, en: nameEn || nameFr },
-      description: descFr ? { fr: descFr } : undefined,
+      name: cleanName,
+      description: Object.keys(cleanDesc).length > 0 ? cleanDesc : undefined,
       slug: slug || nameFr.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       icon, color,
     };
@@ -119,11 +126,8 @@ export default function CategoryManager() {
             <h4 className="text-sm font-semibold">{editing ? 'Modifier' : 'Nouvelle catégorie'}</h4>
             <button onClick={resetForm}><X className="w-4 h-4 text-[var(--text-secondary)]" /></button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input value={nameFr} onChange={e => setNameFr(e.target.value)} placeholder="Nom (FR)" className={inputClass} />
-            <input value={nameEn} onChange={e => setNameEn(e.target.value)} placeholder="Name (EN)" className={inputClass} />
-          </div>
-          <input value={descFr} onChange={e => setDescFr(e.target.value)} placeholder="Description (FR)" className={inputClass} />
+          <MultiLangInput value={name} onChange={setName} label={t('categoryName') || 'Nom'} placeholder="Nom" required />
+          <MultiLangInput value={description} onChange={setDescription} label="Description" placeholder="Description" multiline rows={2} />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <input value={slug} onChange={e => setSlug(e.target.value)} placeholder="slug-url" className={inputClass} />
             <div>
@@ -141,7 +145,7 @@ export default function CategoryManager() {
               </div>
             </div>
           </div>
-          <button onClick={handleSave} disabled={saving || !nameFr.trim()} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-brand-navy text-white hover:bg-brand-navy-deep disabled:opacity-40">
+          <button onClick={handleSave} disabled={saving || !(name.fr || '').trim()} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-brand-navy text-white hover:bg-brand-navy-deep disabled:opacity-40">
             {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {editing ? 'Enregistrer' : 'Créer'}
           </button>
