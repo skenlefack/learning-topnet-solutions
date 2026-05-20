@@ -98,126 +98,29 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
         const ed = editorRef.current;
         if (!ed) return false;
 
-        // Collect image files from clipboardData.items
-        const imageFiles: File[] = [];
-        if (clipData.items) {
-          for (let i = 0; i < clipData.items.length; i++) {
-            const item = clipData.items[i];
-            if (item.type.startsWith('image/')) {
-              const f = item.getAsFile();
-              if (f) imageFiles.push(f);
-            }
-          }
-        }
-
+        // Only intercept standalone image paste (screenshot)
+        const items = clipData.items;
         const html = clipData.getData('text/html');
-        const hasBrokenImages = html && /<img[^>]*src="(?!data:|https?:)/.test(html);
-
-        // Case 1: Standalone image paste (screenshot, single image)
-        if (imageFiles.length > 0 && !html) {
-          event.preventDefault();
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            ed.commands.insertContent(`<img src="${e.target?.result}" />`);
-          };
-          reader.readAsDataURL(imageFiles[0]);
-          return true;
-        }
-
-        // Case 2: HTML with broken images (Word/PPT paste)
-        if (hasBrokenImages) {
-          event.preventDefault();
-
-          // Helper: clean Word HTML markup
-          const cleanWordHtml = (raw: string) => raw
-            .replace(/<o:p>[\s\S]*?<\/o:p>/gi, '')
-            .replace(/class="Mso[^"]*"/gi, '')
-            .replace(/style="[^"]*mso-[^"]*"/gi, '')
-            .replace(/<!\[if[^>]*>[\s\S]*?<!\[endif\]>/gi, '')
-            .replace(/<\/?span[^>]*>/gi, (m) => m.includes('style=') ? m : '')
-            .replace(/<xml>[\s\S]*?<\/xml>/gi, '');
-
-          // Helper: replace img src with base64 array
-          const replaceImages = (rawHtml: string, b64s: string[]) => {
-            let idx = 0;
-            let result = cleanWordHtml(rawHtml)
-              .replace(/<img[^>]*src="([^"]*)"[^>]*\/?>/gi, (match, src) => {
-                if (src.startsWith('data:') || src.startsWith('http')) return match;
-                if (idx < b64s.length) return `<img src="${b64s[idx++]}" />`;
-                return ''; // remove broken image
-              });
-            // Append remaining images
-            while (idx < b64s.length) {
-              result += `<p><img src="${b64s[idx++]}" /></p>`;
-            }
-            return result;
-          };
-
-          // Strategy A: use images from clipboardData.items
-          if (imageFiles.length > 0) {
-            Promise.all(
-              imageFiles.map(f => new Promise<string>(res => {
-                const r = new FileReader();
-                r.onload = () => res(r.result as string);
-                r.readAsDataURL(f);
-              }))
-            ).then(b64s => {
-              ed.commands.insertContent(replaceImages(html, b64s));
-            });
-            return true;
-          }
-
-          // Strategy B: try navigator.clipboard.read() (async Clipboard API)
-          if (navigator.clipboard && typeof navigator.clipboard.read === 'function') {
-            navigator.clipboard.read().then(async (clipItems) => {
-              const b64s: string[] = [];
-              for (const item of clipItems) {
-                for (const type of item.types) {
-                  if (type.startsWith('image/')) {
-                    const blob = await item.getType(type);
-                    const b64 = await new Promise<string>(res => {
-                      const r = new FileReader();
-                      r.onload = () => res(r.result as string);
-                      r.readAsDataURL(blob);
-                    });
-                    b64s.push(b64);
-                  }
-                }
+        if (!html && items) {
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].type.startsWith('image/')) {
+              const file = items[i].getAsFile();
+              if (file) {
+                event.preventDefault();
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  ed.commands.insertContent(`<img src="${e.target?.result}" />`);
+                };
+                reader.readAsDataURL(file);
+                return true;
               }
-              ed.commands.insertContent(replaceImages(html, b64s));
-            }).catch(() => {
-              // Clipboard API denied — insert HTML without images
-              ed.commands.insertContent(cleanWordHtml(html).replace(/<img[^>]*src="(?!data:|https?:)[^"]*"[^>]*\/?>/gi, ''));
-            });
-            return true;
+            }
           }
-
-          // Strategy C: no clipboard API — insert without broken images
-          ed.commands.insertContent(cleanWordHtml(html).replace(/<img[^>]*src="(?!data:|https?:)[^"]*"[^>]*\/?>/gi, ''));
-          return true;
         }
 
-        // Case 3: HTML with images from clipboard items (web paste with images)
-        if (html && imageFiles.length > 0) {
-          event.preventDefault();
-          Promise.all(
-            imageFiles.map(f => new Promise<string>(res => {
-              const r = new FileReader();
-              r.onload = () => res(r.result as string);
-              r.readAsDataURL(f);
-            }))
-          ).then(b64s => {
-            let idx = 0;
-            const clean = html.replace(/<img[^>]*src="(blob:[^"]*)"[^>]*\/?>/gi, (_m) => {
-              if (idx < b64s.length) return `<img src="${b64s[idx++]}" />`;
-              return _m;
-            });
-            ed.commands.insertContent(clean);
-          });
-          return true;
-        }
-
-        return false; // Let TipTap handle regular paste
+        // For everything else (Word, web, etc): let TipTap handle normally,
+        // then fix broken images after paste completes
+        return false;
       },
     },
     onUpdate: ({ editor: ed }) => {
@@ -228,6 +131,107 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
 
   // Keep ref in sync for paste handler
   useEffect(() => { editorRef.current = editor; }, [editor]);
+
+  // Post-paste: fix broken images by reading them from clipboard API
+  useEffect(() => {
+    if (!editor) return;
+    const el = editor.view.dom;
+
+    const handlePasteEvent = (e: Event) => {
+      const clipEvent = e as ClipboardEvent;
+      // Collect image files from clipboard
+      const imageFiles: File[] = [];
+      if (clipEvent.clipboardData?.items) {
+        for (let i = 0; i < clipEvent.clipboardData.items.length; i++) {
+          const item = clipEvent.clipboardData.items[i];
+          if (item.type.startsWith('image/')) {
+            const f = item.getAsFile();
+            if (f) imageFiles.push(f);
+          }
+        }
+      }
+
+      // After TipTap finishes processing (next frame), find broken images
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const imgs = el.querySelectorAll('img') as NodeListOf<HTMLImageElement>;
+          const brokenImgs: HTMLImageElement[] = [];
+          imgs.forEach(img => {
+            const src = img.getAttribute('src') || '';
+            if (src && !src.startsWith('data:') && !src.startsWith('http') && !src.startsWith('blob:')) {
+              brokenImgs.push(img);
+            }
+          });
+
+          if (brokenImgs.length === 0) return;
+
+          // Strategy 1: use clipboard files collected during paste
+          if (imageFiles.length > 0) {
+            Promise.all(
+              imageFiles.map(f => new Promise<string>(res => {
+                const r = new FileReader();
+                r.onload = () => res(r.result as string);
+                r.readAsDataURL(f);
+              }))
+            ).then(b64s => {
+              brokenImgs.forEach((img, i) => {
+                if (i < b64s.length) {
+                  img.setAttribute('src', b64s[i]);
+                } else {
+                  img.remove();
+                }
+              });
+              // Sync editor state
+              onChangeRef.current(editor.getHTML());
+            });
+            return;
+          }
+
+          // Strategy 2: try async Clipboard API
+          if (navigator.clipboard && typeof navigator.clipboard.read === 'function') {
+            navigator.clipboard.read().then(async (clipItems) => {
+              const b64s: string[] = [];
+              for (const item of clipItems) {
+                for (const type of item.types) {
+                  if (type.startsWith('image/')) {
+                    try {
+                      const blob = await item.getType(type);
+                      const b64 = await new Promise<string>(res => {
+                        const r = new FileReader();
+                        r.onload = () => res(r.result as string);
+                        r.readAsDataURL(blob);
+                      });
+                      b64s.push(b64);
+                    } catch { /* skip */ }
+                  }
+                }
+              }
+              brokenImgs.forEach((img, i) => {
+                if (i < b64s.length) {
+                  img.setAttribute('src', b64s[i]);
+                } else {
+                  img.remove();
+                }
+              });
+              onChangeRef.current(editor.getHTML());
+            }).catch(() => {
+              // Can't access clipboard — remove broken images
+              brokenImgs.forEach(img => img.remove());
+              onChangeRef.current(editor.getHTML());
+            });
+            return;
+          }
+
+          // Strategy 3: remove broken images
+          brokenImgs.forEach(img => img.remove());
+          onChangeRef.current(editor.getHTML());
+        }, 100);
+      });
+    };
+
+    el.addEventListener('paste', handlePasteEvent);
+    return () => el.removeEventListener('paste', handlePasteEvent);
+  }, [editor]);
 
   // Only sync from outside when value was NOT set by the editor itself
   useEffect(() => {
