@@ -328,11 +328,9 @@ function CoursesTab() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const limit = 10;
 
-  // Modal state
-  const [courseModalOpen, setCourseModalOpen] = useState(false);
+  // View state: 'list' | 'form' | 'analytics'
+  const [view, setView] = useState<'list' | 'form' | 'analytics'>('list');
   const [editingCourse, setEditingCourse] = useState<any>(null);
-
-  // Analytics state
   const [analyticsCourse, setAnalyticsCourse] = useState<any>(null);
 
   const fetchCourses = useCallback(async () => {
@@ -370,16 +368,27 @@ function CoursesTab() {
     }
   };
 
-  // Show analytics if a course is selected
-  if (analyticsCourse) {
+  // Show analytics
+  if (view === 'analytics' && analyticsCourse) {
     return (
       <motion.div variants={fadeUp}>
         <CourseAnalytics
           courseId={analyticsCourse.id}
           courseTitle={getLocalizedText(analyticsCourse.title)}
-          onClose={() => setAnalyticsCourse(null)}
+          onClose={() => { setAnalyticsCourse(null); setView('list'); }}
         />
       </motion.div>
+    );
+  }
+
+  // Show course form (inline)
+  if (view === 'form') {
+    return (
+      <CourseFormModal
+        onBack={() => { setView('list'); setEditingCourse(null); }}
+        onSuccess={fetchCourses}
+        editCourse={editingCourse}
+      />
     );
   }
 
@@ -403,7 +412,7 @@ function CoursesTab() {
           />
         </div>
         <button
-          onClick={() => { setEditingCourse(null); setCourseModalOpen(true); }}
+          onClick={() => { setEditingCourse(null); setView('form'); }}
           className={clsx(
             'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium',
             'bg-brand-navy text-white hover:bg-brand-navy-deep transition-colors',
@@ -414,13 +423,6 @@ function CoursesTab() {
           {t('newCourse')}
         </button>
       </div>
-
-      <CourseFormModal
-        open={courseModalOpen}
-        onClose={() => { setCourseModalOpen(false); setEditingCourse(null); }}
-        onSuccess={fetchCourses}
-        editCourse={editingCourse}
-      />
 
       {/* Table */}
       <div className={clsx('rounded-xl overflow-hidden border border-[var(--border)]', 'bg-white dark:bg-surface-dark-card')}>
@@ -498,14 +500,14 @@ function CoursesTab() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
-                          onClick={() => setAnalyticsCourse(course)}
+                          onClick={() => { setAnalyticsCourse(course); setView('analytics'); }}
                           className="p-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500"
                           title="Analytics"
                         >
                           <TrendingUp className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => { setEditingCourse(course); setCourseModalOpen(true); }}
+                          onClick={() => { setEditingCourse(course); setView('form'); }}
                           className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-[var(--text-secondary)]"
                           title="Edit"
                         >
