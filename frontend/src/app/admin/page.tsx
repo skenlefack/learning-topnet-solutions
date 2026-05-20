@@ -32,7 +32,7 @@ export default function AdminPage() {
   // Guard: only admin roles
   useEffect(() => {
     if (user && !ADMIN_ROLES.includes(user.role)) {
-      router.replace('/');
+      router.replace('/dashboard');
     }
   }, [user, router]);
 

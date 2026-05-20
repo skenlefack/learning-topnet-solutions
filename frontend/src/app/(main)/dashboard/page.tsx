@@ -3,7 +3,7 @@
 // Renders the client-side dashboard with initial data when available
 // ============================================================================
 import { cookies } from 'next/headers';
-import DashboardClient from './_components/DashboardClient';
+import DashboardClient from '../_components/DashboardClient';
 
 export const dynamic = 'force-dynamic';
 

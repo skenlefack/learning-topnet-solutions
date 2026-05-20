@@ -65,7 +65,7 @@ function SSOCallbackInner() {
       });
 
       // Redirect to dashboard (or to the originally requested page)
-      const redirect = searchParams.get('redirect') || '/';
+      const redirect = searchParams.get('redirect') || '/dashboard';
       router.replace(redirect);
     } catch (err) {
       setError('Failed to process authentication token');

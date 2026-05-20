@@ -114,7 +114,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
     useAuthStore.getState().logout();
     document.cookie = 'aris-token=; path=/; max-age=0; samesite=lax';
     toast.success(t('logoutSuccess'));
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   // User initials

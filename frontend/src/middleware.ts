@@ -11,6 +11,11 @@ const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/', '/verify', '/catalog'
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Landing page is always public
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
+
   // Allow public paths
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
@@ -19,10 +24,10 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
 
   if (!token) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+    const url = req.nextUrl.clone();
+    url.pathname = '/';
+    url.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();

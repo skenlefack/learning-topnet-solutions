@@ -35,7 +35,7 @@ export function useAuth() {
   const logout = useCallback(() => {
     storeLogout();
     document.cookie = 'aris-token=; path=/; max-age=0; samesite=lax';
-    window.location.href = '/login';
+    window.location.href = '/';
   }, [storeLogout]);
 
   // Token expiry check — logout only when token is actually expired
