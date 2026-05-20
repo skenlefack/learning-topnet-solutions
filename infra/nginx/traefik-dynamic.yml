@@ -56,9 +56,9 @@ http:
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
 
-    # --- Dashboard (HTTP, secured) -----------------------------------------
+    # --- Traefik Dashboard (HTTP, secured) ----------------------------------
     academy-dashboard-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/traefik`)"
       entryPoints: ["web"]
       service: api@internal
       middlewares: ["dashboard-auth"]
@@ -122,7 +122,7 @@ http:
         certResolver: letsencrypt
 
     academy-dashboard-https:
-      rule: "Host(`learning.au-ibar.org`) && (PathPrefix(`/api/dashboard`) || PathPrefix(`/dashboard`))"
+      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/traefik`)"
       entryPoints: ["websecure"]
       service: api@internal
       middlewares: ["dashboard-auth"]
