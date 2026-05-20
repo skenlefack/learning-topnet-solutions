@@ -408,32 +408,33 @@ function CategoriesSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => (
-            <motion.button
-              key={cat.id}
-              whileHover={{ y: -3 }}
-              className="flex items-center gap-4 p-5 rounded-xl bg-white border border-[#dee2e6]/60 hover:shadow-[0_0.5rem_1rem_rgba(0,0,0,0.08)] transition-shadow text-left group"
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                style={{ backgroundColor: (cat.color || '#1A5632') + '15' }}
+            <Link key={cat.id} href={`/category/${cat.slug || cat.id}`}>
+              <motion.div
+                whileHover={{ y: -3 }}
+                className="flex items-center gap-4 p-5 rounded-xl bg-white border border-[#dee2e6]/60 hover:shadow-[0_0.5rem_1rem_rgba(0,0,0,0.08)] transition-shadow text-left group cursor-pointer"
               >
-                <BookOpen className="w-6 h-6" style={{ color: cat.color || '#1A5632' }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-[#212529] group-hover:text-[#1A5632] transition-colors">
-                  {getLocalText(cat.name, 'fr')}
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: (cat.color || '#1A5632') + '15' }}
+                >
+                  <BookOpen className="w-6 h-6" style={{ color: cat.color || '#1A5632' }} />
                 </div>
-                <div className="text-xs text-[#6c757d] mt-0.5">
-                  {cat.course_count || 0} {t_sections('coursesAvailable')}
-                </div>
-                {cat.description && (
-                  <div className="text-xs text-[#adb5bd] mt-1 line-clamp-1">
-                    {getLocalText(cat.description, 'fr')}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-[#212529] group-hover:text-[#1A5632] transition-colors">
+                    {getLocalText(cat.name, 'fr')}
                   </div>
-                )}
-              </div>
-              <ArrowRight className="w-4 h-4 text-[#adb5bd] group-hover:text-[#1A5632] transition-colors shrink-0" />
-            </motion.button>
+                  <div className="text-xs text-[#6c757d] mt-0.5">
+                    {cat.course_count || 0} {t_sections('coursesAvailable')}
+                  </div>
+                  {cat.description && (
+                    <div className="text-xs text-[#adb5bd] mt-1 line-clamp-1">
+                      {getLocalText(cat.description, 'fr')}
+                    </div>
+                  )}
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#adb5bd] group-hover:text-[#1A5632] transition-colors shrink-0" />
+              </motion.div>
+            </Link>
           ))}
         </div>
       </div>
@@ -514,29 +515,31 @@ function CoursesSection({ onLogin }: { onLogin: () => void }) {
                   whileHover={{ y: -4 }}
                   className="rounded-xl overflow-hidden bg-white border border-[#dee2e6]/60 hover:shadow-[0_0.5rem_1rem_rgba(0,0,0,0.1)] transition-all group"
                 >
-                  {/* Course header */}
+                  {/* Course image — full width */}
                   <Link href={`/catalog/${course.slug || course.id}`}>
-                    <div
-                      className="h-40 relative flex items-center justify-center cursor-pointer"
-                      style={{ background: `linear-gradient(135deg, ${color}18, ${color}08)` }}
-                    >
-                      <Image
-                        src={course.thumbnail_url || '/au-logo.png'}
-                        alt={title}
-                        width={64}
-                        height={64}
-                        className="w-16 h-16 object-contain opacity-30"
-                      />
-                      <div className="absolute top-3 left-3">
-                        <span
-                          className="px-2.5 py-1 rounded-md text-xs font-medium text-white"
-                          style={{ backgroundColor: color }}
+                    <div className="relative aspect-[16/9] overflow-hidden cursor-pointer">
+                      {course.thumbnail_url ? (
+                        <Image
+                          src={course.thumbnail_url}
+                          alt={title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ background: `linear-gradient(135deg, ${color}20, ${color}08)` }}
                         >
+                          <Image src="/au-logo.png" alt="" width={56} height={56} className="opacity-20" />
+                        </div>
+                      )}
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-1 rounded-md text-xs font-medium text-white shadow-sm" style={{ backgroundColor: color }}>
                           {category}
                         </span>
                       </div>
                       <div className="absolute top-3 right-3">
-                        <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/90 text-[#495057]">
+                        <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/90 text-[#495057] shadow-sm">
                           {LEVEL_LABELS[course.level] || course.level}
                         </span>
                       </div>
