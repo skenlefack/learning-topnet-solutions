@@ -4,16 +4,16 @@
 // CRUD for course categories with icons and colors
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Edit3, Trash2, X, Loader2, Palette } from 'lucide-react';
+import { Plus, Edit3, Trash2, X, Loader2 } from 'lucide-react';
+import { icons } from 'lucide-react';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { categoryApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import MultiLangInput from './MultiLangInput';
-
-const ICON_OPTIONS = ['ShieldCheck', 'Microscope', 'Beef', 'Fish', 'TrendingUp', 'Heart', 'Boxes', 'Bug', 'Leaf', 'BookOpen', 'Globe', 'Award'];
-const COLOR_OPTIONS = ['#1A5632', '#930e2d', '#B8952E', '#0e591a', '#154528', '#7B1639', '#2E7D32', '#a855f7'];
+import IconPicker from './IconPicker';
+import ColorPicker from './ColorPicker';
 
 function getLocalText(t: any, lang = 'fr') {
   if (!t) return '';
@@ -128,21 +128,15 @@ export default function CategoryManager() {
           </div>
           <MultiLangInput value={name} onChange={setName} label={t('categoryName') || 'Nom'} placeholder="Nom" required />
           <MultiLangInput value={description} onChange={setDescription} label="Description" placeholder="Description" multiline rows={2} />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input value={slug} onChange={e => setSlug(e.target.value)} placeholder="slug-url" className={inputClass} />
+          <input value={slug} onChange={e => setSlug(e.target.value)} placeholder="slug-url" className={inputClass} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[var(--text-secondary)] mb-1 block">Icône</label>
-              <select value={icon} onChange={e => setIcon(e.target.value)} className={inputClass}>
-                {ICON_OPTIONS.map(i => <option key={i} value={i}>{i}</option>)}
-              </select>
+              <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Icône</label>
+              <IconPicker value={icon} onChange={setIcon} color={color} />
             </div>
             <div>
-              <label className="text-xs text-[var(--text-secondary)] mb-1 block">Couleur</label>
-              <div className="flex gap-1.5 flex-wrap">
-                {COLOR_OPTIONS.map(c => (
-                  <button key={c} onClick={() => setColor(c)} className={clsx('w-6 h-6 rounded-full border-2', color === c ? 'border-[var(--text-primary)] scale-110' : 'border-transparent')} style={{ backgroundColor: c }} />
-                ))}
-              </div>
+              <label className="text-xs text-[var(--text-secondary)] mb-1.5 block">Couleur</label>
+              <ColorPicker value={color} onChange={setColor} />
             </div>
           </div>
           <button onClick={handleSave} disabled={saving || !(name.fr || '').trim()} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium bg-brand-navy text-white hover:bg-brand-navy-deep disabled:opacity-40">
@@ -157,7 +151,7 @@ export default function CategoryManager() {
         {categories.map(cat => (
           <div key={cat.id} className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] bg-white dark:bg-surface-dark-card hover:shadow-sm transition-shadow">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${cat.color}15` }}>
-              <Palette className="w-5 h-5" style={{ color: cat.color }} />
+              {(() => { const I = icons[cat.icon as keyof typeof icons]; return I ? <I className="w-5 h-5" style={{ color: cat.color }} /> : null; })()}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-[var(--text-primary)] truncate">{getLocalText(cat.name)}</p>
