@@ -24,11 +24,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 };
 
-const STATUS_TABS = [
-  { value: '', label: 'Tous' },
-  { value: 'active', label: 'En cours' },
-  { value: 'completed', label: 'Terminés' },
-];
+// Status tabs use i18n keys
 
 export default function MyCoursesPage() {
   const { token } = useAuth();
@@ -70,11 +66,11 @@ export default function MyCoursesPage() {
       {/* Header */}
       <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t_courses('myCoursesTitle') || 'Mes cours'}</h1>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t_courses('myCoursesTitle')}</h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
             {enrollments.length > 0
-              ? `${enrollments.length} cours en cours de formation`
-              : 'Vous n\'êtes inscrit à aucun cours pour le moment.'
+              ? t_courses('myCoursesSubtitle', { count: enrollments.length })
+              : t_courses('myCoursesEmpty')
             }
           </p>
         </div>
@@ -83,7 +79,7 @@ export default function MyCoursesPage() {
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy-deep dark:bg-brand-gold dark:text-gray-900 dark:hover:bg-brand-gold-dark transition-colors"
         >
           <GraduationCap className="w-4 h-4" />
-          Parcourir le catalogue
+          {t_courses('browseCatalog')}
         </Link>
       </motion.div>
 
@@ -95,7 +91,7 @@ export default function MyCoursesPage() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher dans mes cours..."
+            placeholder={t_courses('searchPlaceholder')}
             className={clsx(
               'w-full pl-10 pr-4 py-2.5 rounded-xl text-sm',
               'bg-white dark:bg-surface-dark-card border border-[var(--border)]',
@@ -105,7 +101,11 @@ export default function MyCoursesPage() {
           />
         </div>
         <div className="flex gap-1.5">
-          {STATUS_TABS.map(tab => (
+          {[
+            { value: '', key: 'allTab' },
+            { value: 'active', key: 'inProgressTab' },
+            { value: 'completed', key: 'completedTab' },
+          ].map(tab => (
             <button
               key={tab.value}
               onClick={() => setStatusFilter(tab.value)}
@@ -116,7 +116,7 @@ export default function MyCoursesPage() {
                   : 'bg-white dark:bg-surface-dark-card border border-[var(--border)] text-[var(--text-secondary)] hover:bg-gray-50 dark:hover:bg-gray-800',
               )}
             >
-              {tab.label}
+              {t_courses(tab.key)}
             </button>
           ))}
         </div>
@@ -134,12 +134,12 @@ export default function MyCoursesPage() {
         <motion.div variants={fadeUp} className="text-center py-16">
           <BookOpen className="w-14 h-14 mx-auto text-[var(--text-secondary)] opacity-20 mb-4" />
           <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
-            {enrollments.length === 0 ? 'Aucun cours en cours' : 'Aucun résultat'}
+            {enrollments.length === 0 ? t_courses('noCourseYet') : t_courses('noResult')}
           </h3>
           <p className="text-sm text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
             {enrollments.length === 0
-              ? 'Explorez notre catalogue et inscrivez-vous à votre premier cours.'
-              : 'Essayez de modifier vos filtres de recherche.'
+              ? t_courses('noCourseYetDesc')
+              : t_courses('noResultDesc')
             }
           </p>
           {enrollments.length === 0 && (
@@ -148,7 +148,7 @@ export default function MyCoursesPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy-deep dark:bg-brand-gold dark:text-gray-900"
             >
               <GraduationCap className="w-4 h-4" />
-              Découvrir les cours
+              {t_courses('discoverCourses')}
             </Link>
           )}
         </motion.div>
@@ -195,7 +195,7 @@ export default function MyCoursesPage() {
                     {/* Progress bar */}
                     <div className="mb-2">
                       <div className="flex items-center justify-between text-[10px] mb-1">
-                        <span className="text-[var(--text-secondary)]">Progression</span>
+                        <span className="text-[var(--text-secondary)]">{t_courses('progressLabel')}</span>
                         <span className="font-semibold" style={{ color: levelMeta.color }}>{Math.round(progress)}%</span>
                       </div>
                       <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -208,10 +208,10 @@ export default function MyCoursesPage() {
 
                     <div className="flex items-center justify-between mt-3">
                       <span className="text-[10px] text-[var(--text-secondary)]">
-                        {isCompleted ? 'Terminé' : 'En cours'}
+                        {isCompleted ? t_courses('finished') : t_courses('ongoing')}
                       </span>
                       <span className="flex items-center gap-1 text-xs font-medium text-brand-navy dark:text-brand-gold">
-                        {isCompleted ? 'Revoir' : 'Continuer'} <ArrowRight className="w-3 h-3" />
+                        {isCompleted ? t_courses('review') : t_courses('continue')} <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
                   </div>
