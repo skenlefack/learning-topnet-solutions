@@ -72,8 +72,8 @@ async function bootstrap() {
   await app.register(pathRoutes, { prefix: '/courses/paths' });
   await app.register(resourceRoutes, { prefix: '/courses/resources' });
   await app.register(courseRoutes, { prefix: '/courses' });
-  await app.register(moduleRoutes, { prefix: '/modules' });
-  await app.register(lessonRoutes, { prefix: '/lessons' });
+  await app.register(moduleRoutes, { prefix: '/courses/modules' });
+  await app.register(lessonRoutes, { prefix: '/courses/lessons' });
   await app.register(searchRoutes, { prefix: '/search' });
 
   // --- Validation error handler ---

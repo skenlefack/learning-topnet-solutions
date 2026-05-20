@@ -128,6 +128,8 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
 
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [savedCourseId, setSavedCourseId] = useState<string | null>(editCourse?.id || null);
 
   // Step 1: Metadata
   const [form, setForm] = useState<CourseFormData>({
@@ -302,17 +304,22 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
   };
 
   // ---------------------------------------------------------------------------
-  // Save
+  // Auto-save: saves course metadata when moving to step 2
   // ---------------------------------------------------------------------------
 
-  const handleSave = useCallback(async () => {
-    if (!token) return;
-    setSaving(true);
-
+  const saveCourseMetadata = useCallback(async (): Promise<string | null> => {
+    if (!token || !form.title.fr || !form.slug) return savedCourseId;
+    setAutoSaving(true);
     try {
-      let courseId: string;
+      let thumbnailUrl = form.thumbnailUrl;
+      if (form.thumbnailFile) {
+        thumbnailUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(form.thumbnailFile!);
+        });
+      }
 
-      // Step A: Create/update the course
       const coursePayload: any = {
         title: form.title,
         description: form.description,
@@ -324,60 +331,97 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
         estimatedHours: form.estimatedHours || undefined,
         passingScore: form.passingScore,
         tags: form.tags,
+        thumbnailUrl: thumbnailUrl || undefined,
       };
 
-      if (isEdit && editCourse?.id) {
-        const res: any = await courseApi.update(token, editCourse.id, coursePayload);
-        courseId = res.data?.id || editCourse.id;
+      let id: string;
+      if (savedCourseId) {
+        const res: any = await courseApi.update(token, savedCourseId, coursePayload);
+        id = res.data?.id || savedCourseId;
       } else {
         const res: any = await courseApi.create(token, coursePayload);
-        courseId = res.data?.id || res.id;
+        id = res.data?.id || res.id;
       }
+      setSavedCourseId(id);
+      toast.success('Cours enregistré', { id: 'auto-save', duration: 2000 });
+      return id;
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de l\'enregistrement');
+      return null;
+    } finally {
+      setAutoSaving(false);
+    }
+  }, [token, form, savedCourseId]);
 
-      if (!courseId) throw new Error('Course ID not returned');
-
-      // Upload thumbnail if provided
-      if (form.thumbnailFile) {
-        const thumbForm = new FormData();
-        thumbForm.append('file', form.thumbnailFile);
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/${courseId}/thumbnail`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: thumbForm,
-        });
-      }
-
-      // Step B: Create/update modules (sequential to maintain order)
-      for (const mod of modules) {
-        let moduleId: string | undefined;
-
+  const saveModules = useCallback(async (courseId: string): Promise<boolean> => {
+    if (!token) return false;
+    setAutoSaving(true);
+    try {
+      for (let i = 0; i < modules.length; i++) {
+        const mod = modules[i];
         if (mod.id) {
           await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/modules/${mod.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({
-              title: mod.title,
-              sortOrder: mod.sortOrder,
-              estimatedMinutes: mod.estimatedMinutes || undefined,
-            }),
-          }).then(r => r.json());
-          moduleId = mod.id;
+            body: JSON.stringify({ title: mod.title, sortOrder: mod.sortOrder, estimatedMinutes: mod.estimatedMinutes || undefined }),
+          });
         } else {
           const mRes: any = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/modules`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({
-              courseId,
-              title: mod.title,
-              sortOrder: mod.sortOrder,
-              estimatedMinutes: mod.estimatedMinutes || undefined,
-              isRequired: true,
-            }),
+            body: JSON.stringify({ courseId, title: mod.title, sortOrder: mod.sortOrder, estimatedMinutes: mod.estimatedMinutes || undefined, isRequired: true }),
           }).then(r => r.json());
-          moduleId = mRes.data?.id;
+          if (mRes.data?.id) {
+            setModules(prev => prev.map((m, idx) => idx === i ? { ...m, id: mRes.data.id } : m));
+          }
         }
+      }
+      toast.success('Modules enregistrés', { id: 'auto-save', duration: 2000 });
+      return true;
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de l\'enregistrement des modules');
+      return false;
+    } finally {
+      setAutoSaving(false);
+    }
+  }, [token, modules]);
 
-        // Step C: Create/update lessons for this module
+  // Navigate between steps with auto-save
+  const goToStep = useCallback(async (targetStep: number) => {
+    if (targetStep > step) {
+      // Moving forward: auto-save current step
+      if (step === 0) {
+        const id = await saveCourseMetadata();
+        if (!id) return; // Save failed, stay on step
+      }
+      if (step === 1 && savedCourseId) {
+        const ok = await saveModules(savedCourseId);
+        if (!ok) return;
+      }
+    }
+    setStep(targetStep);
+  }, [step, saveCourseMetadata, saveModules, savedCourseId]);
+
+  // ---------------------------------------------------------------------------
+  // Final save (step 3 → saves lessons)
+  // ---------------------------------------------------------------------------
+
+  const handleSave = useCallback(async () => {
+    if (!token) return;
+    setSaving(true);
+
+    try {
+      // Ensure course and modules are saved first
+      let courseId = savedCourseId;
+      if (!courseId) {
+        courseId = await saveCourseMetadata();
+        if (!courseId) throw new Error('Course save failed');
+      }
+      await saveModules(courseId);
+
+      // Save lessons for each module
+      for (const mod of modules) {
+        const moduleId = mod.id;
         if (moduleId) {
           for (const lesson of mod.lessons) {
             const contentPayload = lesson.type === 'text'
@@ -466,11 +510,16 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
 
       {/* Stepper */}
       <div className="flex items-center gap-1 bg-white dark:bg-surface-dark-card rounded-xl border border-[var(--border)] p-3">
+        {autoSaving && (
+          <span className="flex items-center gap-1.5 text-xs text-brand-navy dark:text-brand-gold mr-2">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Enregistrement...
+          </span>
+        )}
         {STEP_LABELS.map((label, i) => (
           <button
             key={i}
             type="button"
-            onClick={() => { if (i < step || (i === step + 1 && canGoNext)) setStep(i); }}
+            onClick={() => { if (i < step || (i === step + 1 && canGoNext)) goToStep(i); }}
             className="flex items-center gap-1.5"
           >
             <span className={clsx(
@@ -502,7 +551,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
         onSubmit={e => {
           e.preventDefault();
           if (step === 2) handleSave();
-          else if (canGoNext) setStep(s => s + 1);
+          else if (canGoNext) goToStep(step + 1);
         }}
       >
         <div className="p-6">
@@ -929,7 +978,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
             {step > 0 && (
               <button
                 type="button"
-                onClick={() => setStep(s => s - 1)}
+                onClick={() => goToStep(step - 1)}
                 className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 <ChevronLeft className="w-4 h-4" /> {t('back')}

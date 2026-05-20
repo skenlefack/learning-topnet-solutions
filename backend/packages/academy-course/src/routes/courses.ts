@@ -40,6 +40,7 @@ const courseQuerySchema = z.object({
 const createCourseSchema = z.object({
   title: multiLangTextSchema,
   description: multiLangTextSchema.optional(),
+  descriptionHtml: z.string().optional(),
   slug: z.string().min(3).max(255).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
   level: courseLevelSchema,
   categoryId: z.string().uuid().nullable().optional(),
@@ -47,17 +48,20 @@ const createCourseSchema = z.object({
   estimatedHours: z.number().positive().optional(),
   passingScore: z.number().int().min(0).max(100).default(70),
   tags: z.array(z.string()).default([]),
+  thumbnailUrl: z.string().optional(),
 });
 
 const updateCourseSchema = z.object({
   title: multiLangTextSchema.optional(),
   description: multiLangTextSchema.optional(),
+  descriptionHtml: z.string().optional(),
   level: courseLevelSchema.optional(),
   categoryId: z.string().uuid().nullable().optional(),
   status: z.enum(['draft', 'published', 'archived']).optional(),
   estimatedHours: z.number().positive().optional(),
   passingScore: z.number().int().min(0).max(100).optional(),
   tags: z.array(z.string()).optional(),
+  thumbnailUrl: z.string().url().nullable().optional(),
 });
 
 const overrideSchema = z.object({
@@ -286,12 +290,13 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
     const body = validateBody(createCourseSchema, request.body);
     const user = request.user;
 
+    const metadata = body.descriptionHtml ? { descriptionHtml: body.descriptionHtml } : null;
     const course = await queryOne(
       `INSERT INTO academy_core.courses
          (tenant_id, tenant_level, title, description, slug, level, category_id, status,
-          estimated_hours, passing_score, tags, created_by,
+          estimated_hours, passing_score, tags, created_by, thumbnail_url, metadata,
           published_at)
-       VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8::course_status, $9, $10, $11, $12,
+       VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8::course_status, $9, $10, $11, $12, $13, $14::jsonb,
                CASE WHEN $8::course_status = 'published'::course_status THEN NOW() ELSE NULL END)
        RETURNING *`,
       [
@@ -300,7 +305,8 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
         body.description ? JSON.stringify(body.description) : null,
         body.slug, body.level, body.categoryId || null, body.status,
         body.estimatedHours ?? null, body.passingScore,
-        body.tags, user.sub,
+        body.tags, user.sub, body.thumbnailUrl ?? null,
+        metadata ? JSON.stringify(metadata) : null,
       ],
     );
 
@@ -343,6 +349,9 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
     const body = validateBody(updateCourseSchema, request.body);
     const user = request.user;
 
+    const metadataUpdate = body.descriptionHtml !== undefined
+      ? JSON.stringify({ descriptionHtml: body.descriptionHtml })
+      : null;
     const course = await queryOne(
       `UPDATE academy_core.courses SET
          title = COALESCE($2::jsonb, title),
@@ -353,7 +362,10 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
          estimated_hours = COALESCE($7, estimated_hours),
          passing_score = COALESCE($8, passing_score),
          tags = COALESCE($9, tags),
-         published_at = CASE WHEN $6 = 'published' AND published_at IS NULL THEN NOW() ELSE published_at END
+         thumbnail_url = COALESCE($10, thumbnail_url),
+         metadata = COALESCE($11::jsonb, metadata),
+         published_at = CASE WHEN $6 = 'published' AND published_at IS NULL THEN NOW() ELSE published_at END,
+         updated_at = NOW()
        WHERE id = $1 RETURNING *`,
       [
         request.params.id,
@@ -361,7 +373,8 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
         body.description ? JSON.stringify(body.description) : null,
         body.level ?? null, (body as any).categoryId || null, body.status ?? null,
         body.estimatedHours ?? null, body.passingScore ?? null,
-        body.tags ?? null,
+        body.tags ?? null, (body as any).thumbnailUrl ?? null,
+        metadataUpdate,
       ],
     );
 
