@@ -32,6 +32,7 @@ import {
   AnalyticsDashboard,
   TenantComparison,
 } from './_components/lazy';
+import { ConfirmProvider, useConfirm } from './_components/ConfirmDialog';
 
 // ---------------------------------------------------------------------------
 // Animation
@@ -84,52 +85,54 @@ export default function AdminDashboardContent() {
   ];
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6 max-w-7xl mx-auto"
-    >
-      {/* Header */}
-      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {t('scope')} : <span className="font-medium text-brand-navy dark:text-brand-gold">{scopeLabel}</span>
-          </p>
-        </div>
-      </motion.div>
+    <ConfirmProvider>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6 max-w-7xl mx-auto"
+      >
+        {/* Header */}
+        <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {t('scope')} : <span className="font-medium text-brand-navy dark:text-brand-gold">{scopeLabel}</span>
+            </p>
+          </div>
+        </motion.div>
 
-      {/* Tabs */}
-      <motion.div variants={fadeUp} className="flex gap-1 overflow-x-auto border-b border-[var(--border)] pb-px">
-        {TABS.map(tb => (
-          <button
-            key={tb.key}
-            onClick={() => setTab(tb.key)}
-            className={clsx(
-              'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
-              tab === tb.key
-                ? 'border-brand-navy dark:border-brand-gold text-brand-navy dark:text-brand-gold'
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-            )}
-          >
-            <tb.icon className="w-4 h-4" />
-            {tb.label}
-          </button>
-        ))}
-      </motion.div>
+        {/* Tabs */}
+        <motion.div variants={fadeUp} className="flex gap-1 overflow-x-auto border-b border-[var(--border)] pb-px">
+          {TABS.map(tb => (
+            <button
+              key={tb.key}
+              onClick={() => setTab(tb.key)}
+              className={clsx(
+                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
+                tab === tb.key
+                  ? 'border-brand-navy dark:border-brand-gold text-brand-navy dark:text-brand-gold'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
+              )}
+            >
+              <tb.icon className="w-4 h-4" />
+              {tb.label}
+            </button>
+          ))}
+        </motion.div>
 
-      {/* Tab content */}
-      {tab === 'dashboard' && <DashboardTab />}
-      {tab === 'categories' && <CategoryManager />}
-      {tab === 'courses' && <CoursesTab />}
-      {tab === 'paths' && <PathManager />}
-      {tab === 'quiz' && <QuizBuilder />}
-      {tab === 'users' && <UsersTab />}
-      {tab === 'sessions' && <SessionsTab />}
-      {tab === 'analytics' && <AnalyticsDashboard />}
-      {tab === 'tenants' && <TenantComparison />}
-    </motion.div>
+        {/* Tab content */}
+        {tab === 'dashboard' && <DashboardTab />}
+        {tab === 'categories' && <CategoryManager />}
+        {tab === 'courses' && <CoursesTab />}
+        {tab === 'paths' && <PathManager />}
+        {tab === 'quiz' && <QuizBuilder />}
+        {tab === 'users' && <UsersTab />}
+        {tab === 'sessions' && <SessionsTab />}
+        {tab === 'analytics' && <AnalyticsDashboard />}
+        {tab === 'tenants' && <TenantComparison />}
+      </motion.div>
+    </ConfirmProvider>
   );
 }
 
@@ -319,6 +322,7 @@ function CoursesTab() {
   const { token } = useAuth();
   const t = useTranslations('admin');
   const t_levels = useTranslations('levels');
+  const confirm = useConfirm();
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -356,9 +360,15 @@ function CoursesTab() {
     else { setSortKey(key); setSortDir('asc'); }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, title: string) => {
     if (!token) return;
-    if (!confirm(t('deleteCourse'))) return;
+    const ok = await confirm({
+      title: 'Supprimer ce cours ?',
+      message: `Le cours « ${title} » et tous ses modules et leçons seront définitivement supprimés.`,
+      confirmLabel: 'Supprimer',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       await courseApi.delete(token, id);
       toast.success(t('courseDeleted'));
@@ -514,7 +524,7 @@ function CoursesTab() {
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(course.id)}
+                          onClick={() => handleDelete(course.id, getLocalizedText(course.title))}
                           className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
                           title="Delete"
                         >
@@ -998,6 +1008,7 @@ function QuestionsTab() {
 function SessionsTab() {
   const { token } = useAuth();
   const t = useTranslations('admin');
+  const confirm = useConfirm();
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [planModalOpen, setPlanModalOpen] = useState(false);
@@ -1015,7 +1026,13 @@ function SessionsTab() {
 
   const handleCancel = async (id: string) => {
     if (!token) return;
-    if (!confirm(t('cancelSession'))) return;
+    const ok = await confirm({
+      title: 'Annuler cette session ?',
+      message: 'La session sera marquée comme annulée et les participants seront notifiés.',
+      confirmLabel: 'Annuler la session',
+      variant: 'warning',
+    });
+    if (!ok) return;
     try {
       await liveApi.cancel(token, id);
       setSessions(prev => prev.map(s => s.id === id ? { ...s, status: 'cancelled' } : s));

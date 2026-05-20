@@ -13,6 +13,7 @@ import { categoryApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import MultiLangInput from './MultiLangInput';
 import IconPicker from './IconPicker';
+import { useConfirm } from './ConfirmDialog';
 import ColorPicker from './ColorPicker';
 
 function getLocalText(t: any, lang = 'fr') {
@@ -24,6 +25,7 @@ function getLocalText(t: any, lang = 'fr') {
 export default function CategoryManager() {
   const { token } = useAuth();
   const t = useTranslations('admin');
+  const confirm = useConfirm();
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any | null>(null);
@@ -94,8 +96,15 @@ export default function CategoryManager() {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!token || !confirm('Supprimer cette catégorie ?')) return;
+  const handleDelete = async (id: string, name: string) => {
+    if (!token) return;
+    const ok = await confirm({
+      title: 'Supprimer cette catégorie ?',
+      message: `La catégorie « ${name} » sera définitivement supprimée. Les cours associés ne seront pas affectés.`,
+      confirmLabel: 'Supprimer',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       await categoryApi.delete(token, id);
       toast.success('Catégorie supprimée');
@@ -159,7 +168,7 @@ export default function CategoryManager() {
             </div>
             <div className="flex gap-1">
               <button onClick={() => openEdit(cat)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><Edit3 className="w-3.5 h-3.5 text-[var(--text-secondary)]" /></button>
-              <button onClick={() => handleDelete(cat.id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"><Trash2 className="w-3.5 h-3.5 text-red-500" /></button>
+              <button onClick={() => handleDelete(cat.id, getLocalText(cat.name))} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"><Trash2 className="w-3.5 h-3.5 text-red-500" /></button>
             </div>
           </div>
         ))}

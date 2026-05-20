@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import { pathApi, courseApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useConfirm } from './ConfirmDialog';
 
 function getLocalText(t: any, lang = 'fr') {
   if (!t) return '';
@@ -20,6 +21,7 @@ function getLocalText(t: any, lang = 'fr') {
 export default function PathManager() {
   const { token } = useAuth();
   const t = useTranslations('admin');
+  const confirm = useConfirm();
   const [paths, setPaths] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,8 +99,15 @@ export default function PathManager() {
     finally { setSaving(false); }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!token || !confirm('Supprimer ce parcours ?')) return;
+  const handleDelete = async (id: string, name: string) => {
+    if (!token) return;
+    const ok = await confirm({
+      title: 'Supprimer ce parcours ?',
+      message: `Le parcours « ${name} » et ses associations seront supprimés.`,
+      confirmLabel: 'Supprimer',
+      variant: 'danger',
+    });
+    if (!ok) return;
     try {
       await pathApi.delete(token, id);
       toast.success('Parcours supprimé'); fetchPaths();
@@ -199,7 +208,7 @@ export default function PathManager() {
               </div>
               <div className="flex items-center gap-1">
                 <button onClick={e => { e.stopPropagation(); openEdit(path); }} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><Edit3 className="w-3.5 h-3.5 text-[var(--text-secondary)]" /></button>
-                <button onClick={e => { e.stopPropagation(); handleDelete(path.id); }} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"><Trash2 className="w-3.5 h-3.5 text-red-500" /></button>
+                <button onClick={e => { e.stopPropagation(); handleDelete(path.id, getLocalText(path.title)); }} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"><Trash2 className="w-3.5 h-3.5 text-red-500" /></button>
                 {expanded === path.id ? <ChevronUp className="w-4 h-4 text-[var(--text-secondary)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-secondary)]" />}
               </div>
             </div>
