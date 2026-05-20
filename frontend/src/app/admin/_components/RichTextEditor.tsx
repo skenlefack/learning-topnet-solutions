@@ -59,8 +59,8 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  // Track whether the change comes from inside (user typing) vs outside (prop change)
   const internalChange = useRef(false);
+  const editorRef = useRef<any>(null);
 
   const editor = useEditor({
     extensions: [
@@ -93,26 +93,66 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
         style: `min-height: ${minHeight}`,
       },
       handlePaste(view, event) {
-        const items = event.clipboardData?.items;
+        const clipData = event.clipboardData;
+        if (!clipData) return false;
+
+        // Collect all image files from clipboard
+        const imageFiles: File[] = [];
+        const items = clipData.items;
         if (items) {
           for (let i = 0; i < items.length; i++) {
             if (items[i].type.startsWith('image/')) {
-              const file = items[i].getAsFile();
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                  const src = e.target?.result as string;
-                  view.dispatch(view.state.tr.replaceSelectionWith(
-                    view.state.schema.nodes.image.create({ src }),
-                  ));
-                };
-                reader.readAsDataURL(file);
-                return true;
-              }
+              const f = items[i].getAsFile();
+              if (f) imageFiles.push(f);
             }
           }
         }
-        return false;
+
+        const html = clipData.getData('text/html');
+        const ed = editorRef.current;
+
+        // Case 1: HTML with images (Word/PowerPoint paste)
+        if (html && imageFiles.length > 0 && ed) {
+          event.preventDefault();
+          Promise.all(
+            imageFiles.map(f => new Promise<string>(res => {
+              const r = new FileReader();
+              r.onload = () => res(r.result as string);
+              r.readAsDataURL(f);
+            }))
+          ).then(b64s => {
+            let idx = 0;
+            // Replace broken img src (file:///, blob:, cid:) with base64
+            let clean = html
+              .replace(/<o:p>[\s\S]*?<\/o:p>/gi, '')
+              .replace(/class="Mso[^"]*"/gi, '')
+              .replace(/<!\[if[^>]*>[\s\S]*?<!\[endif\]>/gi, '')
+              .replace(/<img[^>]*src="([^"]*)"[^>]*\/?>/gi, (_m, src) => {
+                if (src.startsWith('data:') || src.startsWith('http')) return _m;
+                if (idx < b64s.length) return `<img src="${b64s[idx++]}" />`;
+                return '';
+              });
+            // Append leftover images not matched to any img tag
+            while (idx < b64s.length) {
+              clean += `<p><img src="${b64s[idx++]}" /></p>`;
+            }
+            ed.commands.insertContent(clean);
+          });
+          return true;
+        }
+
+        // Case 2: Standalone image (screenshot)
+        if (imageFiles.length > 0 && !html && ed) {
+          event.preventDefault();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            ed.commands.insertContent(`<img src="${e.target?.result}" />`);
+          };
+          reader.readAsDataURL(imageFiles[0]);
+          return true;
+        }
+
+        return false; // Let TipTap handle regular HTML/text paste
       },
     },
     onUpdate: ({ editor: ed }) => {
@@ -120,6 +160,9 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
       onChangeRef.current(ed.getHTML());
     },
   });
+
+  // Keep ref in sync for paste handler
+  useEffect(() => { editorRef.current = editor; }, [editor]);
 
   // Only sync from outside when value was NOT set by the editor itself
   useEffect(() => {
