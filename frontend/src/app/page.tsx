@@ -1,3 +1,4 @@
+'use client';
 // ============================================================================
 // AU-IBAR Learning — Home / Landing Page
 // Public landing page — middleware redirects authenticated users to /dashboard
