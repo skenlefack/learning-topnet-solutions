@@ -1,6 +1,8 @@
 {
   "nav": {
     "dashboard": "Painel",
+    "catalog": "Todos os cursos",
+    "myCourses": "Meus cursos",
     "courses": "Meus Cursos",
     "live": "Sessões ao Vivo",
     "certificates": "Certificações",

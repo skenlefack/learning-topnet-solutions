@@ -25,6 +25,7 @@ import {
   Settings,
   FileText,
   BarChart3,
+  GraduationCap,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useTranslations } from 'next-intl';
@@ -54,8 +55,9 @@ interface LevelInfo {
 // ---------------------------------------------------------------------------
 
 const NAV_KEYS = [
-  { href: '/', key: 'dashboard', icon: LayoutDashboard },
-  { href: '/courses', key: 'courses', icon: BookOpen },
+  { href: '/dashboard', key: 'dashboard', icon: LayoutDashboard },
+  { href: '/catalog', key: 'catalog', icon: GraduationCap },
+  { href: '/courses', key: 'myCourses', icon: BookOpen },
   { href: '/live', key: 'live', icon: Video },
   { href: '/resources', key: 'resources', icon: FileText },
   { href: '/certificates', key: 'certificates', icon: Award },
@@ -163,7 +165,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
           {NAV_KEYS.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+            const isActive = pathname === item.href || (item.href.length > 1 && pathname.startsWith(item.href));
             const Icon = item.icon;
             return (
               <Link

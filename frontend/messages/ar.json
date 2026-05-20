@@ -1,6 +1,8 @@
 {
   "nav": {
     "dashboard": "لوحة التحكم",
+    "catalog": "جميع الدورات",
+    "myCourses": "دوراتي",
     "courses": "دوراتي",
     "live": "جلسات مباشرة",
     "certificates": "الشهادات",
