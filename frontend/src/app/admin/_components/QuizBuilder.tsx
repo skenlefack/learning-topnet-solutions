@@ -1,19 +1,21 @@
 'use client';
 // ============================================================================
 // AU-IBAR Learning — Quiz Builder (Admin)
-// Create and manage assessments with multiple question types
+// Create assessments + manage questions with 7 question types
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';
 import {
   Plus, Edit3, Trash2, X, Loader2, CheckCircle, Circle,
   ChevronDown, ChevronUp, Copy, FileDown, FileUp, Search,
   ListChecks, ToggleLeft, Type, AlignLeft, ArrowUpDown, PenTool,
+  ArrowLeft, BookOpen, Clock, Target, Shuffle, Hash,
 } from 'lucide-react';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
-import { questionApi, courseApi } from '@/lib/api';
+import { questionApi, courseApi, assessmentApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useConfirm } from './ConfirmDialog';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,30 +45,185 @@ function getLocalText(t: any, lang = 'fr') {
 
 function generateId() { return Math.random().toString(36).substring(2, 8); }
 
+const inputClass = 'w-full px-3 py-2 rounded-lg text-sm bg-gray-50 dark:bg-gray-800/50 border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-brand-navy/20';
+
+// ---------------------------------------------------------------------------
+// Create Assessment Form
+// ---------------------------------------------------------------------------
+
+function CreateAssessmentForm({ token, onCreated, onCancel }: {
+  token: string;
+  onCreated: (id: string, title: string) => void;
+  onCancel: () => void;
+}) {
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    courseId: '',
+    title: { fr: '', en: '' },
+    type: 'qcm',
+    level: 'beginner',
+    passingScore: 70,
+    timeLimitMinutes: 30,
+    maxAttempts: 3,
+    shuffleQuestions: true,
+    isFinal: false,
+  });
+
+  useEffect(() => {
+    courseApi.list(token, { limit: 100 })
+      .then((res: any) => setCourses(res.data || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  const handleCreate = async () => {
+    if (!form.courseId || !form.title.fr) {
+      toast.error('Sélectionnez un cours et saisissez un titre');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res: any = await assessmentApi.create(token, {
+        courseId: form.courseId,
+        title: form.title,
+        type: form.type,
+        level: form.level,
+        passingScore: form.passingScore,
+        timeLimitMinutes: form.timeLimitMinutes || null,
+        maxAttempts: form.maxAttempts,
+        shuffleQuestions: form.shuffleQuestions,
+        isFinal: form.isFinal,
+      });
+      const a = res.data;
+      const course = courses.find(c => c.id === form.courseId);
+      toast.success('Évaluation créée');
+      onCreated(a.id, `${getLocalText(course?.title)} — ${form.title.fr}`);
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors de la création');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div className="flex items-center gap-2 py-8 justify-center text-sm text-[var(--text-secondary)]"><Loader2 className="w-4 h-4 animate-spin" /> Chargement des cours...</div>;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <button onClick={onCancel} className="flex items-center gap-1 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+          <ArrowLeft className="w-4 h-4" /> Retour
+        </button>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Nouvelle évaluation</h3>
+      </div>
+
+      <div className="rounded-xl border border-[var(--border)] bg-white dark:bg-surface-dark-card p-5 space-y-4">
+        {/* Course selector */}
+        <div>
+          <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Cours associé <span className="text-red-500">*</span></label>
+          <select value={form.courseId} onChange={e => setForm(p => ({ ...p, courseId: e.target.value }))} className={inputClass}>
+            <option value="">— Sélectionner un cours —</option>
+            {courses.map(c => (
+              <option key={c.id} value={c.id}>{getLocalText(c.title)}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Title */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Titre (FR) <span className="text-red-500">*</span></label>
+            <input value={form.title.fr} onChange={e => setForm(p => ({ ...p, title: { ...p.title, fr: e.target.value } }))} className={inputClass} placeholder="Ex: Quiz final Module 1" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Titre (EN)</label>
+            <input value={form.title.en} onChange={e => setForm(p => ({ ...p, title: { ...p.title, en: e.target.value } }))} className={inputClass} placeholder="Ex: Final Quiz Module 1" />
+          </div>
+        </div>
+
+        {/* Type + Level */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Type</label>
+            <select value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value }))} className={inputClass}>
+              <option value="qcm">QCM</option>
+              <option value="practical">Pratique</option>
+              <option value="mixed">Mixte</option>
+              <option value="oral">Oral</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Niveau</label>
+            <select value={form.level} onChange={e => setForm(p => ({ ...p, level: e.target.value }))} className={inputClass}>
+              <option value="beginner">Débutant</option>
+              <option value="intermediate">Intermédiaire</option>
+              <option value="advanced">Avancé</option>
+              <option value="expert">Expert</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Score requis (%)</label>
+            <input type="number" min={0} max={100} value={form.passingScore} onChange={e => setForm(p => ({ ...p, passingScore: Number(e.target.value) }))} className={inputClass} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Durée (min)</label>
+            <input type="number" min={1} max={480} value={form.timeLimitMinutes} onChange={e => setForm(p => ({ ...p, timeLimitMinutes: Number(e.target.value) }))} className={inputClass} />
+          </div>
+        </div>
+
+        {/* Options */}
+        <div className="flex items-center gap-6">
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" checked={form.shuffleQuestions} onChange={e => setForm(p => ({ ...p, shuffleQuestions: e.target.checked }))} className="rounded border-[var(--border)]" />
+            <Shuffle className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+            Mélanger les questions
+          </label>
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" checked={form.isFinal} onChange={e => setForm(p => ({ ...p, isFinal: e.target.checked }))} className="rounded border-[var(--border)]" />
+            <Target className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+            Évaluation finale
+          </label>
+          <div className="flex items-center gap-2">
+            <Hash className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+            <span className="text-sm text-[var(--text-secondary)]">Tentatives :</span>
+            <input type="number" min={1} max={10} value={form.maxAttempts} onChange={e => setForm(p => ({ ...p, maxAttempts: Number(e.target.value) }))} className="w-14 px-2 py-1 rounded-lg text-sm text-center bg-gray-50 dark:bg-gray-800/50 border border-[var(--border)]" />
+          </div>
+        </div>
+
+        <button
+          onClick={handleCreate}
+          disabled={saving || !form.courseId || !form.title.fr}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy-deep dark:bg-brand-gold dark:text-gray-900 disabled:opacity-40"
+        >
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+          Créer l'évaluation
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Assessment Selector
 // ---------------------------------------------------------------------------
 
-function AssessmentSelector({ token, assessmentId, onSelect }: {
-  token: string; assessmentId: string | null; onSelect: (id: string, title: string) => void;
+function AssessmentSelector({ token, onSelect, onCreate }: {
+  token: string; onSelect: (id: string, title: string) => void; onCreate: () => void;
 }) {
   const [assessments, setAssessments] = useState<any[]>([]);
-  const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
         const coursesRes: any = await courseApi.list(token, { limit: 100 });
-        setCourses(coursesRes.data || []);
-        // Flatten assessments from all courses
         const allAssessments: any[] = [];
-        for (const c of (coursesRes.data || []).slice(0, 20)) {
+        for (const c of (coursesRes.data || []).slice(0, 30)) {
           try {
-            const res = await fetch(`/api/assessment/course/${c.id}`, { headers: { Authorization: `Bearer ${token}` } });
-            const data = await res.json();
-            if (data.data) {
-              data.data.forEach((a: any) => allAssessments.push({ ...a, courseTitle: getLocalText(c.title) }));
+            const res: any = await assessmentApi.forCourse(token, c.id);
+            if (res.data) {
+              res.data.forEach((a: any) => allAssessments.push({ ...a, courseTitle: getLocalText(c.title) }));
             }
           } catch {}
         }
@@ -76,30 +233,49 @@ function AssessmentSelector({ token, assessmentId, onSelect }: {
     })();
   }, [token]);
 
-  if (loading) return <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]"><Loader2 className="w-4 h-4 animate-spin" /> Chargement...</div>;
+  if (loading) return <div className="flex items-center gap-2 py-8 justify-center text-sm text-[var(--text-secondary)]"><Loader2 className="w-4 h-4 animate-spin" /> Chargement des évaluations...</div>;
 
   return (
-    <div className="space-y-2">
-      <p className="text-xs font-medium text-[var(--text-secondary)]">Sélectionnez une évaluation :</p>
-      <div className="max-h-48 overflow-y-auto space-y-1">
-        {assessments.map(a => (
-          <button
-            key={a.id}
-            onClick={() => onSelect(a.id, `${a.courseTitle} — ${getLocalText(a.title)}`)}
-            className={clsx(
-              'w-full flex items-center gap-2 p-2.5 rounded-lg text-left text-sm transition-colors',
-              assessmentId === a.id ? 'bg-brand-navy/10 dark:bg-brand-gold/20 text-brand-navy dark:text-brand-gold' : 'hover:bg-gray-50 dark:hover:bg-gray-800/30',
-            )}
-          >
-            <ListChecks className="w-4 h-4 shrink-0" />
-            <div className="min-w-0">
-              <p className="font-medium truncate">{getLocalText(a.title)}</p>
-              <p className="text-[10px] text-[var(--text-secondary)]">{a.courseTitle} &bull; {a.type} &bull; {a.passing_score}%</p>
-            </div>
-          </button>
-        ))}
-        {assessments.length === 0 && <p className="text-xs text-[var(--text-secondary)] p-2">Aucune évaluation. Créez d'abord un cours avec une évaluation.</p>}
-      </div>
+    <div className="space-y-3">
+      {assessments.length > 0 ? (
+        <div className="rounded-xl border border-[var(--border)] bg-white dark:bg-surface-dark-card overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-[var(--border)]">
+            <p className="text-xs font-medium text-[var(--text-secondary)]">Sélectionnez une évaluation ({assessments.length})</p>
+          </div>
+          <div className="max-h-64 overflow-y-auto divide-y divide-[var(--border)]">
+            {assessments.map(a => (
+              <button
+                key={a.id}
+                onClick={() => onSelect(a.id, `${a.courseTitle} — ${getLocalText(a.title)}`)}
+                className="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-lg bg-brand-navy/10 dark:bg-brand-gold/20 flex items-center justify-center shrink-0">
+                  <ListChecks className="w-4.5 h-4.5 text-brand-navy dark:text-brand-gold" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">{getLocalText(a.title)}</p>
+                  <p className="text-[10px] text-[var(--text-secondary)]">
+                    {a.courseTitle} &bull; {a.type} &bull; {a.passing_score}% &bull; {a.question_count_actual || 0} questions
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-[var(--border)] bg-gray-50/50 dark:bg-gray-800/20 p-8 text-center">
+          <ListChecks className="w-10 h-10 mx-auto text-[var(--text-secondary)] opacity-30 mb-3" />
+          <p className="text-sm text-[var(--text-secondary)] mb-1">Aucune évaluation</p>
+          <p className="text-xs text-[var(--text-secondary)]">Créez une évaluation pour commencer à ajouter des questions.</p>
+        </div>
+      )}
+
+      <button
+        onClick={onCreate}
+        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-brand-navy text-white hover:bg-brand-navy-deep dark:bg-brand-gold dark:text-gray-900 w-full justify-center"
+      >
+        <Plus className="w-4 h-4" /> Nouvelle évaluation
+      </button>
     </div>
   );
 }
@@ -132,8 +308,6 @@ function QuestionEditor({ question, onChange, onDelete }: {
     onChange({ ...question, options: choices.filter((_, i) => i !== idx) });
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-lg text-sm bg-gray-50 dark:bg-gray-800/50 border border-[var(--border)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-brand-navy/20';
-
   return (
     <div className="rounded-xl border border-[var(--border)] bg-white dark:bg-surface-dark-card p-4 space-y-3">
       {/* Header */}
@@ -160,7 +334,7 @@ function QuestionEditor({ question, onChange, onDelete }: {
             className="w-16 px-2 py-1 rounded-lg text-xs bg-gray-50 dark:bg-gray-800/50 border border-[var(--border)] text-center"
             title="Points"
           />
-          <button onClick={onDelete} className="p-1 rounded hover:bg-red-50"><Trash2 className="w-3.5 h-3.5 text-red-400" /></button>
+          <button onClick={onDelete} className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20"><Trash2 className="w-3.5 h-3.5 text-red-400" /></button>
         </div>
       </div>
 
@@ -199,7 +373,7 @@ function QuestionEditor({ question, onChange, onDelete }: {
                 disabled={qType === 'true_false'}
               />
               {qType !== 'true_false' && (
-                <button onClick={() => removeChoice(i)} className="p-1 rounded hover:bg-red-50"><X className="w-3.5 h-3.5 text-red-400" /></button>
+                <button onClick={() => removeChoice(i)} className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20"><X className="w-3.5 h-3.5 text-red-400" /></button>
               )}
             </div>
           ))}
@@ -243,6 +417,8 @@ function QuestionEditor({ question, onChange, onDelete }: {
 
 export default function QuizBuilder() {
   const { token } = useAuth();
+  const confirm = useConfirm();
+  const [view, setView] = useState<'select' | 'create' | 'edit'>('select');
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const [assessmentTitle, setAssessmentTitle] = useState('');
   const [questions, setQuestions] = useState<any[]>([]);
@@ -263,6 +439,7 @@ export default function QuizBuilder() {
   const selectAssessment = (id: string, title: string) => {
     setAssessmentId(id);
     setAssessmentTitle(title);
+    setView('edit');
     fetchQuestions(id);
   };
 
@@ -290,6 +467,13 @@ export default function QuizBuilder() {
 
   const deleteQuestion = async (idx: number) => {
     const q = questions[idx];
+    const ok = await confirm({
+      title: 'Supprimer cette question ?',
+      message: getLocalText(q.questionText, 'fr').slice(0, 80) || 'Question sans texte',
+      confirmLabel: 'Supprimer',
+      variant: 'danger',
+    });
+    if (!ok) return;
     if (q.id && token) {
       try {
         await questionApi.delete(token, q.id);
@@ -367,21 +551,36 @@ export default function QuizBuilder() {
 
   const hasUnsaved = questions.some(q => !q._saved);
 
-  if (!assessmentId && token) {
+  // View: Select assessment
+  if (view === 'select' && token) {
     return (
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">Gestionnaire de Quiz</h3>
-        <AssessmentSelector token={token} assessmentId={assessmentId} onSelect={selectAssessment} />
+        <AssessmentSelector token={token} onSelect={selectAssessment} onCreate={() => setView('create')} />
       </div>
     );
   }
 
+  // View: Create new assessment
+  if (view === 'create' && token) {
+    return (
+      <CreateAssessmentForm
+        token={token}
+        onCreated={(id, title) => selectAssessment(id, title)}
+        onCancel={() => setView('select')}
+      />
+    );
+  }
+
+  // View: Edit questions
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <button onClick={() => { setAssessmentId(null); setQuestions([]); }} className="text-xs text-brand-navy dark:text-brand-gold hover:underline mb-1">&larr; Changer d'évaluation</button>
+          <button onClick={() => { setView('select'); setAssessmentId(null); setQuestions([]); }} className="flex items-center gap-1 text-xs text-brand-navy dark:text-brand-gold hover:underline mb-1">
+            <ArrowLeft className="w-3 h-3" /> Changer d'évaluation
+          </button>
           <h3 className="text-sm font-semibold text-[var(--text-primary)] truncate">{assessmentTitle}</h3>
           <p className="text-[10px] text-[var(--text-secondary)]">{questions.length} questions {hasUnsaved && '(modifications non enregistrées)'}</p>
         </div>
@@ -433,8 +632,10 @@ export default function QuizBuilder() {
             </div>
           ))}
           {questions.length === 0 && (
-            <div className="text-center py-8 text-sm text-[var(--text-secondary)]">
-              Aucune question. Cliquez sur "+ Question" pour commencer.
+            <div className="text-center py-12 text-[var(--text-secondary)]">
+              <ListChecks className="w-10 h-10 mx-auto opacity-20 mb-3" />
+              <p className="text-sm">Aucune question</p>
+              <p className="text-xs mt-1">Cliquez sur « + Question » pour commencer</p>
             </div>
           )}
         </div>

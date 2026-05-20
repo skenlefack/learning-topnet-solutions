@@ -150,6 +150,8 @@ export const learningApi = {
 export const assessmentApi = {
   forCourse: (token: string, courseId: string) =>
     apiFetch(`/api/assessment/course/${courseId}`, { token }),
+  create: (token: string, data: any) =>
+    apiFetch('/api/assessment/', { token, method: 'POST', body: JSON.stringify(data) }),
   startAttempt: (token: string, assessmentId: string, enrollmentId: string) =>
     apiFetch('/api/assessment/attempts/start', { token, method: 'POST', body: JSON.stringify({ assessmentId, enrollmentId }) }),
   submitAttempt: (token: string, attemptId: string, answers: any) =>
