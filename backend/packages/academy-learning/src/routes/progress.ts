@@ -249,4 +249,81 @@ export default async function progressRoutes(app: FastifyInstance) {
       });
     },
   );
+
+  // -------------------------------------------------------------------------
+  // GET /lessons/:lessonId/context
+  // Returns lesson + module + course + enrollment + progress + prev/next nav
+  // -------------------------------------------------------------------------
+  app.get<{ Params: { lessonId: string } }>(
+    '/lessons/:lessonId/context',
+    {
+      preHandler: [app.authenticate],
+      schema: {
+        summary: 'Lesson context for the player (lesson, module, course, enrollment, progress, nav)',
+        tags: ['Progress'],
+        security: BearerSecurity,
+        params: UuidParamNamed('lessonId'),
+      },
+    },
+    async (req, reply) => {
+      const userId = req.user.sub;
+      const { lessonId } = req.params;
+
+      // Fetch lesson + module + course in one query
+      const lesson = await queryOne<any>(`
+        SELECT l.*, m.course_id, m.title AS module_title, m.sort_order AS module_sort
+        FROM academy_core.lessons l
+        JOIN academy_core.modules m ON m.id = l.module_id
+        WHERE l.id = $1
+      `, [lessonId]);
+
+      if (!lesson) {
+        return reply.code(404).send({ success: false, error: 'Lesson not found' });
+      }
+
+      const course = await queryOne<any>(
+        `SELECT * FROM academy_core.courses WHERE id = $1`,
+        [lesson.course_id],
+      );
+
+      const mod = {
+        id: lesson.module_id,
+        title: lesson.module_title,
+        sort_order: lesson.module_sort,
+      };
+
+      // Enrollment
+      const enrollment = await queryOne<any>(
+        `SELECT * FROM academy_core.enrollments WHERE user_id = $1 AND course_id = $2`,
+        [userId, lesson.course_id],
+      );
+
+      // Progress
+      const progress = enrollment
+        ? await queryOne<any>(
+            `SELECT * FROM academy_core.progress_tracking WHERE user_id = $1 AND lesson_id = $2`,
+            [userId, lessonId],
+          )
+        : null;
+
+      // Prev/next lesson navigation (all lessons in same course, ordered by module sort then lesson sort)
+      const allLessons = await query<any>(
+        `SELECT l.id, l.sort_order, m.sort_order AS module_sort
+         FROM academy_core.lessons l
+         JOIN academy_core.modules m ON m.id = l.module_id
+         WHERE m.course_id = $1
+         ORDER BY m.sort_order, l.sort_order`,
+        [lesson.course_id],
+      );
+
+      const idx = allLessons.findIndex((l: any) => l.id === lessonId);
+      const prev = idx > 0 ? allLessons[idx - 1].id : null;
+      const next = idx < allLessons.length - 1 ? allLessons[idx + 1].id : null;
+
+      return reply.send({
+        success: true,
+        data: { lesson, module: mod, course, enrollment, progress, prev, next },
+      });
+    },
+  );
 }
