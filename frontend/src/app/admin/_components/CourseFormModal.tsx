@@ -162,7 +162,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
       setForm({
         title: editCourse.title || {},
         description: editCourse.description || {},
-        descriptionHtml: editCourse.description_html || editCourse.descriptionHtml || '',
+        descriptionHtml: editCourse.metadata?.descriptionHtml || editCourse.description_html || editCourse.descriptionHtml || '',
         slug: editCourse.slug || '',
         level: editCourse.level || 'beginner',
         categoryId: editCourse.category_id || undefined,
@@ -320,9 +320,11 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
         });
       }
 
+      // Only include description if it has actual content (not empty {})
+      const hasDescription = form.description && Object.values(form.description).some(v => v?.trim());
       const coursePayload: any = {
         title: form.title,
-        description: form.description,
+        ...(hasDescription ? { description: form.description } : {}),
         descriptionHtml: form.descriptionHtml || undefined,
         slug: form.slug,
         level: form.level,
@@ -411,12 +413,11 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
     setSaving(true);
 
     try {
-      // Ensure course and modules are saved first
-      let courseId = savedCourseId;
-      if (!courseId) {
-        courseId = await saveCourseMetadata();
-        if (!courseId) throw new Error('Course save failed');
-      }
+      // Always save course metadata (description, thumbnail may have changed)
+      const courseId = await saveCourseMetadata();
+      if (!courseId) throw new Error('Course save failed');
+
+      // Save all modules
       await saveModules(courseId);
 
       // Save lessons for each module

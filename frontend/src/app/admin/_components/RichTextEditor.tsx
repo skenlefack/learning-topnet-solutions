@@ -57,6 +57,10 @@ function ToolbarDivider() {
 
 export default function RichTextEditor({ value, onChange, placeholder = '', minHeight = '200px' }: RichTextEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  // Track whether the change comes from inside (user typing) vs outside (prop change)
+  const internalChange = useRef(false);
 
   const editor = useEditor({
     extensions: [
@@ -89,7 +93,6 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
         style: `min-height: ${minHeight}`,
       },
       handlePaste(view, event) {
-        // Handle pasted images from clipboard
         const items = event.clipboardData?.items;
         if (items) {
           for (let i = 0; i < items.length; i++) {
@@ -109,20 +112,27 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
             }
           }
         }
-        return false; // Let TipTap handle Word/HTML paste natively
+        return false;
       },
     },
     onUpdate: ({ editor: ed }) => {
-      onChange(ed.getHTML());
+      internalChange.current = true;
+      onChangeRef.current(ed.getHTML());
     },
   });
 
-  // Sync external value changes
+  // Only sync from outside when value was NOT set by the editor itself
   useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
+    if (!editor) return;
+    if (internalChange.current) {
+      internalChange.current = false;
+      return;
+    }
+    const currentHtml = editor.getHTML();
+    if (value !== currentHtml) {
       editor.commands.setContent(value || '', { emitUpdate: false });
     }
-  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [value, editor]);
 
   const addImage = useCallback(() => {
     fileInputRef.current?.click();
