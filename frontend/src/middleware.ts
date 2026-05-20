@@ -11,8 +11,15 @@ const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/', '/verify', '/catalog'
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Landing page is always public
+  const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
+
+  // Landing page: public for visitors, redirect to /dashboard for authenticated
   if (pathname === '/') {
+    if (token) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
     return NextResponse.next();
   }
 
@@ -20,8 +27,6 @@ export function middleware(req: NextRequest) {
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
-
-  const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
 
   if (!token) {
     const url = req.nextUrl.clone();
