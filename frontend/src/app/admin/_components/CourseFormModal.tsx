@@ -508,7 +508,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
         <div className="p-6">
           {/* STEP 0: Metadata */}
           {step === 0 && (
-            <div className="space-y-4 max-w-2xl">
+            <div className="space-y-4">
               <MultiLangInput
                 label={t('courseTitle')}
                 value={form.title as Record<string, string>}
@@ -545,7 +545,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                   type="text"
                   value={form.slug}
                   onChange={e => setForm(prev => ({ ...prev, slug: slugify(e.target.value) }))}
-                  className={inputClass + ' max-w-md'}
+                  className={inputClass}
                   placeholder="mon-cours-aris"
                 />
               </div>
@@ -593,7 +593,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 max-w-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">{t('estimatedHours')}</label>
                   <input
@@ -621,7 +621,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
 
               <div>
                 <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">Tags</label>
-                <div className="flex items-center gap-2 max-w-md">
+                <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={tagInput}
