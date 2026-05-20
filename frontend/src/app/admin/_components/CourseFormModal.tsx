@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import {
   ChevronRight, ChevronLeft, Plus, Trash2, ArrowLeft,
   GripVertical, BookOpen, Video, FileText, HelpCircle, Wrench,
-  Loader2, Save, Layers,
+  Loader2, Save, Layers, FileUp,
 } from 'lucide-react';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
@@ -17,6 +17,10 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { courseApi, categoryApi } from '@/lib/api';
 import MultiLangInput from './MultiLangInput';
+import dynamic from 'next/dynamic';
+import FileUpload from './FileUpload';
+
+const RichTextEditor = dynamic(() => import('./RichTextEditor'), { ssr: false });
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,11 +37,13 @@ interface MultiLangText {
 interface LessonDraft {
   id?: string;
   title: MultiLangText;
-  type: 'video' | 'text' | 'quiz' | 'practical';
+  type: 'video' | 'text' | 'quiz' | 'practical' | 'document';
   content?: string;
   videoUrl?: string;
   durationMinutes?: number;
   sortOrder: number;
+  file?: File;
+  fileName?: string;
 }
 
 interface ModuleDraft {
@@ -51,6 +57,7 @@ interface ModuleDraft {
 interface CourseFormData {
   title: MultiLangText;
   description: MultiLangText;
+  descriptionHtml: string;
   slug: string;
   level: string;
   categoryId?: string;
@@ -58,6 +65,8 @@ interface CourseFormData {
   passingScore: number;
   tags: string[];
   status: string;
+  thumbnailFile?: File;
+  thumbnailUrl?: string;
 }
 
 interface CourseFormProps {
@@ -85,6 +94,7 @@ const LESSON_TYPE_ICONS: Record<string, typeof Video> = {
   text: FileText,
   quiz: HelpCircle,
   practical: Wrench,
+  document: FileUp,
 };
 
 const inputClass = clsx(
@@ -123,6 +133,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
   const [form, setForm] = useState<CourseFormData>({
     title: {},
     description: {},
+    descriptionHtml: '',
     slug: '',
     level: 'beginner',
     estimatedHours: undefined,
@@ -149,6 +160,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
       setForm({
         title: editCourse.title || {},
         description: editCourse.description || {},
+        descriptionHtml: editCourse.description_html || editCourse.descriptionHtml || '',
         slug: editCourse.slug || '',
         level: editCourse.level || 'beginner',
         categoryId: editCourse.category_id || undefined,
@@ -156,6 +168,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
         passingScore: editCourse.passing_score ?? 70,
         tags: editCourse.tags || [],
         status: editCourse.status || 'draft',
+        thumbnailUrl: editCourse.thumbnail_url || editCourse.thumbnailUrl || undefined,
       });
 
       // Load modules + lessons
@@ -173,10 +186,11 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                   id: l.id,
                   title: l.title || {},
                   type: l.type || 'text',
-                  content: typeof l.content === 'object' ? (l.content?.text || '') : (l.content || ''),
+                  content: typeof l.content === 'object' ? (l.content?.text || l.content?.body || '') : (l.content || ''),
                   videoUrl: l.video_url || l.videoUrl || '',
                   durationMinutes: l.durationMinutes || l.duration_minutes,
                   sortOrder: l.sortOrder ?? l.sort_order ?? li,
+                  fileName: typeof l.content === 'object' ? l.content?.documentName : undefined,
                 })),
               })),
             );
@@ -299,9 +313,10 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
       let courseId: string;
 
       // Step A: Create/update the course
-      const coursePayload = {
+      const coursePayload: any = {
         title: form.title,
         description: form.description,
+        descriptionHtml: form.descriptionHtml || undefined,
         slug: form.slug,
         level: form.level,
         categoryId: form.categoryId || null,
@@ -320,6 +335,17 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
       }
 
       if (!courseId) throw new Error('Course ID not returned');
+
+      // Upload thumbnail if provided
+      if (form.thumbnailFile) {
+        const thumbForm = new FormData();
+        thumbForm.append('file', form.thumbnailFile);
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/${courseId}/thumbnail`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: thumbForm,
+        });
+      }
 
       // Step B: Create/update modules (sequential to maintain order)
       for (const mod of modules) {
@@ -354,14 +380,22 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
         // Step C: Create/update lessons for this module
         if (moduleId) {
           for (const lesson of mod.lessons) {
+            const contentPayload = lesson.type === 'text'
+              ? { body: lesson.content || '' }
+              : lesson.type === 'document'
+                ? undefined
+                : lesson.content ? { text: lesson.content } : undefined;
+
             const lessonBody: any = {
               title: lesson.title,
-              type: lesson.type,
-              content: lesson.content ? { text: lesson.content } : undefined,
+              type: lesson.type === 'document' ? 'text' : lesson.type, // backend uses 'text' type for docs
+              content: contentPayload,
               videoUrl: lesson.videoUrl || undefined,
               durationMinutes: lesson.durationMinutes || undefined,
               sortOrder: lesson.sortOrder,
             };
+
+            let lessonId = lesson.id;
 
             if (lesson.id) {
               await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/lessons/${lesson.id}`, {
@@ -370,10 +404,22 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                 body: JSON.stringify(lessonBody),
               });
             } else {
-              await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/lessons`, {
+              const lRes: any = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/lessons`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ ...lessonBody, moduleId, isRequired: true }),
+              }).then(r => r.json());
+              lessonId = lRes.data?.id;
+            }
+
+            // Upload file for document-type lessons
+            if (lessonId && lesson.file) {
+              const fd = new FormData();
+              fd.append('file', lesson.file);
+              await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/courses/lessons/${lessonId}/upload`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: fd,
               });
             }
           }
@@ -470,12 +516,25 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                 required
               />
 
-              <MultiLangInput
-                label={t('description')}
-                value={form.description as Record<string, string>}
-                onChange={val => setForm(prev => ({ ...prev, description: val }))}
-                multiline
-                rows={3}
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">{t('description')}</label>
+                <RichTextEditor
+                  value={form.descriptionHtml}
+                  onChange={val => setForm(prev => ({ ...prev, descriptionHtml: val }))}
+                  placeholder="Description du cours (copier-coller depuis Word conserve la mise en forme)..."
+                  minHeight="180px"
+                />
+              </div>
+
+              <FileUpload
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                label="Image du cours"
+                hint="PNG, JPG ou WebP — max 5 MB"
+                previewUrl={form.thumbnailUrl}
+                value={form.thumbnailUrl ? 'thumbnail' : undefined}
+                onFile={file => setForm(prev => ({ ...prev, thumbnailFile: file }))}
+                onClear={() => setForm(prev => ({ ...prev, thumbnailFile: undefined, thumbnailUrl: undefined }))}
+                maxSizeMB={5}
               />
 
               <div>
@@ -777,6 +836,7 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                                   >
                                     <option value="video">{t_lessonTypes('video')}</option>
                                     <option value="text">{t_lessonTypes('text')}</option>
+                                    <option value="document">Document (PDF, Word, PPT, Excel)</option>
                                     <option value="quiz">{t_lessonTypes('quiz')}</option>
                                     <option value="practical">{t_lessonTypes('practical')}</option>
                                   </select>
@@ -807,7 +867,31 @@ export default function CourseForm({ onBack, onSuccess, editCourse }: CourseForm
                                 </div>
                               )}
 
-                              {(lesson.type === 'text' || lesson.type === 'practical') && (
+                              {lesson.type === 'text' && (
+                                <div>
+                                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">{t('content')}</label>
+                                  <RichTextEditor
+                                    value={lesson.content ?? ''}
+                                    onChange={val => updateLesson(activeModuleIdx, li, { content: val })}
+                                    placeholder="Contenu de la leçon (copier-coller depuis Word conserve la mise en forme)..."
+                                    minHeight="150px"
+                                  />
+                                </div>
+                              )}
+
+                              {lesson.type === 'document' && (
+                                <FileUpload
+                                  accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.odt,.ods,.odp"
+                                  label="Fichier du cours"
+                                  hint="PDF, Word, PowerPoint, Excel — max 50 MB"
+                                  value={lesson.fileName}
+                                  onFile={file => updateLesson(activeModuleIdx, li, { file, fileName: file.name })}
+                                  onClear={() => updateLesson(activeModuleIdx, li, { file: undefined, fileName: undefined })}
+                                  compact={!!lesson.fileName}
+                                />
+                              )}
+
+                              {lesson.type === 'practical' && (
                                 <div>
                                   <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">{t('content')}</label>
                                   <textarea
