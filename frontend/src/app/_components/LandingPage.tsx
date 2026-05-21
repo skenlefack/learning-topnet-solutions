@@ -588,6 +588,136 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CERTIFICATION PATHS
+// ═══════════════════════════════════════════════════════════════════════════
+
+const PATH_LEVEL_META: Record<string, { color: string; badge: string; icon: string }> = {
+  debutant: { color: '#1A5632', badge: 'Foundation', icon: '🌱' },
+  intermediaire: { color: '#0D47A1', badge: 'Practitioner', icon: '📘' },
+  avance: { color: '#930e2d', badge: 'Senior Specialist', icon: '🎯' },
+  expert: { color: '#7B1639', badge: 'Master', icon: '👑' },
+};
+
+function PathsSection({ onSignup }: { onSignup: () => void }) {
+  const t_sections = useTranslations('sections');
+  const [paths, setPaths] = useState<any[]>([]);
+
+  useEffect(() => {
+    publicApi.courses({ limit: 0 }).catch(() => {}); // warm cache
+    fetch('/api/courses/paths/public')
+      .then(r => r.json())
+      .then(res => setPaths(res.data || []))
+      .catch(() => {});
+  }, []);
+
+  if (paths.length === 0) return null;
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl lg:text-3xl font-bold text-[#212529] mb-3">
+            Parcours de certification
+          </h2>
+          <p className="text-[#6c757d] max-w-2xl mx-auto">
+            Progressez du niveau débutant au niveau expert grâce à nos parcours certifiants.
+            Chaque niveau débloque le suivant.
+          </p>
+        </div>
+
+        {/* Progress steps */}
+        <div className="flex items-center justify-center gap-2 mb-10">
+          {['debutant', 'intermediaire', 'avance', 'expert'].map((lvl, i) => {
+            const meta = PATH_LEVEL_META[lvl];
+            return (
+              <div key={lvl} className="flex items-center gap-2">
+                <div className="flex flex-col items-center">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                    style={{ backgroundColor: meta.color }}
+                  >
+                    {i + 1}
+                  </div>
+                  <span className="text-[10px] font-semibold mt-1" style={{ color: meta.color }}>
+                    {meta.badge}
+                  </span>
+                </div>
+                {i < 3 && (
+                  <div className="w-8 sm:w-16 h-0.5 bg-[#dee2e6] -mt-4" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Path cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {paths.map((path: any) => {
+            const title = getLocalText(path.title, 'fr');
+            const desc = getLocalText(path.description, 'fr');
+            const slug = path.slug || path.id;
+            // Detect level from slug/tags
+            const tags = path.tags || [];
+            const lvlKey = tags.find((t: string) => PATH_LEVEL_META[t]) || 'debutant';
+            const meta = PATH_LEVEL_META[lvlKey] || PATH_LEVEL_META.debutant;
+
+            return (
+              <motion.div
+                key={path.id}
+                whileHover={{ y: -4 }}
+                className="rounded-xl overflow-hidden bg-white border border-[#dee2e6]/60 hover:shadow-lg transition-all group"
+              >
+                {/* Color header */}
+                <div className="h-2" style={{ backgroundColor: meta.color }} />
+                <div className="p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">{meta.icon}</span>
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white uppercase tracking-wider"
+                      style={{ backgroundColor: meta.color }}
+                    >
+                      {meta.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-[#212529] mb-2 line-clamp-2 group-hover:text-[#1A5632] transition-colors">
+                    {title}
+                  </h3>
+                  <p className="text-xs text-[#6c757d] line-clamp-3 mb-4">
+                    {desc}
+                  </p>
+                  <div className="flex items-center gap-3 text-[10px] text-[#adb5bd] mb-4">
+                    <span>{path.course_count || 2} cours</span>
+                    <span>&bull;</span>
+                    <span>{path.estimated_hours || '—'}h</span>
+                    <span>&bull;</span>
+                    <span>{path.passing_score || 70}% requis</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/paths/${slug}`}
+                      className="flex-1 py-2 rounded-lg text-xs font-semibold text-center border text-[#495057] border-[#dee2e6] hover:bg-[#f8f9fa] transition-colors"
+                    >
+                      Voir le détail
+                    </Link>
+                    <button
+                      onClick={onSignup}
+                      className="flex-1 py-2 rounded-lg text-xs font-semibold text-center text-white transition-colors"
+                      style={{ backgroundColor: meta.color }}
+                    >
+                      S'inscrire
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // ABOUT / CTA
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -1095,6 +1225,7 @@ function LandingPage() {
       <StatsBar />
       <CategoriesSection />
       <CoursesSection onLogin={openLogin} onSignup={openSignup} />
+      <PathsSection onSignup={openSignup} />
       <AboutSection onLogin={openLogin} />
       <Footer />
       <Suspense fallback={null}>
