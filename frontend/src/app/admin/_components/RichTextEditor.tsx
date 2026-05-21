@@ -233,16 +233,23 @@ export default function RichTextEditor({ value, onChange, placeholder = '', minH
     return () => el.removeEventListener('paste', handlePasteEvent);
   }, [editor]);
 
-  // Only sync from outside when value was NOT set by the editor itself
+  // Sync external value into editor when it changes from outside
   useEffect(() => {
     if (!editor) return;
+    // Skip if the change came from the editor itself (typing)
     if (internalChange.current) {
       internalChange.current = false;
       return;
     }
-    const currentHtml = editor.getHTML();
-    if (value !== currentHtml) {
-      editor.commands.setContent(value || '', { emitUpdate: false });
+    // Compare normalized content to avoid unnecessary resets
+    const editorHtml = editor.getHTML();
+    const isEmpty = (h: string) => !h || h === '<p></p>' || h.trim() === '';
+    // Only update if value is meaningfully different
+    if (isEmpty(editorHtml) && !isEmpty(value)) {
+      // Editor is empty but value has content — load it (edit mode pre-fill)
+      editor.commands.setContent(value, { emitUpdate: false });
+    } else if (!isEmpty(value) && value !== editorHtml) {
+      editor.commands.setContent(value, { emitUpdate: false });
     }
   }, [value, editor]);
 
