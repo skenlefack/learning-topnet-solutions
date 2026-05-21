@@ -234,6 +234,10 @@ services:
       JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
       BBB_URL: ${BBB_URL:-https://bbb.au-ibar.org/bigbluebutton/}
       BBB_SECRET: ${BBB_SECRET:-bbb-shared-secret}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-academy_minio_secret}
     ports:
       - "4004:4004"
     networks:

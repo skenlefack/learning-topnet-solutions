@@ -26,6 +26,15 @@ function getLocalText(t: any, lang = 'fr'): string {
   return t[lang] || t.fr || t.en || '';
 }
 
+function formatElapsed(s: number) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    : `${m}:${String(sec).padStart(2, '0')}`;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PRE-JOIN LOBBY
 // ═══════════════════════════════════════════════════════════════════════════
@@ -237,7 +246,7 @@ function SessionSidebar({
         </div>
 
         {/* Stats */}
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <div className="flex justify-between text-xs">
             <span className="text-gray-400">Participants</span>
             <span className="text-white font-medium">{session.current_attendees || 0} / {session.max_participants}</span>
@@ -253,6 +262,25 @@ function SessionSidebar({
           <div className="flex justify-between text-xs">
             <span className="text-gray-400">Heure</span>
             <span className="text-white font-medium">{scheduledAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-400">Temps écoulé</span>
+            <span className="text-brand-gold font-mono font-medium">{formatElapsed(elapsed)}</span>
+          </div>
+        </div>
+
+        {/* BBB Features Guide */}
+        <div className="pt-3 border-t border-gray-800 space-y-2">
+          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Fonctionnalités</h4>
+          <div className="space-y-1.5 text-[11px] text-gray-500">
+            <p>💬 Chat public et privé</p>
+            <p>🖥️ Partage d'écran (formateur)</p>
+            <p>📹 Caméra activable/désactivable</p>
+            <p>🎤 Micro avec lever la main</p>
+            <p>📊 Présentations et tableaux blancs</p>
+            <p>🔴 Enregistrement automatique</p>
+            <p>📝 Notes partagées</p>
+            <p>📋 Sondages en direct</p>
           </div>
         </div>
       </div>
@@ -361,15 +389,6 @@ export default function LiveRoomPage() {
     document.addEventListener('fullscreenchange', h);
     return () => document.removeEventListener('fullscreenchange', h);
   }, []);
-
-  const formatElapsed = (s: number) => {
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
-    return h > 0
-      ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
-      : `${m}:${String(sec).padStart(2, '0')}`;
-  };
 
   const title = session ? getLocalText(session.title, language) : '';
 

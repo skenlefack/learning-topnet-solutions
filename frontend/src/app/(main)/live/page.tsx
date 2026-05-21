@@ -128,13 +128,25 @@ export default function LivePage() {
       liveApi.upcoming(token).catch(() => ({ data: [] })),
       liveApi.recordings(token, { limit: 50 }).catch(() => ({ data: [] })),
     ]).then(([sessRes, upRes, recRes]: any[]) => {
-      const liveSessions = (sessRes.data || []).filter((s: Session) => s.status === 'live');
+      const liveSessions = (sessRes.data || []).filter((s: Session) => s.status === 'live' || s.status === 'scheduled');
       setSessions(liveSessions);
       setUpcoming(upRes.data || []);
       setRecordings(recRes.data || []);
       // If there are live sessions, default to live tab
       if (liveSessions.length > 0) setTab('live');
     }).finally(() => setLoading(false));
+  }, [token]);
+
+  // Auto-refresh every 15s for live sessions
+  useEffect(() => {
+    if (!token) return;
+    const interval = setInterval(() => {
+      liveApi.sessions(token).then((res: any) => {
+        const live = (res.data || []).filter((s: Session) => s.status === 'live' || s.status === 'scheduled');
+        setSessions(live);
+      }).catch(() => {});
+    }, 15000);
+    return () => clearInterval(interval);
   }, [token]);
 
   // Unique courses & trainers for filters
