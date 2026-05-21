@@ -148,6 +148,9 @@ export default function LessonPlayerPage() {
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
+          <Link href="/dashboard" className="shrink-0">
+            <img src="/au-logo.png" alt="AU-IBAR" className="w-7 h-7 object-contain" />
+          </Link>
           <Link
             href={courseId ? `/courses/${courseId}` : '/courses'}
             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-[var(--text-secondary)]"
