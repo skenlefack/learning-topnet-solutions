@@ -106,6 +106,7 @@ export default function CatalogDetailPage() {
 
   const title = getLocalText(course.title, lang);
   const description = getLocalText(course.description, lang);
+  const descriptionHtml = course.metadata?.descriptionHtml || '';
   const color = LEVEL_COLORS[course.level] || '#1A5632';
   const modules = course.modules || [];
   const totalLessons = modules.reduce((sum: number, m: any) => sum + (m.lesson_count || 0), 0);
@@ -239,15 +240,20 @@ export default function CatalogDetailPage() {
           <div className="lg:col-span-2 space-y-8">
 
             {/* Summary */}
-            {description && (
+            {(descriptionHtml || description) && (
               <div>
                 <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-[#1A5632]" />
                   {t('summary')}
                 </h2>
-                <p className="text-sm text-[#495057] leading-relaxed">
-                  {description}
-                </p>
+                {descriptionHtml ? (
+                  <div
+                    className="prose prose-sm max-w-none text-[#495057] leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+                  />
+                ) : (
+                  <p className="text-sm text-[#495057] leading-relaxed">{description}</p>
+                )}
                 {course.tags && course.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4">
                     {course.tags.map((tag: string) => (
