@@ -29,10 +29,13 @@ interface CertTemplate {
   name: string;
   level: string;
   design: {
-    style: string; // 'classic' | 'modern' | 'elegant' | 'gold' | 'green'
+    style: string;
     borderColor: string;
     accentColor: string;
     logoUrl?: string;
+    backgroundUrl?: string;
+    backgroundMode?: 'watermark' | 'cover' | 'center';
+    backgroundOpacity?: number;
     headerText: string;
     bodyText: string;
     footerText: string;
@@ -105,14 +108,32 @@ function CertPreview({ template }: { template: CertTemplate }) {
       className="relative bg-white rounded-lg shadow-lg overflow-hidden"
       style={{ aspectRatio: '1.414', border: `3px solid ${d.borderColor}` }}
     >
+      {/* Background image */}
+      {d.backgroundUrl && (
+        <div className="absolute inset-0 z-0">
+          {d.backgroundMode === 'cover' ? (
+            <img src={d.backgroundUrl} alt="" className="w-full h-full object-cover" style={{ opacity: d.backgroundOpacity ?? 0.08 }} />
+          ) : d.backgroundMode === 'center' ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <img src={d.backgroundUrl} alt="" className="max-w-[60%] max-h-[60%] object-contain" style={{ opacity: d.backgroundOpacity ?? 0.06 }} />
+            </div>
+          ) : (
+            /* watermark (default) — centered, large, very faded */
+            <div className="w-full h-full flex items-center justify-center">
+              <img src={d.backgroundUrl} alt="" className="max-w-[50%] max-h-[50%] object-contain" style={{ opacity: d.backgroundOpacity ?? 0.05 }} />
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Inner border */}
-      <div className="absolute inset-2 border rounded" style={{ borderColor: d.accentColor, borderWidth: '1px' }} />
+      <div className="absolute inset-2 border rounded z-[1]" style={{ borderColor: d.accentColor, borderWidth: '1px' }} />
 
       {/* Corner accents */}
-      <div className="absolute top-0 left-0 w-16 h-16" style={{ background: `linear-gradient(135deg, ${d.borderColor}20, transparent)` }} />
-      <div className="absolute top-0 right-0 w-16 h-16" style={{ background: `linear-gradient(225deg, ${d.borderColor}20, transparent)` }} />
-      <div className="absolute bottom-0 left-0 w-16 h-16" style={{ background: `linear-gradient(45deg, ${d.borderColor}20, transparent)` }} />
-      <div className="absolute bottom-0 right-0 w-16 h-16" style={{ background: `linear-gradient(315deg, ${d.borderColor}20, transparent)` }} />
+      <div className="absolute top-0 left-0 w-16 h-16 z-[1]" style={{ background: `linear-gradient(135deg, ${d.borderColor}20, transparent)` }} />
+      <div className="absolute top-0 right-0 w-16 h-16 z-[1]" style={{ background: `linear-gradient(225deg, ${d.borderColor}20, transparent)` }} />
+      <div className="absolute bottom-0 left-0 w-16 h-16 z-[1]" style={{ background: `linear-gradient(45deg, ${d.borderColor}20, transparent)` }} />
+      <div className="absolute bottom-0 right-0 w-16 h-16 z-[1]" style={{ background: `linear-gradient(315deg, ${d.borderColor}20, transparent)` }} />
 
       <div className="relative z-10 h-full flex flex-col items-center justify-between p-6 text-center">
         {/* Header */}
@@ -393,6 +414,70 @@ export default function CertificateManager() {
                 <div>
                   <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Couleur accent</label>
                   <input type="color" value={d.accentColor} onChange={e => setEditing({ ...editing, design: { ...d, accentColor: e.target.value } })} className="w-full h-9 rounded-lg cursor-pointer border border-[var(--border)]" />
+                </div>
+              </div>
+
+              {/* Background image */}
+              <div className="rounded-lg border border-[var(--border)] p-3 space-y-3 bg-gray-50/50 dark:bg-gray-800/10">
+                <label className="block text-xs font-medium text-[var(--text-secondary)]">Image de fond / filigrane</label>
+                <div className="flex items-center gap-3">
+                  {d.backgroundUrl ? (
+                    <div className="relative">
+                      <img src={d.backgroundUrl} alt="" className="w-16 h-16 rounded-lg object-contain border border-[var(--border)] bg-white" />
+                      <button
+                        onClick={() => setEditing({ ...editing, design: { ...d, backgroundUrl: undefined } })}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex items-center gap-2 px-4 py-3 rounded-lg border border-dashed border-[var(--border)] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 text-[var(--text-secondary)] text-xs">
+                      <Palette className="w-4 h-4" />
+                      Uploader une image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = ev => setEditing({ ...editing, design: { ...d, backgroundUrl: ev.target?.result as string } });
+                          reader.readAsDataURL(file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  )}
+                  {d.backgroundUrl && (
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] text-[var(--text-secondary)] w-12">Mode</label>
+                        <select
+                          value={d.backgroundMode || 'watermark'}
+                          onChange={e => setEditing({ ...editing, design: { ...d, backgroundMode: e.target.value as any } })}
+                          className="flex-1 px-2 py-1 rounded-lg text-xs bg-white dark:bg-gray-800/50 border border-[var(--border)]"
+                        >
+                          <option value="watermark">Filigrane (centré, très subtil)</option>
+                          <option value="center">Centré (moyen)</option>
+                          <option value="cover">Couverture (plein fond)</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] text-[var(--text-secondary)] w-12">Opacité</label>
+                        <input
+                          type="range"
+                          min={1}
+                          max={30}
+                          value={Math.round((d.backgroundOpacity ?? 0.05) * 100)}
+                          onChange={e => setEditing({ ...editing, design: { ...d, backgroundOpacity: Number(e.target.value) / 100 } })}
+                          className="flex-1 accent-brand-navy"
+                        />
+                        <span className="text-[10px] text-[var(--text-secondary)] w-8 text-right">{Math.round((d.backgroundOpacity ?? 0.05) * 100)}%</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
