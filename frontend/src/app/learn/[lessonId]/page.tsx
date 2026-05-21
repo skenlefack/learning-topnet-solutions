@@ -212,7 +212,7 @@ export default function LessonPlayerPage() {
       <div className="flex-1 flex relative">
         {/* Main content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 space-y-4">
             {/* Completion badge */}
             {isCompleted && (
               <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 rounded-lg px-4 py-2">
@@ -565,7 +565,7 @@ function TextRenderer({
     <div
       className={clsx(
         'rounded-xl bg-white dark:bg-surface-dark-card border border-[var(--border)]',
-        'p-6 lg:p-8 max-h-[70vh] overflow-y-auto',
+        'p-6 lg:p-8 max-h-[calc(100vh-7rem)] overflow-y-auto',
       )}
       ref={containerRef}
     >

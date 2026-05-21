@@ -143,7 +143,7 @@ function PdfViewer({ url, onProgress, className }: { url: string; onProgress?: (
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 overflow-auto flex justify-center p-4 min-h-[500px]">
+      <div className="flex-1 overflow-auto flex justify-center p-2 sm:p-4 min-h-[calc(100vh-10rem)]">
         <canvas ref={canvasRef} className="shadow-lg" />
       </div>
     </div>
@@ -183,7 +183,7 @@ function HtmlViewer({ url }: { url: string }) {
     <div className="rounded-xl overflow-hidden border border-[var(--border)]">
       <iframe
         src={url}
-        className="w-full min-h-[600px] bg-white"
+        className="w-full min-h-[calc(100vh-10rem)] bg-white"
         sandbox="allow-same-origin allow-scripts"
         title="Contenu HTML"
       />
