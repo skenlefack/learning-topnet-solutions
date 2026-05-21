@@ -63,11 +63,18 @@ function CourseCard({ course }: { course: any }) {
         <div className="p-4">
           <h3 className="text-sm font-semibold text-[#212529] mb-2 line-clamp-2 group-hover:text-[#1A5632] transition-colors">{title}</h3>
           <p className="text-xs text-[#6c757d] line-clamp-2 mb-3">{getLocalText(course.description, 'fr')}</p>
-          <div className="flex items-center gap-3 text-xs text-[#6c757d]">
+          <div className="flex items-center gap-3 text-xs text-[#6c757d] mb-3">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {course.estimated_hours || '—'}h</span>
             <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {(course.enrollment_count || 0).toLocaleString('fr-FR')}</span>
             <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> {course.module_count || 0} mod.</span>
           </div>
+          <Link
+            href={`/?redirect=/courses/${course.id}&mode=register`}
+            className="block w-full py-2 rounded-lg text-xs font-semibold text-center border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632] hover:text-white transition-colors"
+            onClick={e => e.stopPropagation()}
+          >
+            S'inscrire
+          </Link>
         </div>
       </div>
     </Link>

@@ -452,7 +452,7 @@ function getLocalText(text: Record<string, string> | string | undefined, lang: s
   return text[lang] || text.fr || text.en || Object.values(text)[0] || '';
 }
 
-function CoursesSection({ onLogin }: { onLogin: () => void }) {
+function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => void }) {
   const t_sections = useTranslations('sections');
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -565,7 +565,7 @@ function CoursesSection({ onLogin }: { onLogin: () => void }) {
                       </span>
                     </div>
                     <button
-                      onClick={onLogin}
+                      onClick={onSignup}
                       className="w-full py-2.5 rounded-lg text-xs font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632] hover:text-white transition-colors"
                     >
                       {t_sections('enrollCourse')}
@@ -1094,7 +1094,7 @@ function LandingPage() {
       <SearchSection />
       <StatsBar />
       <CategoriesSection />
-      <CoursesSection onLogin={openLogin} />
+      <CoursesSection onLogin={openLogin} onSignup={openSignup} />
       <AboutSection onLogin={openLogin} />
       <Footer />
       <Suspense fallback={null}>
