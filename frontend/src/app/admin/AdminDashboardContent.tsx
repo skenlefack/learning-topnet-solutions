@@ -31,6 +31,7 @@ import {
   QuizBuilder,
   AnalyticsDashboard,
   TenantComparison,
+  CertificateManager,
 } from './_components/lazy';
 import { ConfirmProvider, useConfirm } from './_components/ConfirmDialog';
 
@@ -48,7 +49,7 @@ const fadeUp = {
 // Types
 // ---------------------------------------------------------------------------
 
-type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions' | 'analytics' | 'tenants';
+type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions' | 'certificates' | 'analytics' | 'tenants';
 
 const CHART_COLORS = ['#2E7D32', '#C8A951', '#7B1639', '#a855f7', '#ef4444', '#3b82f6'];
 
@@ -80,6 +81,7 @@ export default function AdminDashboardContent() {
     { key: 'quiz', label: 'Quiz', icon: ListChecks },
     { key: 'users', label: t('tabUsers'), icon: Users },
     { key: 'sessions', label: t('tabSessions'), icon: Video },
+    { key: 'certificates', label: 'Certificats', icon: Award },
     { key: 'analytics', label: 'Analytique', icon: BarChart3 },
     { key: 'tenants', label: 'Tenants', icon: Users },
   ];
@@ -129,6 +131,7 @@ export default function AdminDashboardContent() {
         {tab === 'quiz' && <QuizBuilder />}
         {tab === 'users' && <UsersTab />}
         {tab === 'sessions' && <SessionsTab />}
+        {tab === 'certificates' && <CertificateManager />}
         {tab === 'analytics' && <AnalyticsDashboard />}
         {tab === 'tenants' && <TenantComparison />}
       </motion.div>

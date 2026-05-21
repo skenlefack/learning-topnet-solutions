@@ -56,3 +56,8 @@ export const TenantComparison = dynamic(
   () => import('./TenantComparison'),
   { ssr: false }
 );
+
+export const CertificateManager = dynamic(
+  () => import('./CertificateManager'),
+  { ssr: false }
+);

@@ -76,6 +76,10 @@ async function bootstrap() {
   await app.register(lessonRoutes, { prefix: '/courses/lessons' });
   await app.register(searchRoutes, { prefix: '/search' });
 
+  // Certificate templates
+  const { certificateTemplateRoutes } = await import('./routes/certificate-templates');
+  await app.register(certificateTemplateRoutes, { prefix: '/courses/certificate-templates' });
+
   // --- Validation error handler ---
   app.setErrorHandler((error, _request, reply) => {
     if ('validation' in error && 'statusCode' in error) {
