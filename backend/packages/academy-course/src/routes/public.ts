@@ -105,7 +105,7 @@ export async function publicRoutes(app: FastifyInstance) {
       const rows = await query(
         `SELECT
           c.id, c.slug, c.title, c.description, c.level, c.estimated_hours,
-          c.tags, c.thumbnail_url, c.published_at,
+          c.tags, c.thumbnail_url, c.published_at, c.metadata, c.category_id,
           (SELECT COUNT(*) FROM academy_core.modules m WHERE m.course_id = c.id) AS module_count,
           (SELECT COUNT(*) FROM academy_core.enrollments e WHERE e.course_id = c.id) AS enrollment_count
         FROM academy_core.courses c
@@ -157,6 +157,7 @@ export async function publicRoutes(app: FastifyInstance) {
         `SELECT
           c.id, c.slug, c.title, c.description, c.level, c.estimated_hours,
           c.tags, c.thumbnail_url, c.passing_score, c.published_at, c.prerequisites,
+          c.metadata, c.category_id,
           (SELECT COUNT(*) FROM academy_core.enrollments e WHERE e.course_id = c.id) AS enrollment_count
         FROM academy_core.courses c
         WHERE (c.id::text = $1 OR c.slug = $1) AND c.status = 'published'`,
