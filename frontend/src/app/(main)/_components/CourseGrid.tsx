@@ -122,7 +122,7 @@ function CourseCard({ course, enrollment }: { course: any; enrollment?: any }) {
   const levelColor = level ? (LEVEL_COLORS[level.toLowerCase()] ?? 'bg-brand-navy') : 'bg-brand-navy';
 
   return (
-    <Link href={enrollment ? `/courses/${course.id}` : `/catalog/${course.slug || course.id}`}>
+    <Link href={`/courses/${course.id}`}>
       <div
         className={clsx(
           'card-hover rounded-xl overflow-hidden',
