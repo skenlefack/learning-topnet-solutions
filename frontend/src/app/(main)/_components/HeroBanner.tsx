@@ -5,6 +5,7 @@
 // ============================================================================
 import clsx from 'clsx';
 import { Play } from 'lucide-react';
+import Link from 'next/link';
 import ProgressRing from './ProgressRing';
 import { t as pickLang } from '@/lib/utils';
 
@@ -58,7 +59,8 @@ export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerPr
             </p>
           )}
           {enrollment && (
-            <button
+            <Link
+              href={`/courses/${enrollment.course_id}`}
               className={clsx(
                 'mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full',
                 'bg-brand-navy hover:bg-brand-navy-deep text-white',
@@ -68,7 +70,7 @@ export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerPr
             >
               <Play className="w-4 h-4" />
               Reprendre le cours
-            </button>
+            </Link>
           )}
         </div>
 

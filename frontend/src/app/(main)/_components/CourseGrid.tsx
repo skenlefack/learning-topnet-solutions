@@ -4,6 +4,7 @@
 // Enrolled + available courses with progress bars
 // ============================================================================
 import clsx from 'clsx';
+import Link from 'next/link';
 import { BookOpen, Clock, ChevronRight } from 'lucide-react';
 import ProgressRing from './ProgressRing';
 
@@ -52,9 +53,9 @@ export default function CourseGrid({ courses, enrollments, isLoading }: CourseGr
         <h2 className="text-lg font-semibold text-[var(--text-primary)]">
           Mes cours
         </h2>
-        <button className="text-sm text-brand-navy dark:text-green-400 hover:underline flex items-center gap-1">
+        <Link href="/courses" className="text-sm text-brand-navy dark:text-green-400 hover:underline flex items-center gap-1">
           Voir tout <ChevronRight className="w-4 h-4" />
-        </button>
+        </Link>
       </div>
 
       {enrolled.length > 0 && (
@@ -121,83 +122,85 @@ function CourseCard({ course, enrollment }: { course: any; enrollment?: any }) {
   const levelColor = level ? (LEVEL_COLORS[level.toLowerCase()] ?? 'bg-brand-navy') : 'bg-brand-navy';
 
   return (
-    <div
-      className={clsx(
-        'card-hover rounded-xl overflow-hidden',
-        'bg-white dark:bg-surface-dark-card',
-        'border border-[var(--border)]',
-        'cursor-pointer group',
-      )}
-    >
-      {/* Color accent bar */}
-      <div className={clsx('h-1', levelColor)} />
+    <Link href={enrollment ? `/courses/${course.id}` : `/catalog/${course.slug || course.id}`}>
+      <div
+        className={clsx(
+          'card-hover rounded-xl overflow-hidden',
+          'bg-white dark:bg-surface-dark-card',
+          'border border-[var(--border)]',
+          'cursor-pointer group',
+        )}
+      >
+        {/* Color accent bar */}
+        <div className={clsx('h-1', levelColor)} />
 
-      <div className="relative h-32 bg-gradient-to-br from-brand-navy/80 to-brand-navy-deep flex items-center justify-center">
-        <BookOpen className="w-8 h-8 text-white/30" />
+        <div className="relative h-32 bg-gradient-to-br from-brand-navy/80 to-brand-navy-deep flex items-center justify-center">
+          <BookOpen className="w-8 h-8 text-white/30" />
 
-        {/* Tags */}
-        <div className="absolute top-2 left-2 flex items-center gap-1.5">
-          {level && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold uppercase rounded-full bg-brand-gold/90 text-brand-navy-deep">
-              {level}
-            </span>
-          )}
-          {isNew && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-green-500 text-white">
-              Nouveau
-            </span>
-          )}
-          {isPopular && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-purple-500 text-white">
-              Populaire
-            </span>
-          )}
-        </div>
-
-        {enrollment && (
-          <div className="absolute top-2 right-2">
-            <ProgressRing
-              percent={progress}
-              size={36}
-              strokeWidth={3}
-              trailColor="rgba(255,255,255,0.2)"
-              strokeColor="#C8A951"
-            >
-              <span className="text-[9px] font-bold text-white">{Math.round(progress)}%</span>
-            </ProgressRing>
+          {/* Tags */}
+          <div className="absolute top-2 left-2 flex items-center gap-1.5">
+            {level && (
+              <span className="px-2 py-0.5 text-[10px] font-semibold uppercase rounded-full bg-brand-gold/90 text-brand-navy-deep">
+                {level}
+              </span>
+            )}
+            {isNew && (
+              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-green-500 text-white">
+                Nouveau
+              </span>
+            )}
+            {isPopular && (
+              <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-purple-500 text-white">
+                Populaire
+              </span>
+            )}
           </div>
-        )}
-      </div>
 
-      <div className="p-4 space-y-2">
-        <h4 className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-brand-navy dark:group-hover:text-green-400 transition-colors">
-          {title || 'Sans titre'}
-        </h4>
-        {description && (
-          <p className="text-xs text-[var(--text-secondary)] line-clamp-2">{description}</p>
-        )}
-        <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)]">
-          {moduleCount > 0 && (
-            <span className="flex items-center gap-1">
-              <BookOpen className="w-3 h-3" /> {moduleCount} modules
-            </span>
-          )}
           {enrollment && (
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" /> En cours
-            </span>
+            <div className="absolute top-2 right-2">
+              <ProgressRing
+                percent={progress}
+                size={36}
+                strokeWidth={3}
+                trailColor="rgba(255,255,255,0.2)"
+                strokeColor="#C8A951"
+              >
+                <span className="text-[9px] font-bold text-white">{Math.round(progress)}%</span>
+              </ProgressRing>
+            </div>
           )}
         </div>
 
-        {enrollment && (
-          <div className="w-full h-1.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark transition-all duration-700"
-              style={{ width: `${Math.min(progress, 100)}%` }}
-            />
+        <div className="p-4 space-y-2">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-brand-navy dark:group-hover:text-green-400 transition-colors">
+            {title || 'Sans titre'}
+          </h4>
+          {description && (
+            <p className="text-xs text-[var(--text-secondary)] line-clamp-2">{description}</p>
+          )}
+          <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)]">
+            {moduleCount > 0 && (
+              <span className="flex items-center gap-1">
+                <BookOpen className="w-3 h-3" /> {moduleCount} modules
+              </span>
+            )}
+            {enrollment && (
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" /> En cours
+              </span>
+            )}
           </div>
-        )}
+
+          {enrollment && (
+            <div className="w-full h-1.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-brand-gold to-brand-gold-dark transition-all duration-700"
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
