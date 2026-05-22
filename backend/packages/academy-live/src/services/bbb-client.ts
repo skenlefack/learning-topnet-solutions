@@ -5,6 +5,7 @@
 import { createHash } from 'crypto';
 
 const BBB_URL = process.env.BBB_URL || 'https://bbb.au-ibar.org/bigbluebutton/';
+const BBB_PUBLIC_URL = process.env.BBB_PUBLIC_URL || BBB_URL;
 const BBB_SECRET = process.env.BBB_SECRET || 'bbb-shared-secret';
 
 const MAX_RETRIES = 3;
@@ -158,7 +159,11 @@ export class BBBClient {
       role,
     };
     if (userId) params.userID = userId;
-    return this.buildUrl('join', params);
+    // Use public URL for join (user browser must access this directly)
+    const qs = new URLSearchParams(params).toString();
+    const checksum = this.checksum('join', qs);
+    const publicBase = BBB_PUBLIC_URL.endsWith('/') ? BBB_PUBLIC_URL : BBB_PUBLIC_URL + '/';
+    return `${publicBase}api/join?${qs}&checksum=${checksum}`;
   }
 
   async endMeeting(meetingId: string): Promise<void> {

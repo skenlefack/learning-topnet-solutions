@@ -233,6 +233,7 @@ services:
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
       BBB_URL: ${BBB_URL:-https://bbb.au-ibar.org/bigbluebutton/}
+      BBB_PUBLIC_URL: ${BBB_PUBLIC_URL:-http://10.202.101.144/bigbluebutton/}
       BBB_SECRET: ${BBB_SECRET:-bbb-shared-secret}
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000

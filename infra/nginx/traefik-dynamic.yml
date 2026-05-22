@@ -56,6 +56,13 @@ http:
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
 
+    # --- BigBlueButton reverse proxy ----------------------------------------
+    bbb-proxy-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/bigbluebutton`)"
+      entryPoints: ["web"]
+      service: bbb-backend
+      priority: 20
+
     # --- Traefik Dashboard (HTTP, secured) ----------------------------------
     academy-dashboard-http:
       rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/traefik`)"
@@ -177,6 +184,12 @@ http:
           path: /health
           interval: 15s
           timeout: 5s
+
+    bbb-backend:
+      loadBalancer:
+        servers:
+          - url: "http://10.202.101.145:80"
+        passHostHeader: false
 
   # =========================================================================
   # Middlewares
