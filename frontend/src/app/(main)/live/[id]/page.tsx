@@ -349,10 +349,7 @@ export default function LiveRoomPage() {
     try {
       const joinRes: any = await liveApi.join(token, sessionId);
       // Append user params to BBB URL
-      let url = joinRes.data.joinUrl;
-      const sep = url.includes('?') ? '&' : '?';
-      url += `${sep}userdata-bbb_auto_join_audio=true&userdata-bbb_listen_only_mode=${!opts.audioEnabled}&userdata-bbb_skip_check_audio=true`;
-      if (!opts.videoEnabled) url += '&userdata-bbb_auto_share_webcam=false';
+      const url = joinRes.data.joinUrl;
       setJoinUrl(url);
       joinedAtRef.current = Date.now();
       setPhase('live');
