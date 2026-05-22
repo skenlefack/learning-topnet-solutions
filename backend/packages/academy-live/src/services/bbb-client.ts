@@ -68,7 +68,8 @@ export class BBBClient {
   // -- Checksum ------------------------------------------------------------
 
   private checksum(apiCall: string, queryString: string): string {
-    return createHash('sha1')
+    // BBB 3.0 requires SHA-256 (SHA-1 deprecated)
+    return createHash('sha256')
       .update(apiCall + queryString + this.secret)
       .digest('hex');
   }
