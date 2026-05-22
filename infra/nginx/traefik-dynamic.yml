@@ -61,7 +61,16 @@ http:
       rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/bigbluebutton`)"
       entryPoints: ["web"]
       service: bbb-backend
+      middlewares: ["bbb-headers"]
       priority: 20
+
+    # --- BBB HTML5 client, GraphQL, WebSocket, assets -----------------------
+    bbb-graphql-http:
+      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && (PathPrefix(`/graphql`) || PathPrefix(`/api/rest`) || PathPrefix(`/html5client`) || PathPrefix(`/ws`) || PathPrefix(`/pad`) || PathPrefix(`/default.pdf`) || PathPrefix(`/playback`) || PathPrefix(`/recording`) || PathPrefix(`/presentation`) || PathPrefix(`/bbb-webrtc-sfu`) || PathPrefix(`/freeswitch`) || PathPrefix(`/locales`) || PathPrefix(`/resources`) || PathPrefix(`/svgs`) || PathPrefix(`/compatibility`) || PathPrefix(`/fonts`))"
+      entryPoints: ["web"]
+      service: bbb-backend
+      middlewares: ["bbb-headers"]
+      priority: 18
 
     # --- Traefik Dashboard (HTTP, secured) ----------------------------------
     academy-dashboard-http:
@@ -286,6 +295,13 @@ http:
         excludedContentTypes:
           - text/event-stream
         minResponseBodyBytes: 1024
+
+    # --- BBB proxy headers (pretend HTTPS for BBB) --------------------------
+    bbb-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Port: "443"
 
     # --- Retry (backend services) ------------------------------------------
     retry:
