@@ -262,8 +262,11 @@ services:
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET}
       BBB_URL: ${BBB_URL}
+      BBB_PUBLIC_URL: ${BBB_PUBLIC_URL:-https://bbb.au-ibar.org/bigbluebutton/}
       BBB_SECRET: ${BBB_SECRET}
       METRICS_ENABLED: "true"
+    extra_hosts:
+      - "bbb.au-ibar.org:10.202.101.145"
     logging:
       driver: json-file
       options:

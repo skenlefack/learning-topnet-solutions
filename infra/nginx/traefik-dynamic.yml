@@ -56,22 +56,6 @@ http:
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
       priority: 10
 
-    # --- BigBlueButton reverse proxy ----------------------------------------
-    bbb-proxy-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/bigbluebutton`)"
-      entryPoints: ["web"]
-      service: bbb-backend
-      middlewares: ["bbb-headers"]
-      priority: 20
-
-    # --- BBB HTML5 client, GraphQL, WebSocket, assets -----------------------
-    bbb-graphql-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && (PathPrefix(`/graphql`) || PathPrefix(`/api/rest`) || PathPrefix(`/html5client`) || PathPrefix(`/ws`) || PathPrefix(`/pad`) || PathPrefix(`/default.pdf`) || PathPrefix(`/playback`) || PathPrefix(`/recording`) || PathPrefix(`/presentation`) || PathPrefix(`/bbb-webrtc-sfu`) || PathPrefix(`/freeswitch`) || PathPrefix(`/locales`) || PathPrefix(`/resources`) || PathPrefix(`/svgs`) || PathPrefix(`/compatibility`) || PathPrefix(`/fonts`))"
-      entryPoints: ["web"]
-      service: bbb-backend
-      middlewares: ["bbb-headers"]
-      priority: 18
-
     # --- Traefik Dashboard (HTTP, secured) ----------------------------------
     academy-dashboard-http:
       rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/traefik`)"
@@ -194,12 +178,6 @@ http:
           interval: 15s
           timeout: 5s
 
-    bbb-backend:
-      loadBalancer:
-        servers:
-          - url: "http://10.202.101.145:80"
-        passHostHeader: false
-
   # =========================================================================
   # Middlewares
   # =========================================================================
@@ -231,6 +209,7 @@ http:
         accessControlAllowOriginList:
           - "https://learning.au-ibar.org"
           - "https://au-ibar.org"
+          - "https://bbb.au-ibar.org"
           - "http://learning.au-ibar.org"
           - "http://10.202.101.144"
         accessControlAllowMethods:
@@ -276,13 +255,13 @@ http:
       headers:
         browserXssFilter: true
         contentTypeNosniff: true
-        frameDeny: true
+        frameDeny: false
         stsIncludeSubdomains: true
         stsPreload: true
         stsSeconds: 31536000
         customFrameOptionsValue: "SAMEORIGIN"
         referrerPolicy: "strict-origin-when-cross-origin"
-        permissionsPolicy: "camera=(), microphone=(self), geolocation=(), payment=()"
+        permissionsPolicy: "camera=(self \"https://bbb.au-ibar.org\"), microphone=(self \"https://bbb.au-ibar.org\"), fullscreen=(self \"https://bbb.au-ibar.org\"), display-capture=(self \"https://bbb.au-ibar.org\"), geolocation=(), payment=()"
         customResponseHeaders:
           X-Content-Type-Options: "nosniff"
           X-Download-Options: "noopen"
@@ -295,13 +274,6 @@ http:
         excludedContentTypes:
           - text/event-stream
         minResponseBodyBytes: 1024
-
-    # --- BBB proxy headers (pretend HTTPS for BBB) --------------------------
-    bbb-headers:
-      headers:
-        customRequestHeaders:
-          X-Forwarded-Proto: "https"
-          X-Forwarded-Port: "443"
 
     # --- Retry (backend services) ------------------------------------------
     retry:
