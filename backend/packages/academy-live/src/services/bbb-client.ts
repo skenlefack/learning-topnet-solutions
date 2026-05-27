@@ -142,7 +142,9 @@ export class BBBClient {
       allowStartStopRecording: 'true',
       maxParticipants: String(params.maxParticipants || 300),
       logoutURL: params.logoutURL || 'https://learning.au-ibar.org/live',
-      welcome: params.welcomeMessage || 'Bienvenue dans la session ARIS Academy!',
+      welcome: params.welcomeMessage || 'Bienvenue dans la session AU-IBAR Learning!',
+      meetingExpireIfNoUserJoinedInMinutes: '30',
+      meetingExpireWhenLastUserLeftInMinutes: '5',
     });
 
     return {
