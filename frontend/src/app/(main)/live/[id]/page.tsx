@@ -9,13 +9,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {
-  ArrowLeft, Users, Clock, Video, Loader2, Maximize2, Minimize2,
+  ArrowLeft, Users, Clock, Video, Loader2,
   AlertTriangle, Mic, MicOff, Camera, CameraOff, Monitor,
-  MessageSquare, Info, X, ChevronRight, Settings, FileText,
-  Calendar, Award, Play,
+  Info, X, Calendar, Play,
 } from 'lucide-react';
 import clsx from 'clsx';
-import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/lib/store';
 import { liveApi } from '@/lib/api';
@@ -305,10 +303,8 @@ export default function LiveRoomPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState<'loading' | 'prejoin' | 'live' | 'recording' | 'error'>('loading');
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const iframeContainerRef = useRef<HTMLDivElement>(null);
   const joinedAtRef = useRef<number>(Date.now());
 
   // Fetch session
@@ -344,15 +340,21 @@ export default function LiveRoomPage() {
   }, [token, sessionId]);
 
   // Join handler (called from PreJoinLobby)
+  // Opens BBB in a new tab — BBB does not allow iframe embedding (X-Frame-Options)
   const handleJoin = useCallback(async (opts: { audioEnabled: boolean; videoEnabled: boolean }) => {
     if (!token) return;
     try {
       const joinRes: any = await liveApi.join(token, sessionId);
-      // Append user params to BBB URL
       const url = joinRes.data.joinUrl;
       setJoinUrl(url);
       joinedAtRef.current = Date.now();
       setPhase('live');
+      // Open BBB in a new tab — iframe embedding is blocked by BBB's own headers
+      const bbbWindow = window.open(url, '_blank', 'noopener');
+      if (!bbbWindow) {
+        // Popup blocked — fallback: redirect in same tab
+        window.location.href = url;
+      }
     } catch (err: any) {
       setError(err.message || 'Impossible de rejoindre');
       setPhase('error');
@@ -369,23 +371,6 @@ export default function LiveRoomPage() {
   }, [phase]);
 
   const handleLeave = useCallback(() => router.push('/live'), [router]);
-
-  const toggleFullscreen = useCallback(() => {
-    if (!iframeContainerRef.current) return;
-    if (!document.fullscreenElement) {
-      iframeContainerRef.current.requestFullscreen().catch(() => {});
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen().catch(() => {});
-      setIsFullscreen(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const h = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener('fullscreenchange', h);
-    return () => document.removeEventListener('fullscreenchange', h);
-  }, []);
 
   const title = session ? getLocalText(session.title, language) : '';
 
@@ -480,25 +465,66 @@ export default function LiveRoomPage() {
           >
             <Info className="w-4 h-4" />
           </button>
-          <button onClick={toggleFullscreen} className="p-2 rounded-lg hover:bg-gray-800" title="Plein écran">
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
           <button onClick={handleLeave} className="ml-1 px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-semibold transition-colors">
             Quitter
           </button>
         </div>
       </motion.header>
 
-      {/* Content area */}
-      <div ref={iframeContainerRef} className="flex-1 relative bg-black">
-        {joinUrl && (
-          <iframe
-            src={joinUrl}
-            className="absolute inset-0 w-full h-full border-0"
-            allow="camera; microphone; fullscreen; display-capture; autoplay"
-            allowFullScreen
-          />
-        )}
+      {/* Content area — BBB runs in a separate tab */}
+      <div className="flex-1 relative bg-gray-950 flex items-center justify-center">
+        <div className="text-center space-y-6 max-w-md mx-auto px-4">
+          {/* Live pulse animation */}
+          <div className="relative mx-auto w-24 h-24">
+            <span className="absolute inset-0 rounded-full bg-red-600/20 animate-ping" />
+            <span className="relative flex items-center justify-center w-24 h-24 rounded-full bg-red-600/30">
+              <Video className="w-10 h-10 text-red-400" />
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold text-white mb-2">Session en cours</h2>
+            <p className="text-sm text-gray-400">
+              La session BBB est ouverte dans un autre onglet.<br />
+              Gardez cet onglet ouvert pour le suivi de votre participation.
+            </p>
+          </div>
+
+          {/* Elapsed timer */}
+          <div className="flex items-center justify-center gap-2 text-brand-gold">
+            <Clock className="w-5 h-5" />
+            <span className="text-lg font-mono font-semibold">{formatElapsed(elapsed)}</span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-col items-center gap-3">
+            <button
+              onClick={() => {
+                if (joinUrl) {
+                  const w = window.open(joinUrl, '_blank', 'noopener');
+                  if (!w) window.location.href = joinUrl;
+                }
+              }}
+              className="px-6 py-2.5 bg-brand-navy text-white rounded-xl text-sm font-semibold hover:bg-brand-navy-deep transition-colors flex items-center gap-2"
+            >
+              <Monitor className="w-4 h-4" /> Rejoindre à nouveau
+            </button>
+            <button
+              onClick={handleLeave}
+              className="px-5 py-2 text-sm text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-xl transition-colors"
+            >
+              Quitter la session
+            </button>
+          </div>
+
+          {/* Session info summary */}
+          {session && (
+            <div className="pt-4 border-t border-gray-800 text-xs text-gray-500 space-y-1">
+              <p>{session.trainer_first_name} {session.trainer_last_name} — {session.current_attendees || 0} participant(s)</p>
+              <p>{session.duration_minutes} min prévues</p>
+            </div>
+          )}
+        </div>
 
         {/* Session sidebar */}
         <AnimatePresence>
