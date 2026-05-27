@@ -398,8 +398,25 @@ export async function sessionRoutes(app: FastifyInstance) {
       }
     }
 
-    // Create meeting on BBB if session is still scheduled
-    if (session.status === 'scheduled') {
+    // Create or recreate meeting on BBB if needed
+    let needsCreate = session.status === 'scheduled';
+
+    // If session is 'live', verify the meeting still exists on BBB (it may have expired)
+    if (session.status === 'live') {
+      try {
+        const running = await bbbClient.isMeetingRunning(session.bbb_meeting_id);
+        if (!running) {
+          // Meeting expired on BBB — recreate it
+          app.log.info({ meetingId: session.bbb_meeting_id }, '[BBB] Meeting expired, recreating');
+          needsCreate = true;
+        }
+      } catch {
+        // getMeetingInfo/isMeetingRunning failed — meeting likely gone, recreate
+        needsCreate = true;
+      }
+    }
+
+    if (needsCreate) {
       const sessionTitle = typeof session.title === 'object'
         ? (session.title.fr || session.title.en)
         : session.title;
@@ -418,7 +435,9 @@ export async function sessionRoutes(app: FastifyInstance) {
           WHERE id = $1
         `, [session.id, result.internalMeetingId]);
 
-        await publishEvent(TOPICS.LIVE_STARTED, { sessionId: session.id }, user.tenantId, user.sub);
+        if (session.status === 'scheduled') {
+          await publishEvent(TOPICS.LIVE_STARTED, { sessionId: session.id }, user.tenantId, user.sub);
+        }
       } catch (err) {
         app.log.error({ err }, '[BBB] Failed to create meeting');
         return reply.code(503).send({
