@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Video, Calendar, Play, Clock, Users, Filter,
-  ChevronLeft, ChevronRight, Radio,
+  ChevronLeft, ChevronRight, Radio, CheckCircle,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
@@ -53,7 +53,7 @@ interface Session {
   recording_duration_seconds?: number;
 }
 
-type Tab = 'live' | 'upcoming' | 'recordings';
+type Tab = 'live' | 'upcoming' | 'past' | 'recordings';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -114,6 +114,7 @@ export default function LivePage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [upcoming, setUpcoming] = useState<Session[]>([]);
   const [recordings, setRecordings] = useState<Session[]>([]);
+  const [ended, setEnded] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [weekOffset, setWeekOffset] = useState(0);
   const [filterCourse, setFilterCourse] = useState('');
@@ -128,8 +129,11 @@ export default function LivePage() {
       liveApi.upcoming(token).catch(() => ({ data: [] })),
       liveApi.recordings(token, { limit: 50 }).catch(() => ({ data: [] })),
     ]).then(([sessRes, upRes, recRes]: any[]) => {
-      const liveSessions = (sessRes.data || []).filter((s: Session) => s.status === 'live' || s.status === 'scheduled');
+      const allSess = sessRes.data || [];
+      const liveSessions = allSess.filter((s: Session) => s.status === 'live' || s.status === 'scheduled');
+      const endedSessions = allSess.filter((s: Session) => s.status === 'ended');
       setSessions(liveSessions);
+      setEnded(endedSessions);
       setUpcoming(upRes.data || []);
       setRecordings(recRes.data || []);
       // If there are live sessions, default to live tab
@@ -142,15 +146,16 @@ export default function LivePage() {
     if (!token) return;
     const interval = setInterval(() => {
       liveApi.sessions(token).then((res: any) => {
-        const live = (res.data || []).filter((s: Session) => s.status === 'live' || s.status === 'scheduled');
-        setSessions(live);
+        const all = res.data || [];
+        setSessions(all.filter((s: Session) => s.status === 'live' || s.status === 'scheduled'));
+        setEnded(all.filter((s: Session) => s.status === 'ended'));
       }).catch(() => {});
     }, 15000);
     return () => clearInterval(interval);
   }, [token]);
 
   // Unique courses & trainers for filters
-  const allSessions = useMemo(() => [...sessions, ...upcoming, ...recordings], [sessions, upcoming, recordings]);
+  const allSessions = useMemo(() => [...sessions, ...upcoming, ...recordings, ...ended], [sessions, upcoming, recordings, ended]);
   const courses = useMemo(() => {
     const map = new Map<string, string>();
     allSessions.forEach(s => {
@@ -189,10 +194,12 @@ export default function LivePage() {
   const filteredUpcoming = filterSessions(upcoming);
   const filteredRecordings = filterSessions(recordings);
   const filteredLive = filterSessions(sessions);
+  const filteredEnded = filterSessions(ended);
 
   const TABS: { key: Tab; label: string; icon: typeof Video; count: number }[] = [
     { key: 'live', label: t('liveTab'), icon: Radio, count: filteredLive.length },
     { key: 'upcoming', label: t('upcomingTab'), icon: Calendar, count: filteredUpcoming.length },
+    { key: 'past', label: t('pastTab'), icon: CheckCircle, count: filteredEnded.length },
     { key: 'recordings', label: t('recordingsTab'), icon: Play, count: filteredRecordings.length },
   ];
 
@@ -454,6 +461,74 @@ export default function LivePage() {
                   <Calendar className="w-12 h-12 mx-auto text-[var(--text-secondary)] mb-3 opacity-40" />
                   <p className="font-medium text-[var(--text-secondary)]">{t('noUpcoming')}</p>
                   <p className="text-xs text-[var(--text-secondary)] mt-1">{t('noUpcomingDesc')}</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* ====== PAST TAB — Ended sessions ====== */}
+          {tab === 'past' && (
+            <motion.div variants={fadeUp}>
+              {filteredEnded.length === 0 ? (
+                <div className="text-center py-16">
+                  <CheckCircle className="w-12 h-12 mx-auto text-[var(--text-secondary)] mb-3 opacity-40" />
+                  <p className="font-medium text-[var(--text-secondary)]">{t('noPast')}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">{t('noPastDesc')}</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredEnded.map(session => (
+                    <div
+                      key={session.id}
+                      className={clsx(
+                        'rounded-xl overflow-hidden',
+                        'bg-white dark:bg-surface-dark-card',
+                        'border border-[var(--border)]',
+                      )}
+                    >
+                      <div className="h-28 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center relative">
+                        <Video className="w-10 h-10 text-gray-400" />
+                        <span className="absolute top-3 right-3 bg-gray-500 text-white px-2.5 py-1 rounded-full text-xs font-bold">
+                          {t('endedBadge')}
+                        </span>
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <h3 className="font-semibold text-[var(--text-primary)] line-clamp-1">
+                          {getLocalizedText(session.title)}
+                        </h3>
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          {session.trainer_first_name} {session.trainer_last_name}
+                        </p>
+                        {session.course_title && (
+                          <p className="text-xs text-brand-navy dark:text-brand-gold">
+                            {getLocalizedText(session.course_title)}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)] pt-1">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {format(parseISO(session.scheduled_at), 'd MMM yyyy', { locale: fr })}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            {session.duration_minutes} min
+                          </span>
+                        </div>
+                        {session.recording_url ? (
+                          <Link href={`/live/${session.id}`}>
+                            <button className="mt-2 w-full py-2 bg-brand-navy hover:bg-brand-navy-deep text-white text-sm font-medium rounded-lg transition-colors dark:bg-brand-gold dark:hover:bg-brand-gold-dark dark:text-gray-900 flex items-center justify-center gap-2">
+                              <Play className="w-4 h-4" />
+                              {t('watchReplay')}
+                            </button>
+                          </Link>
+                        ) : (
+                          <div className="mt-2 w-full py-2 bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)] text-sm text-center rounded-lg">
+                            {t('noReplayAvailable')}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </motion.div>

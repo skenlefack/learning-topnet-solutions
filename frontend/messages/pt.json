@@ -188,7 +188,12 @@
     "noRecordingsDesc": "As gravações das sessões anteriores aparecerão aqui",
     "watchReplay": "Ver repetição",
     "scheduled": "Agendado",
-    "liveStatus": "Ao vivo"
+    "liveStatus": "Ao vivo",
+    "pastTab": "Encerradas",
+    "endedBadge": "ENCERRADA",
+    "noPast": "Nenhuma sessão encerrada",
+    "noPastDesc": "As sessões encerradas aparecerão aqui",
+    "noReplayAvailable": "Gravação não disponível"
   },
   "liveRoom": {
     "connecting": "A ligar à sessão...",

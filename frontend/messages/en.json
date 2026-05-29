@@ -188,7 +188,12 @@
     "noRecordingsDesc": "Recordings of past sessions will appear here",
     "watchReplay": "Watch replay",
     "scheduled": "Scheduled",
-    "liveStatus": "Live"
+    "liveStatus": "Live",
+    "pastTab": "Past",
+    "endedBadge": "ENDED",
+    "noPast": "No past sessions",
+    "noPastDesc": "Past sessions will appear here",
+    "noReplayAvailable": "Recording not available"
   },
   "liveRoom": {
     "connecting": "Connecting to session...",

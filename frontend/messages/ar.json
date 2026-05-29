@@ -188,7 +188,12 @@
     "noRecordingsDesc": "ستظهر تسجيلات الجلسات السابقة هنا",
     "watchReplay": "مشاهدة الإعادة",
     "scheduled": "مجدول",
-    "liveStatus": "مباشر"
+    "liveStatus": "مباشر",
+    "pastTab": "المنتهية",
+    "endedBadge": "انتهت",
+    "noPast": "لا توجد جلسات منتهية",
+    "noPastDesc": "ستظهر الجلسات المنتهية هنا",
+    "noReplayAvailable": "التسجيل غير متاح"
   },
   "liveRoom": {
     "connecting": "جاري الاتصال بالجلسة...",

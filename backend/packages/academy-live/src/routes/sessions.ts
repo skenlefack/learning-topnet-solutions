@@ -66,9 +66,9 @@ export async function sessionRoutes(app: FastifyInstance) {
         FROM academy_core.live_sessions ls
         JOIN academy_core.users u ON u.id = ls.trainer_id
         LEFT JOIN academy_core.courses c ON c.id = ls.course_id
-        WHERE ls.status IN ('scheduled', 'live')
+        WHERE ls.status IN ('scheduled', 'live', 'ended')
           AND (ls.tenant_id = $1 OR ls.tenant_id = '00000000-0000-0000-0000-000000000001')
-        ORDER BY ls.scheduled_at ASC
+        ORDER BY CASE ls.status WHEN 'live' THEN 0 WHEN 'scheduled' THEN 1 ELSE 2 END, ls.scheduled_at DESC
       `, [user.tenantId]);
       return reply.send({ success: true, data: sessions });
     } catch (err: any) {

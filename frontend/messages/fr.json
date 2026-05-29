@@ -188,7 +188,12 @@
     "noRecordingsDesc": "Les enregistrements des sessions passées apparaîtront ici",
     "watchReplay": "Regarder le replay",
     "scheduled": "Planifié",
-    "liveStatus": "En direct"
+    "liveStatus": "En direct",
+    "pastTab": "Terminées",
+    "endedBadge": "TERMINÉE",
+    "noPast": "Aucune session terminée",
+    "noPastDesc": "Les sessions passées apparaîtront ici",
+    "noReplayAvailable": "Enregistrement non disponible"
   },
   "liveRoom": {
     "connecting": "Connexion à la session...",
