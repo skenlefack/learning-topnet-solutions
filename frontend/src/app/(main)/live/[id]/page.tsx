@@ -316,7 +316,10 @@ export default function LiveRoomPage() {
         const sess = res.data;
         setSession(sess);
 
-        if (sess.status === 'live' || sess.status === 'scheduled') {
+        const endTime = new Date(sess.scheduled_at).getTime() + sess.duration_minutes * 60000;
+        const isExpired = sess.status === 'ended' && Date.now() > endTime;
+
+        if (!isExpired && (sess.status === 'live' || sess.status === 'scheduled')) {
           setPhase('prejoin');
         } else if (sess.recording_url) {
           try {
@@ -327,7 +330,9 @@ export default function LiveRoomPage() {
           }
           setPhase('recording');
         } else {
-          setError('Cette session est terminée et aucun replay n\'est disponible.');
+          setError(isExpired
+            ? 'Cette session est terminée. Aucun enregistrement n\'est disponible pour le moment.'
+            : 'Cette session est terminée et aucun replay n\'est disponible.');
           setPhase('error');
         }
       } catch (err: any) {

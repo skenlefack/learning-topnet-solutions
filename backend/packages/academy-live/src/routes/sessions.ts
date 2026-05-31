@@ -381,6 +381,18 @@ export async function sessionRoutes(app: FastifyInstance) {
       return reply.code(410).send({ success: false, error: 'Session has been cancelled' });
     }
 
+    // If session ended and scheduled end time has passed, block rejoin
+    if (session.status === 'ended') {
+      const endTime = new Date(session.scheduled_at).getTime() + session.duration_minutes * 60000;
+      if (Date.now() > endTime) {
+        return reply.code(410).send({
+          success: false,
+          error: 'Session has ended. You can view the recording if available.',
+          code: 'SESSION_EXPIRED',
+        });
+      }
+    }
+
     const isModerator = user.sub === session.trainer_id ||
       ['admin_rec', 'admin_continental'].includes(user.role);
 
