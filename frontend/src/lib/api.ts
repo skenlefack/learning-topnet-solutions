@@ -196,6 +196,15 @@ export const liveApi = {
     apiFetch(`/api/live/recordings/${sessionId}`, { token, method: 'DELETE' }),
 };
 
+// === Translation API (SYSTRAN) ===
+export const translateApi = {
+  translate: (texts: string[], source: string, target: string) =>
+    apiFetch<{ success: boolean; translations: string[] }>('/api/translate', {
+      method: 'POST',
+      body: JSON.stringify({ texts, source, target }),
+    }),
+};
+
 // === Notification APIs ===
 export const notificationApi = {
   list: (token: string, params?: { page?: number; limit?: number; unreadOnly?: string }) =>
