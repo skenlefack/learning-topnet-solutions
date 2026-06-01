@@ -4,7 +4,7 @@
 // Full e-learning homepage: navbar, hero slider, search, categories, courses,
 // login/register modal, footer — design aligned with au-ibar.org
 // ============================================================================
-import { Suspense, useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -80,10 +80,29 @@ const NAV_LINKS = [
 // NAVBAR
 // ═══════════════════════════════════════════════════════════════════════════
 
+const LANGUAGES = [
+  { code: 'fr' as const, label: 'Français', short: 'FR' },
+  { code: 'en' as const, label: 'English', short: 'EN' },
+  { code: 'ar' as const, label: 'العربية', short: 'AR' },
+  { code: 'pt' as const, label: 'Português', short: 'PT' },
+];
+
 function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => void }) {
   const t_nav = useTranslations('landingNav');
+  const { language, setLanguage } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+  const currentLang = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -130,6 +149,44 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
 
             {/* Actions */}
             <div className="flex items-center gap-3">
+              {/* Language selector */}
+              <div className="relative" ref={langRef}>
+                <button
+                  onClick={() => setLangOpen(!langOpen)}
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold text-[#495057] hover:bg-gray-100 transition-colors"
+                  aria-label="Select language"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>{currentLang.short}</span>
+                </button>
+                <AnimatePresence>
+                  {langOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-1 w-36 py-1 rounded-lg shadow-lg bg-white border border-gray-200 z-50"
+                    >
+                      {LANGUAGES.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => { setLanguage(lang.code); setLangOpen(false); }}
+                          className={clsx(
+                            'w-full flex items-center gap-2 px-3 py-2 text-sm',
+                            language === lang.code
+                              ? 'bg-[#1A5632]/5 text-[#1A5632] font-medium'
+                              : 'text-[#495057] hover:bg-gray-50',
+                          )}
+                        >
+                          <span className="text-xs font-bold w-5">{lang.short}</span>
+                          {lang.label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <button
                 onClick={onSignup}
                 className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
@@ -172,6 +229,23 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
                     {t_nav(link.key)}
                   </a>
                 ))}
+                {/* Mobile language selector */}
+                <div className="flex gap-2 mt-2">
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => { setLanguage(lang.code); setMobileOpen(false); }}
+                      className={clsx(
+                        'flex-1 py-2 rounded-lg text-xs font-semibold transition-colors',
+                        language === lang.code
+                          ? 'bg-[#1A5632] text-white'
+                          : 'border border-gray-300 text-[#495057] hover:bg-gray-50',
+                      )}
+                    >
+                      {lang.short}
+                    </button>
+                  ))}
+                </div>
                 <button
                   onClick={() => { setMobileOpen(false); onSignup(); }}
                   className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632]"
@@ -847,7 +921,7 @@ function Footer() {
             <div>
               <h4 className="text-sm font-semibold text-[#212529] mb-4">{t_footer('usefulLinks')}</h4>
               <ul className="space-y-2 text-xs text-[#6c757d]">
-                <li><a href="https://www.au-ibar.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A5632] transition-colors">au-ibar.org</a></li>
+                <li><a href="https://www.au-ibar.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A5632] transition-colors">{t_footer('website')}</a></li>
                 <li><a href="https://au.int" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A5632] transition-colors">{t_footer('africanUnion')}</a></li>
                 <li><a href="#" className="hover:text-[#1A5632] transition-colors">AAGRIS</a></li>
                 <li><a href="#" className="hover:text-[#1A5632] transition-colors">ARIS</a></li>
