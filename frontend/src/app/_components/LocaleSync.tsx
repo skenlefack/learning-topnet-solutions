@@ -8,24 +8,32 @@ import { useAuthStore } from '@/lib/store';
 
 const RTL_LOCALES = new Set(['ar']);
 
+function getCookie(name: string): string | undefined {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? match[1] : undefined;
+}
+
 export default function LocaleSync() {
   const language = useAuthStore((s) => s.language);
-  const prevLang = useRef(language);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    // Sync cookie
-    document.cookie = `aris-locale=${language}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    const currentCookie = getCookie('aris-locale');
 
     // Sync html attributes
     const html = document.documentElement;
     html.lang = language;
     html.dir = RTL_LOCALES.has(language) ? 'rtl' : 'ltr';
 
-    // Reload page when language actually changes so next-intl loads correct messages
-    if (prevLang.current !== language) {
-      prevLang.current = language;
+    // Set cookie
+    document.cookie = `aris-locale=${language}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+
+    // Only reload if user actively changed the language (cookie differs from new value)
+    // Skip on first mount to avoid reload loop
+    if (initializedRef.current && currentCookie && currentCookie !== language) {
       window.location.reload();
     }
+    initializedRef.current = true;
   }, [language]);
 
   return null;

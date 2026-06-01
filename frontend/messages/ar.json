@@ -401,6 +401,8 @@
   "sections": {
     "competencies": "مجالات الخبرة",
     "competenciesDesc": "استكشف مجالات التدريب الـ 9 التي تغطي جميع الموارد الحيوانية في القارة الأفريقية",
+    "categoriesTitle": "فئات الدورات",
+    "categoriesDesc": "تصفح فئات التدريب التي طورها خبراء UA-BIRA",
     "coursesAvailable": "دورات متاحة",
     "latestCourses": "أحدث الدورات المنشورة",
     "expertDeveloped": "تدريب معتمد طوره خبراء AU-IBAR",
