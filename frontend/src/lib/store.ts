@@ -42,7 +42,14 @@ export const useAuthStore = create<AuthState>()(
       theme: 'light',
       toggleTheme: () => set({ theme: get().theme === 'light' ? 'dark' : 'light' }),
       language: 'fr',
-      setLanguage: (lang) => set({ language: lang }),
+      setLanguage: (lang) => {
+        const current = get().language;
+        set({ language: lang });
+        if (typeof window !== 'undefined' && current !== lang) {
+          document.cookie = `aris-locale=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+          window.location.reload();
+        }
+      },
     }),
     {
       name: 'aris-academy-auth',
