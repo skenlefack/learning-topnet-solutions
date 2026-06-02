@@ -459,14 +459,25 @@ export async function sessionRoutes(app: FastifyInstance) {
       }
     }
 
-    // Generate join URL
+    // Generate join URL (server-side token to prevent double-join issues)
     const fullName = `${(user as any).firstName || 'User'} ${(user as any).lastName || ''}`.trim();
-    const joinUrl = bbbClient.joinMeeting(
-      session.bbb_meeting_id,
-      fullName,
-      isModerator ? 'MODERATOR' : 'VIEWER',
-      user.sub,
-    );
+    let joinUrl: string;
+    try {
+      joinUrl = await bbbClient.joinMeetingWithToken(
+        session.bbb_meeting_id,
+        fullName,
+        isModerator ? 'MODERATOR' : 'VIEWER',
+        user.sub,
+      );
+    } catch (err) {
+      // Fallback to direct join URL
+      joinUrl = bbbClient.joinMeeting(
+        session.bbb_meeting_id,
+        fullName,
+        isModerator ? 'MODERATOR' : 'VIEWER',
+        user.sub,
+      );
+    }
 
     // Track attendance (upsert)
     await queryOne(`

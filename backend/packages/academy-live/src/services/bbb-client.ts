@@ -160,6 +160,7 @@ export class BBBClient {
       meetingID: meetingId,
       fullName,
       role,
+      redirect: 'false',
     };
     if (userId) params.userID = userId;
     // Use public URL for join (user browser must access this directly)
@@ -167,6 +168,28 @@ export class BBBClient {
     const checksum = this.checksum('join', qs);
     const publicBase = BBB_PUBLIC_URL.endsWith('/') ? BBB_PUBLIC_URL : BBB_PUBLIC_URL + '/';
     return `${publicBase}api/join?${qs}&checksum=${checksum}`;
+  }
+
+  async joinMeetingWithToken(meetingId: string, fullName: string, role: 'MODERATOR' | 'VIEWER', userId?: string): Promise<string> {
+    const params: Record<string, string> = {
+      meetingID: meetingId,
+      fullName,
+      role,
+      redirect: 'false',
+    };
+    if (userId) params.userID = userId;
+    const qs = new URLSearchParams(params).toString();
+    const checksum = this.checksum('join', qs);
+    // Call BBB API server-side to get session token
+    const url = `${this.baseUrl}api/join?${qs}&checksum=${checksum}`;
+    const res = await fetch(url, { redirect: 'manual' });
+    const xml = await res.text();
+    const sessionToken = getXmlTag(xml, 'session_token') || getXmlTag(xml, 'sessionToken');
+    if (!sessionToken) {
+      throw new Error('Failed to get BBB session token');
+    }
+    const publicBase = BBB_PUBLIC_URL.endsWith('/') ? BBB_PUBLIC_URL : BBB_PUBLIC_URL + '/';
+    return `${publicBase}html5client/?sessionToken=${sessionToken}`;
   }
 
   async endMeeting(meetingId: string): Promise<void> {
