@@ -11,6 +11,7 @@ import { learningApi, courseApi, liveApi, assessmentApi, pathApi } from '@/lib/a
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { Calendar, Clock, Video, Route, BookOpen, ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import SectionErrorBoundary from '@/app/_components/SectionErrorBoundary';
 import HeroBanner from './HeroBanner';
 import StatsGrid from './StatsGrid';
@@ -84,14 +85,15 @@ function PlanningPanel({ liveSessions, enrollments }: { liveSessions: any[]; enr
 
 function PathsSection({ paths }: { paths: any[] }) {
   const { token } = useAuthStore();
+  const t = useTranslations('dashboard');
 
   const handleEnroll = async (pathId: string) => {
     if (!token) return;
     try {
       await pathApi.enroll(token, pathId);
-      toast.success('Inscrit au parcours !');
+      toast.success(t('enrolledPath'));
     } catch (err: any) {
-      toast.error(err.message || 'Erreur');
+      toast.error(err.message || t('error'));
     }
   };
 
@@ -100,7 +102,7 @@ function PathsSection({ paths }: { paths: any[] }) {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[var(--text-primary)] flex items-center gap-2">
           <Route className="w-5 h-5 text-brand-navy dark:text-brand-gold" />
-          Parcours de formation
+          {t('pathsTitle')}
         </h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -121,7 +123,7 @@ function PathsSection({ paths }: { paths: any[] }) {
                 )}
                 <div className="flex items-center gap-3 mt-2 text-[10px] text-[var(--text-secondary)]">
                   <span className="flex items-center gap-1">
-                    <BookOpen className="w-3 h-3" /> {path.course_count || 0} cours
+                    <BookOpen className="w-3 h-3" /> {t('pathCourses', { count: path.course_count || 0 })}
                   </span>
                   {path.estimated_hours && (
                     <span className="flex items-center gap-1">
@@ -135,7 +137,7 @@ function PathsSection({ paths }: { paths: any[] }) {
               onClick={() => handleEnroll(path.id)}
               className="mt-3 w-full py-2 rounded-lg text-xs font-semibold bg-brand-navy text-white hover:bg-brand-navy-deep dark:bg-brand-gold dark:text-gray-900 dark:hover:bg-brand-gold-dark transition-colors flex items-center justify-center gap-1"
             >
-              S'inscrire <ArrowRight className="w-3 h-3" />
+              {t('enrollPath')} <ArrowRight className="w-3 h-3" />
             </button>
           </div>
         ))}

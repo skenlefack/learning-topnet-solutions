@@ -75,15 +75,15 @@ export default function AdminDashboardContent() {
 
   const TABS: { key: AdminTab; label: string; icon: typeof Users }[] = [
     { key: 'dashboard', label: t('tabDashboard'), icon: TrendingUp },
-    { key: 'categories', label: 'Catégories', icon: Palette },
+    { key: 'categories', label: t('tabCategories'), icon: Palette },
     { key: 'courses', label: t('tabCourses'), icon: BookOpen },
-    { key: 'paths', label: 'Parcours', icon: Route },
-    { key: 'quiz', label: 'Quiz', icon: ListChecks },
+    { key: 'paths', label: t('tabPaths'), icon: Route },
+    { key: 'quiz', label: t('tabQuiz'), icon: ListChecks },
     { key: 'users', label: t('tabUsers'), icon: Users },
     { key: 'sessions', label: t('tabSessions'), icon: Video },
-    { key: 'certificates', label: 'Certificats', icon: Award },
-    { key: 'analytics', label: 'Analytique', icon: BarChart3 },
-    { key: 'tenants', label: 'Tenants', icon: Users },
+    { key: 'certificates', label: t('tabCertificates'), icon: Award },
+    { key: 'analytics', label: t('tabAnalyticsFull'), icon: BarChart3 },
+    { key: 'tenants', label: t('tabTenants'), icon: Users },
   ];
 
   return (

@@ -31,7 +31,12 @@
     "learningHours": "ساعات التعلم",
     "certifications": "الشهادات",
     "progression": "التقدم",
-    "continueLearning": "مواصلة التعلم"
+    "continueLearning": "مواصلة التعلم",
+    "pathsTitle": "مسارات التدريب",
+    "pathCourses": "{count} دورات",
+    "enrollPath": "التسجيل",
+    "enrolledPath": "تم التسجيل في المسار!",
+    "error": "خطأ"
   },
   "courses": {
     "title": "جميع الدورات",
@@ -457,6 +462,9 @@
     "tabUsers": "المستخدمون",
     "tabQuestions": "الأسئلة",
     "tabSessions": "الجلسات المباشرة",
+    "tabCertificates": "الشهادات",
+    "tabAnalyticsFull": "التحليلات",
+    "tabTenants": "المستأجرون",
     "tabAnalytics": "التحليلات",
     "newCourse": "دورة جديدة",
     "newUser": "مستخدم جديد",

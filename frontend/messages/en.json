@@ -31,7 +31,12 @@
     "learningHours": "Learning Hours",
     "certifications": "Certifications",
     "progression": "Progression",
-    "continueLearning": "Continue Learning"
+    "continueLearning": "Continue Learning",
+    "pathsTitle": "Learning Paths",
+    "pathCourses": "{count} courses",
+    "enrollPath": "Enroll",
+    "enrolledPath": "Enrolled in path!",
+    "error": "Error"
   },
   "courses": {
     "title": "All Courses",
@@ -457,6 +462,9 @@
     "tabUsers": "Users",
     "tabQuestions": "Questions",
     "tabSessions": "Live Sessions",
+    "tabCertificates": "Certificates",
+    "tabAnalyticsFull": "Analytics",
+    "tabTenants": "Tenants",
     "tabAnalytics": "Analytics",
     "newCourse": "New course",
     "newUser": "New user",

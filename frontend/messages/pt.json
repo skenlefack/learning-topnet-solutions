@@ -31,7 +31,12 @@
     "learningHours": "Horas de aprendizagem",
     "certifications": "Certificações",
     "progression": "Progressão",
-    "continueLearning": "Continuar aprendendo"
+    "continueLearning": "Continuar aprendendo",
+    "pathsTitle": "Percursos de formação",
+    "pathCourses": "{count} cursos",
+    "enrollPath": "Inscrever-se",
+    "enrolledPath": "Inscrito no percurso!",
+    "error": "Erro"
   },
   "courses": {
     "title": "Todos os cursos",
@@ -457,6 +462,9 @@
     "tabUsers": "Utilizadores",
     "tabQuestions": "Questões",
     "tabSessions": "Sessões ao Vivo",
+    "tabCertificates": "Certificados",
+    "tabAnalyticsFull": "Analítica",
+    "tabTenants": "Tenants",
     "tabAnalytics": "Análises",
     "newCourse": "Novo curso",
     "newUser": "Novo utilizador",
