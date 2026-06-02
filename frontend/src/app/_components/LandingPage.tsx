@@ -149,6 +149,18 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
 
             {/* Actions */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={onSignup}
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
+              >
+                {t_nav('signup')}
+              </button>
+              <button
+                onClick={onLogin}
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
+              >
+                {t_nav('login')}
+              </button>
               {/* Language selector */}
               <div className="relative" ref={langRef}>
                 <button
@@ -187,18 +199,6 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
                   )}
                 </AnimatePresence>
               </div>
-              <button
-                onClick={onSignup}
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
-              >
-                {t_nav('signup')}
-              </button>
-              <button
-                onClick={onLogin}
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
-              >
-                {t_nav('login')}
-              </button>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
