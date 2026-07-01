@@ -2,9 +2,12 @@
 // ============================================================================
 // AU-IBAR Learning — MultiLangInput
 // Reusable input/textarea with 4 language tabs (FR/EN/AR/PT)
+// Includes SYSTRAN auto-translate button
 // ============================================================================
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import clsx from 'clsx';
+import { Languages, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const LANGS = [
   { code: 'fr' as const, label: 'FR' },
@@ -37,10 +40,69 @@ export default function MultiLangInput({
   className,
 }: MultiLangInputProps) {
   const [activeLang, setActiveLang] = useState<LangCode>('fr');
+  const [translating, setTranslating] = useState(false);
 
   const handleChange = (text: string) => {
     onChange({ ...value, [activeLang]: text });
   };
+
+  // Auto-translate: takes the source language text and fills missing languages via SYSTRAN
+  const handleAutoTranslate = useCallback(async () => {
+    // Find source: first non-empty language (prefer fr)
+    const sourceLang = (['fr', 'en', 'ar', 'pt'] as LangCode[]).find(l => value[l]?.trim());
+    if (!sourceLang) {
+      toast.error('Saisissez du texte dans au moins une langue avant de traduire');
+      return;
+    }
+    const sourceText = value[sourceLang]!.trim();
+
+    // Find target languages that are empty
+    const targets = (['fr', 'en', 'ar', 'pt'] as LangCode[]).filter(
+      l => l !== sourceLang && !value[l]?.trim()
+    );
+    if (targets.length === 0) {
+      toast('Toutes les langues sont déjà remplies', { icon: '\u2139\uFE0F' });
+      return;
+    }
+
+    setTranslating(true);
+    const updated = { ...value };
+
+    try {
+      // Call SYSTRAN for each target language in parallel
+      const results = await Promise.allSettled(
+        targets.map(async (target) => {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texts: [sourceText], source: sourceLang, target }),
+          });
+          if (!res.ok) throw new Error(`Erreur traduction ${target}`);
+          const data = await res.json();
+          return { lang: target, text: data.translations?.[0] || '' };
+        })
+      );
+
+      let filled = 0;
+      for (const r of results) {
+        if (r.status === 'fulfilled' && r.value.text) {
+          updated[r.value.lang] = r.value.text;
+          filled++;
+        }
+      }
+
+      onChange(updated);
+      if (filled > 0) {
+        toast.success(`${filled} langue${filled > 1 ? 's' : ''} traduite${filled > 1 ? 's' : ''} (${sourceLang.toUpperCase()} \u2192 ${targets.map(t => t.toUpperCase()).join(', ')})`);
+      } else {
+        toast.error('La traduction a échoué');
+      }
+    } catch {
+      toast.error('Erreur lors de la traduction automatique');
+    } finally {
+      setTranslating(false);
+    }
+  }, [value, onChange]);
 
   const inputClasses = clsx(
     'w-full px-3 py-2 rounded-lg text-sm',
@@ -50,6 +112,11 @@ export default function MultiLangInput({
     activeLang === 'ar' && 'text-right',
   );
 
+  // Show translate button only if at least one lang has text and at least one is empty
+  const hasSource = (['fr', 'en', 'ar', 'pt'] as LangCode[]).some(l => value[l]?.trim());
+  const hasEmpty = (['fr', 'en', 'ar', 'pt'] as LangCode[]).some(l => !value[l]?.trim());
+  const showTranslate = hasSource && hasEmpty;
+
   return (
     <div className={className}>
       {label && (
@@ -58,7 +125,7 @@ export default function MultiLangInput({
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
       )}
-      <div className="flex gap-0.5 mb-1.5">
+      <div className="flex items-center gap-0.5 mb-1.5">
         {LANGS.map(lang => (
           <button
             key={lang.code}
@@ -75,6 +142,27 @@ export default function MultiLangInput({
             {lang.label}
           </button>
         ))}
+        {showTranslate && (
+          <button
+            type="button"
+            onClick={handleAutoTranslate}
+            disabled={translating}
+            title="Traduire automatiquement (SYSTRAN)"
+            className={clsx(
+              'ml-auto flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-colors',
+              'bg-blue-50 text-blue-600 hover:bg-blue-100',
+              'dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+            )}
+          >
+            {translating ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Languages className="w-3 h-3" />
+            )}
+            {translating ? 'Traduction...' : 'Auto-traduire'}
+          </button>
+        )}
       </div>
       {multiline ? (
         <textarea
