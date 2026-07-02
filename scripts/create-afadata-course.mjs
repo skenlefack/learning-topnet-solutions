@@ -45,7 +45,12 @@ async function systranTranslate(text, source, target) {
     });
     if (!res.ok) return '';
     const data = await res.json();
-    return data.outputs?.[0]?.output || '';
+    const raw = data.outputs?.[0]?.output || '';
+    // SYSTRAN wraps output as JSON string '{"text":"Hello"}' — unwrap
+    if (typeof raw === 'string' && raw.startsWith('{')) {
+      try { return JSON.parse(raw).text || raw; } catch { return raw; }
+    }
+    return raw;
   } catch {
     return '';
   }

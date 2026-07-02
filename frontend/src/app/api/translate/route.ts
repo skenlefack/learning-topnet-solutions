@@ -42,7 +42,14 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json();
-    const translations = (data.outputs || []).map((o: any) => o.output);
+    // SYSTRAN wraps output as JSON string: '{"text":"Hello"}' — unwrap it
+    const translations = (data.outputs || []).map((o: any) => {
+      const raw = o.output;
+      if (typeof raw === 'string' && raw.startsWith('{')) {
+        try { return JSON.parse(raw).text || raw; } catch { return raw; }
+      }
+      return raw;
+    });
 
     return NextResponse.json({
       success: true,
