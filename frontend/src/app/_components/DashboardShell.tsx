@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Dashboard Shell
+// Topnet Solutions Academy — Dashboard Shell
 // Layout wrapper: Sidebar + Header + main content slot
 // Animated entrance with framer-motion fade-up stagger
 // ============================================================================

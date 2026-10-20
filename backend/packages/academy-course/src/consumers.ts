@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Course Service Kafka Consumers
+// Topnet Solutions Academy — Course Service Kafka Consumers
 // Listens for events that require cache invalidation or side effects
 // ============================================================================
 import {
@@ -8,7 +8,7 @@ import {
   cacheDel,
   queryOne,
   type AcademyEvent,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { invalidateResolvedCache } from './services/course-resolver';
 
 // ---------------------------------------------------------------------------

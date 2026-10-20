@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — API Client
+// Topnet Solutions Academy — API Client
 // Typed fetch wrapper for all backend microservices
 // ============================================================================
 
@@ -84,6 +84,26 @@ export const pathExamApi = {
     apiFetch<{ success: boolean; data: any }>('/api/assessment/path-exam/start', { token, method: 'POST', body: JSON.stringify({ pathId }) }),
   submit: (token: string, attemptId: string, answers: Record<string, any>) =>
     apiFetch<{ success: boolean; data: any }>('/api/assessment/path-exam/submit', { token, method: 'POST', body: JSON.stringify({ attemptId, answers }) }),
+};
+
+// === Skills API (standalone IT skill tests) ===
+export const skillsApi = {
+  tracks: (params?: { tenantId?: string }) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/assessment/skills/tracks', { params }),
+  track: (code: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/assessment/skills/tracks/${code}`),
+  formats: () =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/assessment/skills/formats'),
+  start: (token: string, data: { trackCode: string; format: string }) =>
+    apiFetch<{ success: boolean; data: any }>('/api/assessment/skills/start', { token, method: 'POST', body: JSON.stringify(data) }),
+  submit: (token: string, data: { attemptId: string; token: string; answers: Record<string, number>; tabSwitches: number; timeUp: boolean }) =>
+    apiFetch<{ success: boolean; data: any }>('/api/assessment/skills/submit', { token, method: 'POST', body: JSON.stringify(data) }),
+  result: (token: string, attemptId: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/assessment/skills/result/${attemptId}`, { token }),
+  history: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/assessment/skills/history', { token }),
+  verify: (certCode: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/assessment/skills/verify/${certCode}`),
 };
 
 // === Resources API ===
@@ -266,6 +286,71 @@ export const profileApi = {
     }
     return res.json();
   },
+};
+
+// === Commerce API (offers, orders, payments, wallet, coupons) ===
+export const commerceApi = {
+  // Public (no auth)
+  offers: (params?: { tenantId?: string }) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/offers/public', { params }),
+  offer: (code: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/commerce/offers/public/${code}`),
+  sponsorGet: (token: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/commerce/sponsor/${token}`),
+  sponsorPay: (sponsorToken: string, data: any) =>
+    apiFetch('/api/commerce/sponsor/' + sponsorToken + '/pay', { method: 'POST', body: JSON.stringify(data) }),
+  // Authenticated
+  createOrder: (token: string, data: any) =>
+    apiFetch('/api/commerce/orders', { token, method: 'POST', body: JSON.stringify(data) }),
+  orders: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/orders', { token }),
+  order: (token: string, ref: string) =>
+    apiFetch<{ success: boolean; data: any }>(`/api/commerce/orders/${ref}`, { token }),
+  cancelOrder: (token: string, ref: string) =>
+    apiFetch(`/api/commerce/orders/${ref}/cancel`, { token, method: 'POST' }),
+  payOrder: (token: string, orderRef: string, data: any) =>
+    apiFetch(`/api/commerce/payments/${orderRef}/pay`, { token, method: 'POST', body: JSON.stringify(data) }),
+  verifyPayment: (token: string, orderRef: string) =>
+    apiFetch(`/api/commerce/payments/${orderRef}/verify`, { token }),
+  wallet: (token: string) =>
+    apiFetch<{ success: boolean; data: any }>('/api/commerce/wallet', { token }),
+  setReferral: (token: string, refCode: string) =>
+    apiFetch('/api/commerce/wallet/referral', { token, method: 'POST', body: JSON.stringify({ refCode }) }),
+  redeemCoupon: (token: string, code: string) =>
+    apiFetch('/api/commerce/coupons/redeem', { token, method: 'POST', body: JSON.stringify({ code }) }),
+  services: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/services', { token }),
+  serviceRequest: (token: string, id: string, request: string) =>
+    apiFetch(`/api/commerce/services/${id}/request`, { token, method: 'POST', body: JSON.stringify({ request }) }),
+  // Admin
+  adminStats: (token: string) =>
+    apiFetch('/api/commerce/admin/stats', { token }),
+  adminOrders: (token: string, params?: { status?: string; q?: string }) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/orders/admin', { token, params }),
+  adminValidateOrder: (token: string, ref: string, data: { approve: boolean; note?: string }) =>
+    apiFetch(`/api/commerce/orders/admin/${ref}/validate`, { token, method: 'POST', body: JSON.stringify(data) }),
+  adminOffers: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/offers/admin', { token }),
+  adminCreateOffer: (token: string, data: any) =>
+    apiFetch('/api/commerce/offers/admin', { token, method: 'POST', body: JSON.stringify(data) }),
+  adminUpdateOffer: (token: string, id: string, data: any) =>
+    apiFetch(`/api/commerce/offers/admin/${id}`, { token, method: 'PUT', body: JSON.stringify(data) }),
+  adminProviders: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/admin/providers', { token }),
+  adminCreateProvider: (token: string, data: any) =>
+    apiFetch('/api/commerce/admin/providers', { token, method: 'POST', body: JSON.stringify(data) }),
+  adminUpdateProvider: (token: string, id: string, data: any) =>
+    apiFetch(`/api/commerce/admin/providers/${id}`, { token, method: 'PUT', body: JSON.stringify(data) }),
+  adminDeleteProvider: (token: string, id: string) =>
+    apiFetch(`/api/commerce/admin/providers/${id}`, { token, method: 'DELETE' }),
+  adminCoupons: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/coupons/admin', { token }),
+  adminCreateCoupons: (token: string, data: any) =>
+    apiFetch('/api/commerce/coupons/admin', { token, method: 'POST', body: JSON.stringify(data) }),
+  adminServices: (token: string) =>
+    apiFetch<{ success: boolean; data: any[] }>('/api/commerce/services/admin', { token }),
+  adminUpdateService: (token: string, id: string, data: any) =>
+    apiFetch(`/api/commerce/services/admin/${id}`, { token, method: 'PUT', body: JSON.stringify(data) }),
 };
 
 // === Admin APIs ===

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — MultiLangInput
+// Topnet Solutions Academy — MultiLangInput
 // Reusable input/textarea with 4 language tabs (FR/EN/AR/PT)
 // Includes SYSTRAN auto-translate button
 // ============================================================================

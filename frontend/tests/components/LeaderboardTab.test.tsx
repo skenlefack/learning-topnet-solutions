@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: LeaderboardTab
+// Topnet Solutions Academy — Component Test: LeaderboardTab
 // Period selector, table headers, entries, scores, country, empty state
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: HeroBanner
+// Topnet Solutions Academy — Component Test: HeroBanner
 // Welcome message, enrollment info, resume button, loading, edge cases
 // ============================================================================
 import { describe, it, expect } from 'vitest';
@@ -96,6 +96,6 @@ describe('HeroBanner', () => {
       />,
     );
     // When user is null, firstName is empty, so fallback text is shown
-    expect(screen.getByText('Bienvenue sur AU-IBAR Learning')).toBeInTheDocument();
+    expect(screen.getByText('Bienvenue sur Topnet Solutions Academy')).toBeInTheDocument();
   });
 });

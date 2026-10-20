@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Admin Routes
+// Topnet Solutions Academy — Admin Routes
 // GET  /admin/stats                          — aggregate statistics
 // GET  /admin/users                          — list users (paginated, filtered)
 // POST /admin/users                          — create user
@@ -19,7 +19,7 @@ import {
   UuidParam,
   UuidParamNamed,
   sendWelcomeEmail,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import crypto from 'crypto';
 
 // ---------------------------------------------------------------------------
@@ -882,7 +882,7 @@ export default async function adminRoutes(app: FastifyInstance) {
       try {
         const ExcelJS = (await import('exceljs')).default;
         const wb = new ExcelJS.Workbook();
-        wb.creator = 'AU-IBAR Learning';
+        wb.creator = 'Topnet Solutions Academy';
         wb.created = new Date();
 
         const ws = wb.addWorksheet('Enrollments');

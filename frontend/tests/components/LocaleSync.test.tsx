@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: LocaleSync
+// Topnet Solutions Academy — Component Test: LocaleSync
 // Syncs Zustand language to cookie + html lang/dir
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -43,6 +43,6 @@ describe('LocaleSync', () => {
 
   it('sets locale cookie', () => {
     render(<LocaleSync />);
-    expect(document.cookie).toContain('aris-locale=fr');
+    expect(document.cookie).toContain('topnet-locale=fr');
   });
 });

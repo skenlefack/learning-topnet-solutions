@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Shared Package Barrel Export
+// Topnet Solutions Academy — Shared Package Barrel Export
 // ============================================================================
 
 // Core infrastructure
@@ -19,6 +19,9 @@ export * from './utils/audit';
 
 // Email (Postmark)
 export * from './utils/email';
+
+// Crypto (payment provider secret encryption)
+export * from './utils/crypto';
 
 // Fastify plugins (register with fastify.register())
 export { default as authPlugin } from './plugins/auth';

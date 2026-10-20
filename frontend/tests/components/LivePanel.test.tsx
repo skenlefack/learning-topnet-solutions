@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: LivePanel
+// Topnet Solutions Academy — Component Test: LivePanel
 // Live badge, join button, empty state, sorting
 // ============================================================================
 import { describe, it, expect } from 'vitest';

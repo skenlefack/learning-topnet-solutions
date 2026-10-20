@@ -5,7 +5,7 @@ SET search_path TO academy_core, public;
 
 -- Tenants hierarchy
 INSERT INTO tenants (id, name, code, level, parent_id) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'AU-IBAR Continental', 'AU-IBAR', 'continental', NULL),
+  ('00000000-0000-0000-0000-000000000001', 'Topnet Solutions Continental', 'Topnet Solutions', 'continental', NULL),
   ('00000000-0000-0000-0000-000000000010', 'ECOWAS', 'ECOWAS', 'rec', '00000000-0000-0000-0000-000000000001'),
   ('00000000-0000-0000-0000-000000000011', 'EAC', 'EAC', 'rec', '00000000-0000-0000-0000-000000000001'),
   ('00000000-0000-0000-0000-000000000012', 'SADC', 'SADC', 'rec', '00000000-0000-0000-0000-000000000001'),
@@ -17,8 +17,8 @@ INSERT INTO tenants (id, name, code, level, parent_id) VALUES
 
 -- Demo admin user
 INSERT INTO users (id, email, first_name, last_name, role, tenant_id, preferred_language) VALUES
-  ('00000000-0000-0000-0000-000000000201', 'serge@au-ibar.org', 'Serge', 'Admin', 'admin_continental', '00000000-0000-0000-0000-000000000001', 'fr'),
-  ('00000000-0000-0000-0000-000000000202', 'amina.osei@au-ibar.org', 'Amina', 'Osei', 'trainer', '00000000-0000-0000-0000-000000000001', 'en'),
+  ('00000000-0000-0000-0000-000000000201', 'serge@topnet-solutions.com', 'Serge', 'Admin', 'admin_continental', '00000000-0000-0000-0000-000000000001', 'fr'),
+  ('00000000-0000-0000-0000-000000000202', 'amina.osei@topnet-solutions.com', 'Amina', 'Osei', 'trainer', '00000000-0000-0000-0000-000000000001', 'en'),
   ('00000000-0000-0000-0000-000000000203', 'jean.baptiste@eac.int', 'Jean-Baptiste', 'Nkurunziza', 'trainer', '00000000-0000-0000-0000-000000000011', 'fr'),
   ('00000000-0000-0000-0000-000000000204', 'fatima.diallo@ecowas.int', 'Fatima', 'Diallo', 'trainer', '00000000-0000-0000-0000-000000000010', 'fr');
 

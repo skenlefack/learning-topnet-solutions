@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Route Tests: Live Session Routes
+// Topnet Solutions Academy — Route Tests: Live Session Routes
 // Tests sessions, recordings, attendance (no real DB)
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
@@ -21,8 +21,8 @@ vi.mock('@fastify/rate-limit', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: (...args: any[]) => mockQuery(...args),
@@ -66,7 +66,7 @@ vi.mock('../../packages/academy-live/src/services/recording-processor', () => ({
 // Import routes after mocks
 // ---------------------------------------------------------------------------
 
-import { authPlugin } from '@aris-academy/shared';
+import { authPlugin } from '@topnet-academy/shared';
 import { sessionRoutes } from '../../packages/academy-live/src/routes/sessions';
 
 // ---------------------------------------------------------------------------
@@ -76,9 +76,9 @@ import { sessionRoutes } from '../../packages/academy-live/src/routes/sessions';
 function signToken(payload: Record<string, any> = {}): string {
   const defaults = {
     sub: 'usr-001',
-    email: 'trainer@au-ibar.org',
+    email: 'trainer@topnet-solutions.com',
     role: 'trainer',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     firstName: 'Test',
     lastName: 'Trainer',

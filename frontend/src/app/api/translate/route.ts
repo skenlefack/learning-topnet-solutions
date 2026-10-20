@@ -1,11 +1,11 @@
 // ============================================================================
-// AU-IBAR Learning — SYSTRAN Translation Proxy
+// Topnet Solutions Academy — SYSTRAN Translation Proxy
 // POST { text, source, target } → { translatedText }
 // Keeps API key server-side
 // ============================================================================
 import { NextRequest, NextResponse } from 'next/server';
 
-const SYSTRAN_URL = 'https://systran.au-ibar.org:8904';
+const SYSTRAN_URL = 'https://systran.topnet-solutions.com:8904';
 const SYSTRAN_KEY = 'ea850eeb-4bf3-45d5-81b3-d0afe1bb172d';
 
 export async function POST(req: NextRequest) {

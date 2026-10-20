@@ -131,7 +131,7 @@ export default function VerifyClient({ cert, certNumber }: Props) {
   const verifyUrl =
     typeof window !== 'undefined'
       ? window.location.href
-      : `https://learning.au-ibar.org/verify/${certNumber}`;
+      : `https://learning.topnet-solutions.com/verify/${certNumber}`;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 sm:py-16">
@@ -144,15 +144,15 @@ export default function VerifyClient({ cert, certNumber }: Props) {
         className="flex items-center justify-center gap-3 mb-8"
       >
         <Image
-          src="/au-logo.png"
-          alt="AU-IBAR"
-          width={44}
-          height={44}
-          className="w-11 h-11 object-contain"
+          src="/logo-topnet.jpg"
+          alt="Topnet Solutions"
+          width={130}
+          height={130}
+          className="w-[130px] h-auto object-contain"
         />
         <div className="leading-none">
           <span className="font-display text-xl text-brand-navy dark:text-white tracking-tight">
-            AU-IBAR
+            Topnet Solutions
           </span>
           <span className="block text-[10px] font-semibold tracking-[0.2em] text-brand-gold uppercase mt-0.5">
             Learning
@@ -337,7 +337,7 @@ export default function VerifyClient({ cert, certNumber }: Props) {
         className="text-center space-y-3"
       >
         <a
-          href="https://learning.au-ibar.org"
+          href="https://learning.topnet-solutions.com"
           className="inline-flex items-center gap-1.5 text-sm text-brand-navy dark:text-brand-gold hover:underline"
         >
           {t('visitLink')}

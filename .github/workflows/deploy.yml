@@ -1,5 +1,5 @@
 # ============================================================================
-# ARIS Academy — Deploy Pipeline
+# Topnet Solutions Academy — Deploy Pipeline
 # Build Docker images, push to GHCR, deploy to VM-ACADEMY via SSH
 # Triggers on push to main or manual dispatch
 # ============================================================================
@@ -17,7 +17,7 @@ concurrency:
 
 env:
   REGISTRY: ${{ secrets.CI_REGISTRY || 'ghcr.io' }}
-  IMAGE_PREFIX: ${{ secrets.CI_REGISTRY_IMAGE || format('ghcr.io/{0}/aris-academy', github.repository_owner) }}
+  IMAGE_PREFIX: ${{ secrets.CI_REGISTRY_IMAGE || format('ghcr.io/{0}/topnet-academy', github.repository_owner) }}
 
 jobs:
   # =========================================================================
@@ -125,7 +125,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           password: ${{ secrets.VM_ACADEMY_PASSWORD }}
           script: |
-            cd /opt/aris-academy
+            cd /opt/topnet-academy
 
             # Pull latest code
             git pull origin main

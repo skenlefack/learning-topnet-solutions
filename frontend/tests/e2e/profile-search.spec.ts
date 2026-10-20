@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — E2E: Profile Management & Global Search
+// Topnet Solutions Academy — E2E: Profile Management & Global Search
 // Edit profile, change language, global search functionality
 // ============================================================================
 import { test, expect } from '@playwright/test';
 
 async function injectAuth(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-001',
@@ -238,7 +238,7 @@ test.describe('Language Switching', () => {
 
     // Language should update in store
     const lang = await page.evaluate(() => {
-      const raw = localStorage.getItem('aris-academy-auth');
+      const raw = localStorage.getItem('topnet-academy-auth');
       return raw ? JSON.parse(raw)?.state?.language : null;
     });
     expect(lang).toBe('en');

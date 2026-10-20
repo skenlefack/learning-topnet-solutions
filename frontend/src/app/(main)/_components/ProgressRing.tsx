@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Animated Progress Ring (SVG)
+// Topnet Solutions Academy — Animated Progress Ring (SVG)
 // stroke-dashoffset animated via CSS transition
 // ============================================================================
 
@@ -19,7 +19,7 @@ export default function ProgressRing({
   size = 80,
   strokeWidth = 6,
   trailColor = 'rgba(255,255,255,0.15)',
-  strokeColor = '#C8A951',
+  strokeColor = '#00B341',
   className = '',
   children,
 }: ProgressRingProps) {

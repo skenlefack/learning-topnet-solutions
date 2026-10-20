@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Reusable OpenAPI JSON Schema definitions
+// Topnet Solutions Academy — Reusable OpenAPI JSON Schema definitions
 // Used by @fastify/swagger to generate spec from route schemas.
 // ============================================================================
 

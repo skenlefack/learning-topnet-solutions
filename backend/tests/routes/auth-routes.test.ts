@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Route Tests: Auth Routes (DEV mode)
+// Topnet Solutions Academy — Route Tests: Auth Routes (DEV mode)
 // Tests POST /auth/login using Fastify inject, no real DB
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
@@ -12,8 +12,8 @@ const TEST_SECRET = 'test-secret-for-auth-routes';
 // Mocks — Kafka, DB, Redis (auth route uses them in production only)
 // ---------------------------------------------------------------------------
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: vi.fn().mockResolvedValue([]),
@@ -104,7 +104,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'serge@au-ibar.org',
+          email: 'serge@topnet-solutions.com',
           password: 'academy2026',
         },
       });
@@ -115,9 +115,9 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
       expect(body.token).toBeDefined();
       expect(typeof body.token).toBe('string');
       expect(body.user).toBeDefined();
-      expect(body.user.email).toBe('serge@au-ibar.org');
+      expect(body.user.email).toBe('serge@topnet-solutions.com');
       expect(body.user.role).toBe('admin_continental');
-      expect(body.user.tenantId).toBe('au-ibar');
+      expect(body.user.tenantId).toBe('topnet-solutions');
       expect(body.user.tenantLevel).toBe('continental');
       expect(body.user.firstName).toBe('Serge');
     });
@@ -127,7 +127,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'amina@au-ibar.org',
+          email: 'amina@topnet-solutions.com',
           password: 'academy2026',
         },
       });
@@ -180,13 +180,13 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'Serge@AU-IBAR.org',
+          email: 'Serge@TOPNET-SOLUTIONS.com',
           password: 'academy2026',
         },
       });
 
       expect(res.statusCode).toBe(200);
-      expect(res.json().user.email).toBe('serge@au-ibar.org');
+      expect(res.json().user.email).toBe('serge@topnet-solutions.com');
     });
 
     it('JWT token should be verifiable with the correct secret', async () => {
@@ -194,7 +194,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'serge@au-ibar.org',
+          email: 'serge@topnet-solutions.com',
           password: 'academy2026',
         },
       });
@@ -204,7 +204,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
       const decoded = jsonwebtoken.verify(token, TEST_SECRET) as any;
       expect(decoded.sub).toBe('usr_serge_001');
       expect(decoded.role).toBe('admin_continental');
-      expect(decoded.tenantId).toBe('au-ibar');
+      expect(decoded.tenantId).toBe('topnet-solutions');
     });
   });
 
@@ -218,7 +218,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'serge@au-ibar.org',
+          email: 'serge@topnet-solutions.com',
           password: 'wrong-password',
         },
       });
@@ -234,7 +234,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'serge@au-ibar.org',
+          email: 'serge@topnet-solutions.com',
           password: '',
         },
       });
@@ -266,7 +266,7 @@ describe('Auth Routes — POST /auth/login (DEV mode)', () => {
         method: 'POST',
         url: '/auth/login',
         payload: {
-          email: 'serge@au-ibar.org',
+          email: 'serge@topnet-solutions.com',
         },
       });
 

@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — E2E: Complete Course Flow
+// Topnet Solutions Academy — E2E: Complete Course Flow
 // Catalogue → Course Detail → Enroll → Lesson → Quiz → Completion
 // ============================================================================
 import { test, expect } from '@playwright/test';
 
 async function injectAuth(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-001',

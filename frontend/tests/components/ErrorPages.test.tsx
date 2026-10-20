@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: Error/Loading/NotFound pages
+// Topnet Solutions Academy — Component Test: Error/Loading/NotFound pages
 // ============================================================================
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';

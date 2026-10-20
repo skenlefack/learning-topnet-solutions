@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Analytics Dashboard (Admin)
+// Topnet Solutions Academy — Analytics Dashboard (Admin)
 // Engagement trends, path analytics, export reports
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';
@@ -20,7 +20,7 @@ function getLocalText(t: any, lang = 'fr') {
 }
 
 // Simple inline bar chart
-function MiniChart({ data, color = '#1A5632' }: { data: { day: string; count: number }[]; color?: string }) {
+function MiniChart({ data, color = '#1B0CB3' }: { data: { day: string; count: number }[]; color?: string }) {
   if (!data || data.length === 0) return <div className="h-16 flex items-end text-xs text-[var(--text-secondary)]">Aucune donnée</div>;
   const max = Math.max(...data.map(d => d.count), 1);
   return (
@@ -123,10 +123,10 @@ export default function AnalyticsDashboard() {
 
       {/* Engagement trend cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TrendCard title="Inscriptions" value={totalEnrollments14d} data={eng.enrollments} icon={Users} color="#1A5632" />
-        <TrendCard title="Complétions" value={totalCompletions14d} data={eng.completions} icon={Award} color="#B8952E" />
-        <TrendCard title="Apprenants actifs" value={totalActive14d} data={eng.activeLearners} icon={TrendingUp} color="#0e591a" />
-        <TrendCard title="Certifications" value={totalCerts14d} data={eng.certifications} icon={Award} color="#930e2d" />
+        <TrendCard title="Inscriptions" value={totalEnrollments14d} data={eng.enrollments} icon={Users} color="#1B0CB3" />
+        <TrendCard title="Complétions" value={totalCompletions14d} data={eng.completions} icon={Award} color="#009930" />
+        <TrendCard title="Apprenants actifs" value={totalActive14d} data={eng.activeLearners} icon={TrendingUp} color="#1B0CB3" />
+        <TrendCard title="Certifications" value={totalCerts14d} data={eng.certifications} icon={Award} color="#1B0CB3" />
       </div>
 
       {/* Learning Paths Analytics */}

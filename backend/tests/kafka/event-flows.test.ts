@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Kafka Event Flow Tests
+// Topnet Solutions Academy — Kafka Event Flow Tests
 // Tests event-driven flows between services by invoking consumer handler logic
 // directly (no real Kafka broker needed).
 //
@@ -31,8 +31,8 @@ vi.mock('../../packages/shared/src/kafka/index', async (importOriginal) => {
   };
 });
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     publishEvent: vi.fn().mockResolvedValue(undefined),
@@ -47,7 +47,7 @@ vi.mock('@aris-academy/shared', async (importOriginal) => {
 
 import { getTestPool, testQuery, testQueryOne, closeTestPool } from '../helpers/db';
 import { IDS, seedTestData, cleanTestData } from '../helpers/fixtures';
-import { cacheSet, cacheGet, cacheDel, getRedis } from '@aris-academy/shared';
+import { cacheSet, cacheGet, cacheDel, getRedis } from '@topnet-academy/shared';
 
 // ============================================================================
 // Suite
@@ -176,7 +176,7 @@ describe('Kafka Event Flows', () => {
       );
       expect(cert).toBeTruthy();
       expect(cert.level).toBe('beginner');
-      expect(cert.certificate_number).toMatch(/^ARIS-/);
+      expect(cert.certificate_number).toMatch(/^TOPNET-/);
     });
 
     it('checkLevelUnlock is idempotent (does not duplicate certification)', async () => {

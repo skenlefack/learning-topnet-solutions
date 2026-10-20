@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Lesson Player (immersive)
+// Topnet Solutions Academy — Lesson Player (immersive)
 // Video (HLS / heartbeat / resume / auto-complete), Text (scroll tracking),
 // Quiz (one-at-a-time, timer, feedback), Replay, prev/next, module sidebar
 // ============================================================================
@@ -149,7 +149,7 @@ export default function LessonPlayerPage() {
       >
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/dashboard" className="shrink-0">
-            <img src="/au-logo.png" alt="AU-IBAR" className="w-7 h-7 object-contain" />
+            <img src="/logo-topnet.jpg" alt="Topnet Solutions" className="w-[120px] h-auto object-contain" />
           </Link>
           <Link
             href={courseId ? `/courses/${courseId}` : '/courses'}

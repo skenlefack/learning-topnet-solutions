@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Community Page
+// Topnet Solutions Academy — Community Page
 // Full-page layout: hero header, 3 tabs (Forum, Leaderboard, Study Groups)
 // ============================================================================
 import { useState } from 'react';

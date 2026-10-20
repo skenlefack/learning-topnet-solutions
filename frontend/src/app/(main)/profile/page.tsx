@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Profile Page
+// Topnet Solutions Academy — Profile Page
 // Avatar upload, editable fields, read-only info, save
 // ============================================================================
 import { useState, useEffect, useCallback, useRef } from 'react';

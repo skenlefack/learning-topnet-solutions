@@ -1,5 +1,5 @@
 {
-  "name": "@aris-academy/academy-course",
+  "name": "@topnet-academy/academy-course",
   "version": "1.0.0",
   "private": true,
   "main": "dist/server.js",
@@ -9,7 +9,7 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
-    "@aris-academy/shared": "*",
+    "@topnet-academy/shared": "*",
     "fastify": "^4.25.0",
     "@fastify/jwt": "^8.0.0",
     "@fastify/cors": "^9.0.0",

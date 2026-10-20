@@ -52,7 +52,7 @@ export async function generateMetadata({
 
   if (!cert) {
     return {
-      title: 'Certificate Not Found | AU-IBAR Learning',
+      title: 'Certificate Not Found | Topnet Solutions Academy',
       description: 'This certificate could not be verified.',
     };
   }
@@ -61,14 +61,14 @@ export async function generateMetadata({
   const courseTitle = getTitle(cert.course_title);
 
   return {
-    title: `${holderName} — ${courseTitle} | AU-IBAR Certification`,
-    description: `Verified AU-IBAR Learning certification (${cert.level}) for ${holderName}. Certificate ${cert.certificate_number}, issued ${new Date(cert.issued_at).toLocaleDateString('en')}.`,
+    title: `${holderName} — ${courseTitle} | Topnet Solutions Certification`,
+    description: `Verified Topnet Solutions Academy certification (${cert.level}) for ${holderName}. Certificate ${cert.certificate_number}, issued ${new Date(cert.issued_at).toLocaleDateString('en')}.`,
     openGraph: {
-      title: `AU-IBAR Certification — ${holderName}`,
-      description: `${courseTitle} (${cert.level}) — Verified by AU-IBAR Learning`,
-      siteName: 'AU-IBAR Learning',
+      title: `Topnet Solutions Certification — ${holderName}`,
+      description: `${courseTitle} (${cert.level}) — Verified by Topnet Solutions Academy`,
+      siteName: 'Topnet Solutions Academy',
       type: 'website',
-      url: `https://learning.au-ibar.org/verify/${cert.certificate_number}`,
+      url: `https://learning.topnet-solutions.com/verify/${cert.certificate_number}`,
     },
   };
 }

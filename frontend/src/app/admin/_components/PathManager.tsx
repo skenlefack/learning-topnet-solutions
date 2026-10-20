@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Learning Path Manager (Admin)
+// Topnet Solutions Academy — Learning Path Manager (Admin)
 // CRUD for multi-course learning paths (parcours de formation)
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';

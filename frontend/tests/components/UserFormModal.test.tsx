@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: UserFormModal
+// Topnet Solutions Academy — Component Test: UserFormModal
 // Tests form rendering, validation, edit mode, submission
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -31,7 +31,7 @@ vi.mock('react-hot-toast', () => ({
 vi.mock('@/lib/api', () => ({
   adminApi: {
     tenants: vi.fn().mockResolvedValue({ data: [
-      { id: 't1', name: 'AU-IBAR', level: 'continental' },
+      { id: 't1', name: 'Topnet Solutions', level: 'continental' },
       { id: 't2', name: 'ECOWAS', level: 'rec' },
       { id: 't3', name: 'Kenya', level: 'country', code: 'KE', parent_id: 't2' },
     ]}),

@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Mock Login API
+// Topnet Solutions Academy — Mock Login API
 // POST { email, password } → { token, user } + Set-Cookie
 // ============================================================================
 import { NextRequest, NextResponse } from 'next/server';
@@ -8,21 +8,21 @@ import { signToken, buildCookieHeader } from '@/lib/auth';
 const DEV_PASSWORD = 'academy2026';
 
 const DEMO_USERS: Record<string, { id: string; firstName: string; lastName: string; role: string; tenantId: string; tenantLevel: string; preferredLanguage: string }> = {
-  'serge@au-ibar.org': {
+  'serge@topnet-solutions.com': {
     id: 'usr_serge_001',
     firstName: 'Serge',
     lastName: 'Nakouzi',
     role: 'admin_continental',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     preferredLanguage: 'fr',
   },
-  'amina@au-ibar.org': {
+  'amina@topnet-solutions.com': {
     id: 'usr_amina_002',
     firstName: 'Amina',
     lastName: 'Diallo',
     role: 'trainer',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     preferredLanguage: 'fr',
   },

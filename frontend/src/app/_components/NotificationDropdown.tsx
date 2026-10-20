@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — NotificationDropdown
+// Topnet Solutions Academy — NotificationDropdown
 // Bell icon with unread count badge, dropdown with scrollable notification list
 // Uses SWR-style polling every 30s for unread count
 // ============================================================================

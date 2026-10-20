@@ -31,8 +31,8 @@ beforeAll(async () => {
   // Create tenant hierarchy
   continentalTenant = await createTenant({
     id: 'tenant-continental',
-    name: 'AU-IBAR',
-    code: 'AU',
+    name: 'Topnet Solutions',
+    code: 'TOPNET',
     level: 'continental',
   });
 
@@ -63,7 +63,7 @@ beforeAll(async () => {
   // Create users in different tenants
   continentalAdmin = await createUser({
     id: 'user-continental-admin',
-    email: 'admin@au-ibar.org',
+    email: 'admin@topnet-solutions.com',
     role: 'admin_continental',
     tenantId: 'tenant-continental',
   });
@@ -121,8 +121,8 @@ beforeAll(async () => {
   continentalCourse = await createCourse({
     id: 'course-continental-001',
     tenantId: 'tenant-continental',
-    title: { en: 'ARIS Foundation' },
-    slug: 'aris-foundation',
+    title: { en: 'Topnet Foundation' },
+    slug: 'topnet-foundation',
   });
 });
 

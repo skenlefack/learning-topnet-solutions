@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Learning Service Consumers
+// Topnet Solutions Academy — Learning Service Consumers
 // Kafka topics  : COURSE_PUBLISHED, COURSE_UPDATED, CERTIFICATION_ISSUED,
 //                 LIVE_RECORDED, PROGRESS_UPDATED
 // Background job: video heartbeat flush (every 5 min)
@@ -9,8 +9,8 @@ import {
   query, queryOne,
   cacheDel, publishEvent,
   sendNotificationEmail,
-} from '@aris-academy/shared';
-import type { AcademyEvent } from '@aris-academy/shared';
+} from '@topnet-academy/shared';
+import type { AcademyEvent } from '@topnet-academy/shared';
 import {
   getNextLevel,
   updateLeaderboard,

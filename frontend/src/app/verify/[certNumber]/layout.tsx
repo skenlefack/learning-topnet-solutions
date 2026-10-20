@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Verify Certificate | AU-IBAR Learning',
-  description: 'Verify the authenticity of an AU-IBAR Learning certification',
+  title: 'Verify Certificate | Topnet Solutions Academy',
+  description: 'Verify the authenticity of a Topnet Solutions Academy certification',
 };
 
 export default function VerifyLayout({ children }: { children: React.ReactNode }) {

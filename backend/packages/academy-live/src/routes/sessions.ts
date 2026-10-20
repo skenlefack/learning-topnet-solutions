@@ -1,11 +1,11 @@
 // ============================================================================
-// ARIS Academy — Live Session Routes
+// Topnet Solutions Academy — Live Session Routes
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   query, queryOne, publishEvent, paginate, TOPICS,
   UuidParam, PaginationQuery, MultiLangTextSchema, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { bbbClient } from '../services/bbb-client';
 import { processRecording } from '../services/recording-processor';
 
@@ -15,7 +15,7 @@ import { processRecording } from '../services/recording-processor';
 const MOCK_SESSIONS = [
   {
     id: 'mock-session-1',
-    title: { fr: 'Formation ARIS 3.0 — Introduction', en: 'ARIS 3.0 Training — Introduction' },
+    title: { fr: 'Formation Academy — Introduction', en: 'Academy Training — Introduction' },
     description: { fr: 'Session de formation introductive' },
     status: 'scheduled',
     scheduled_at: new Date(Date.now() + 2 * 86400000).toISOString(),
@@ -23,7 +23,7 @@ const MOCK_SESSIONS = [
     max_participants: 300,
     trainer_first_name: 'Dr. Amina',
     trainer_last_name: 'Diallo',
-    course_title: { fr: 'Introduction à ARIS 3.0' },
+    course_title: { fr: 'Introduction à la plateforme Academy' },
     current_attendees: 0,
     registered_count: 45,
   },
@@ -215,7 +215,7 @@ export async function sessionRoutes(app: FastifyInstance) {
     }
 
     const body = req.body as any;
-    const meetingId = `aris-academy-${Date.now()}`;
+    const meetingId = `topnet-academy-${Date.now()}`;
 
     const session = await queryOne(`
       INSERT INTO academy_core.live_sessions
@@ -344,7 +344,7 @@ export async function sessionRoutes(app: FastifyInstance) {
       [req.params.id],
     );
 
-    // Notify each registered participant via ARIS Message Service
+    // Notify each registered participant via Topnet Message Service
     for (const att of attendees) {
       await publishEvent('academy.notification.session_cancelled', {
         sessionId: session.id,
@@ -536,8 +536,8 @@ export async function sessionRoutes(app: FastifyInstance) {
     }
 
     const sessionTitle = typeof session.title === 'object'
-      ? (session.title.fr || session.title.en || 'ARIS Session')
-      : (session.title || 'ARIS Session');
+      ? (session.title.fr || session.title.en || 'Academy Session')
+      : (session.title || 'Academy Session');
 
     try {
       const result = await bbbClient.createMeeting({

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Live Service (academy-live)
+// Topnet Solutions Academy — Live Service (academy-live)
 // Port: 4004
 // Manages: BigBlueButton sessions, scheduling, recording, attendance
 // ============================================================================
@@ -14,7 +14,7 @@ import {
   requestLoggerPlugin,
   swaggerPlugin,
   getCorsConfig,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { sessionRoutes } from './routes/sessions';
 import { recordingRoutes } from './routes/recordings';
 import { webhookRoutes } from './routes/webhooks';

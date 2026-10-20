@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Route Tests: Admin Routes
+// Topnet Solutions Academy — Route Tests: Admin Routes
 // Tests user management, stats, tenants (no real DB)
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
@@ -21,8 +21,8 @@ vi.mock('@fastify/rate-limit', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: (...args: any[]) => mockQuery(...args),
@@ -59,7 +59,7 @@ vi.mock('../../packages/shared/src/kafka/index', async (importOriginal) => {
 // Import routes after mocks
 // ---------------------------------------------------------------------------
 
-import { authPlugin } from '@aris-academy/shared';
+import { authPlugin } from '@topnet-academy/shared';
 import adminRoutes from '../../packages/academy-learning/src/routes/admin';
 
 // ---------------------------------------------------------------------------
@@ -69,9 +69,9 @@ import adminRoutes from '../../packages/academy-learning/src/routes/admin';
 function signToken(payload: Record<string, any> = {}): string {
   const defaults = {
     sub: 'usr-admin-001',
-    email: 'admin@au-ibar.org',
+    email: 'admin@topnet-solutions.com',
     role: 'admin_continental',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     firstName: 'Admin',
     lastName: 'Test',
@@ -302,7 +302,7 @@ describe('Admin Routes — API (Fastify inject)', () => {
   describe('GET /admin/tenants', () => {
     it('should return 200 with tenants list', async () => {
       mockQuery.mockResolvedValue([
-        { id: 't1', name: 'AU-IBAR', level: 'continental' },
+        { id: 't1', name: 'Topnet Solutions', level: 'continental' },
         { id: 't2', name: 'Kenya', level: 'country' },
       ]);
 

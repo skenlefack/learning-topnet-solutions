@@ -1,11 +1,11 @@
 // ============================================================================
-// ARIS Academy — Integration Tests: Live Session Routes
+// Topnet Solutions Academy — Integration Tests: Live Session Routes
 // Tests real PostgreSQL + Redis via Testcontainers, mocks Kafka + BBB
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
-import { authPlugin, tenantScopePlugin } from '@aris-academy/shared';
+import { authPlugin, tenantScopePlugin } from '@topnet-academy/shared';
 import { TOKENS } from '../../helpers/jwt';
 import { IDS, seedTestData, cleanTestData } from '../../helpers/fixtures';
 import { getTestPool, testQuery, testQueryOne, closeTestPool } from '../../helpers/db';
@@ -31,8 +31,8 @@ vi.mock('../../../packages/shared/src/kafka/index', async (importOriginal) => {
   };
 });
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     publishEvent: vi.fn().mockResolvedValue(undefined),
@@ -87,7 +87,7 @@ async function insertSession(overrides: Record<string, unknown> = {}): Promise<a
     trainerId: IDS.users.amina, // trainer
     tenantId: IDS.tenants.continental,
     status: 'scheduled' as string,
-    bbbMeetingId: `aris-academy-test-${Date.now()}`,
+    bbbMeetingId: `topnet-academy-test-${Date.now()}`,
     scheduledAt: new Date(Date.now() + 86400000).toISOString(), // tomorrow
     durationMinutes: 60,
     maxParticipants: 300,

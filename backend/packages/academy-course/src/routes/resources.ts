@@ -1,9 +1,9 @@
 // ============================================================================
-// ARIS Academy — Resources Routes
+// Topnet Solutions Academy — Resources Routes
 // List all documents/files published by trainers across courses
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { query, BearerSecurity } from '@aris-academy/shared';
+import { query, BearerSecurity } from '@topnet-academy/shared';
 
 export async function resourceRoutes(app: FastifyInstance) {
   // GET / — List all resources (lessons with documents or videos)

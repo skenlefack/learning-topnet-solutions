@@ -15,16 +15,16 @@ const notoSansArabic = Noto_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: 'AU-IBAR Learning | Online Training Platform',
-  description: 'Online training platform of the African Union — Interafrican Bureau for Animal Resources. Capacity building for 55 Member States.',
-  keywords: ['AU-IBAR', 'e-learning', 'training', 'African Union', 'capacity building', 'Africa'],
-  authors: [{ name: 'AU-IBAR', url: 'https://au-ibar.org' }],
+  title: 'Topnet Solutions Academy | Plateforme de Formation en Ligne',
+  description: 'Plateforme de formation en ligne de Topnet Solutions. Développez vos compétences avec nos formations professionnelles certifiantes.',
+  keywords: ['Topnet Solutions', 'e-learning', 'formation', 'certification', 'academy', 'Cameroun'],
+  authors: [{ name: 'Topnet Solutions', url: 'https://topnet-solutions.com' }],
   openGraph: {
-    title: 'AU-IBAR Learning',
-    description: 'Online training platform for the 55 Member States of the African Union',
-    url: 'https://learning.au-ibar.org',
-    siteName: 'AU-IBAR Learning',
-    locale: 'en',
+    title: 'Topnet Solutions Academy',
+    description: 'Plateforme de formation en ligne de Topnet Solutions. Formations professionnelles certifiantes.',
+    url: 'https://learning.topnet-solutions.com',
+    siteName: 'Topnet Solutions Academy',
+    locale: 'fr',
     type: 'website',
   },
 };
@@ -37,10 +37,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1A5632" />
+        <meta name="theme-color" content="#1B0CB3" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="AU-IBAR Learning" />
+        <meta name="apple-mobile-web-app-title" content="Topnet Academy" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={`font-sans antialiased ${notoSansArabic.variable}`}>
@@ -59,7 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   padding: '0.75rem 1rem',
                 },
                 success: {
-                  iconTheme: { primary: '#1A5632', secondary: '#fff' },
+                  iconTheme: { primary: '#1B0CB3', secondary: '#fff' },
                 },
                 error: {
                   iconTheme: { primary: '#ef4444', secondary: '#fff' },

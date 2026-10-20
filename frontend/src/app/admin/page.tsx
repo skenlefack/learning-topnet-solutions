@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Admin Dashboard
+// Topnet Solutions Academy — Admin Dashboard
 // Lazy-loaded back-office with stats, charts, CRUD, role-scoped data
 // ============================================================================
 import { Suspense, lazy } from 'react';

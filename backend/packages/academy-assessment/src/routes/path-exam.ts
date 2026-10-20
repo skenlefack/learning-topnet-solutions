@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Path Composite Exam Routes
+// Topnet Solutions Academy — Path Composite Exam Routes
 // Start and submit exams that pull questions from all courses in a path
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 import {
   query, queryOne, transaction, validateBody, publishEvent, TOPICS,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 const startSchema = z.object({ pathId: z.string().uuid() });
 const submitSchema = z.object({
@@ -207,7 +207,7 @@ export async function pathExamRoutes(app: FastifyInstance) {
       );
 
       // Issue path certification
-      const certNumber = `ARIS-PATH-${new Date().getFullYear()}-${attempt.path_id.substring(0, 4).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+      const certNumber = `TOPNET-PATH-${new Date().getFullYear()}-${attempt.path_id.substring(0, 4).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
       certification = await queryOne(
         `INSERT INTO academy_core.certifications
            (user_id, course_id, path_id, level, status, certificate_number, issued_at, expires_at)

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Home / Landing Page
+// Topnet Solutions Academy — Home / Landing Page
 // Public landing page — middleware redirects authenticated users to /dashboard
 // ============================================================================
 import LandingPage from './_components/LandingPage';

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Stats Grid
+// Topnet Solutions Academy — Stats Grid
 // 4 stat cards with count-up animation on mount
 // ============================================================================
 import { useEffect, useRef, useState } from 'react';

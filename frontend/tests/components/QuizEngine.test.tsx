@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: QuizEngine
+// Topnet Solutions Academy — Component Test: QuizEngine
 // Question navigation, answer selection, scoring, timer, edge cases
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

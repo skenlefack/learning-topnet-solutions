@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Certification Panel
+// Topnet Solutions Academy — Certification Panel
 // Sidebar panel showing certification progress & issued certificates
 // ============================================================================
 import Link from 'next/link';
@@ -42,7 +42,7 @@ export default function CertificationPanel({ certifications, enrollments, isLoad
     <div className="rounded-xl border border-[var(--border)] bg-white dark:bg-surface-dark-card p-4 space-y-3">
       <div className="flex items-center gap-2">
         <Award className="w-4 h-4 text-brand-gold" />
-        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Certifications AU-IBAR</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Certifications Topnet Solutions</h3>
       </div>
 
       <div className="space-y-2">

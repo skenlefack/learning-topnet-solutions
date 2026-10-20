@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Mock Register API
+// Topnet Solutions Academy — Mock Register API
 // POST { firstName, lastName, email, password } → { token, user } + Set-Cookie
 // ============================================================================
 import { NextRequest, NextResponse } from 'next/server';
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       role: 'learner',
-      tenantId: 'au-ibar',
+      tenantId: 'topnet-solutions',
       tenantLevel: 'continental',
       preferredLanguage: 'fr',
     };

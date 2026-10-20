@@ -16,7 +16,7 @@ export default function GlobalError({
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[AU-IBAR Learning] Unhandled error:', error);
+      console.error('[Topnet Solutions Academy] Unhandled error:', error);
     }
   }, [error]);
 
@@ -83,7 +83,7 @@ export default function GlobalError({
         </div>
 
         <p className="mt-12 text-xs text-[var(--text-secondary)]/60">
-          AU-IBAR Learning
+          Topnet Solutions Academy
         </p>
       </div>
     </div>

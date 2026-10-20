@@ -1,9 +1,9 @@
 // ============================================================================
-// AU-IBAR Learning — Certificate Template Routes
+// Topnet Solutions Academy — Certificate Template Routes
 // CRUD for certificate design templates by level
 // ============================================================================
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { query, queryOne, BearerSecurity, UuidParam } from '@aris-academy/shared';
+import { query, queryOne, BearerSecurity, UuidParam } from '@topnet-academy/shared';
 
 const ADMIN_ROLES = ['admin_country', 'admin_rec', 'admin_continental'];
 

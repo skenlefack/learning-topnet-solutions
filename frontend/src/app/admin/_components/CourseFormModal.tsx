@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — CourseForm
+// Topnet Solutions Academy — CourseForm
 // 3-step wizard: Metadata → Modules → Lessons
 // Inline view (replaces course list) with back button
 // ============================================================================

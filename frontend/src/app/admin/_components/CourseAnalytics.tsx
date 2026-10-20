@@ -18,7 +18,7 @@ interface Props {
   onClose: () => void;
 }
 
-const FUNNEL_COLORS = ['#2E7D32', '#4CAF50', '#C8A951', '#7B1639'];
+const FUNNEL_COLORS = ['#2E7D32', '#4CAF50', '#00B341', '#A09060'];
 
 function getLocalizedText(text: Record<string, string> | string | undefined): string {
   if (!text) return '';
@@ -156,7 +156,7 @@ export default function CourseAnalytics({ courseId, courseTitle, onClose }: Prop
                   fontSize: 12,
                 }}
               />
-              <Bar dataKey="count" fill="#C8A951" radius={[4, 4, 0, 0]} name={t('students')} />
+              <Bar dataKey="count" fill="#00B341" radius={[4, 4, 0, 0]} name={t('students')} />
             </BarChart>
           </ResponsiveContainer>
         </div>

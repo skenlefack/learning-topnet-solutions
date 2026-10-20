@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "ARIS Academy — Production Monitoring Dashboard",
+  "description": "Topnet Solutions Academy — Production Monitoring Dashboard",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -728,7 +728,7 @@
     }
   ],
   "schemaVersion": 39,
-  "tags": ["aris-academy", "production"],
+  "tags": ["topnet-academy", "production"],
   "templating": {
     "list": [
       {
@@ -750,7 +750,7 @@
   "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "ARIS Academy — Production",
-  "uid": "aris-academy-prod",
+  "title": "Topnet Solutions Academy — Production",
+  "uid": "topnet-academy-prod",
   "version": 1
 }

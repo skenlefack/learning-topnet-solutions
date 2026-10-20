@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — LeaderboardTab
+// Topnet Solutions Academy — LeaderboardTab
 // Ranking table from /dashboard/leaderboard endpoint
 // ============================================================================
 import { useState, useEffect } from 'react';

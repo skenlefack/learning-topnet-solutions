@@ -1,8 +1,8 @@
-# ARIS Academy
+# Topnet Solutions Academy
 
-**LMS multi-tenant certifiant pour AU-IBAR / ARIS 3.0 — 55 pays africains**
+**LMS multi-tenant certifiant pour Topnet Solutions / Topnet Solutions — 55 pays africains**
 
-Production: [https://learning.au-ibar.org](https://learning.au-ibar.org)
+Production: [https://learning.topnet-solutions.com](https://learning.topnet-solutions.com)
 
 ---
 
@@ -60,7 +60,7 @@ Continental (AU) ─► REC (ECOWAS, SADC, ...) ─► Country (55 member states
 ```bash
 # Clone
 git clone <repository-url>
-cd learn.au-aris.org
+cd learn.topnet-solutions.com
 
 # Environment
 cp .env.example .env
@@ -86,7 +86,7 @@ The frontend will be available at `http://localhost:3000`.
 ## Project Structure
 
 ```
-learn.au-aris.org/
+learn.topnet-solutions.com/
 ├── frontend/                  # Next.js 14 application
 │   ├── app/                   # App Router pages
 │   ├── components/            # React components
@@ -99,7 +99,7 @@ learn.au-aris.org/
 │   ├── assessment-service/    # Quizzes & certification (port 4003)
 │   └── live-service/          # BBB integration & attendance (port 4004)
 ├── packages/
-│   └── shared/                # @aris-academy/shared (types, auth, plugins)
+│   └── shared/                # @topnet-academy/shared (types, auth, plugins)
 ├── infra/
 │   ├── docker/                # Dockerfiles
 │   ├── scripts/               # Backup, restore, seed, health-check
@@ -207,7 +207,7 @@ Disaster recovery: [docs/DISASTER-RECOVERY.md](docs/DISASTER-RECOVERY.md)
 
 ## Languages
 
-ARIS Academy supports four languages across all UI and content:
+Topnet Solutions Academy supports four languages across all UI and content:
 
 | Code | Language   |
 |------|------------|
@@ -239,5 +239,5 @@ Content uses `MultiLangText` JSONB fields: `{ "en": "...", "fr": "...", "ar": ".
 
 ## License
 
-Proprietary — African Union Inter-African Bureau for Animal Resources (AU-IBAR).
+Proprietary — African Union Inter-African Bureau for Animal Resources (Topnet Solutions).
 All rights reserved.

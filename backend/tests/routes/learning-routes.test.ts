@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Route Tests: Learning Routes
+// Topnet Solutions Academy — Route Tests: Learning Routes
 // Tests dashboard, notifications, profile, enrollments (no real DB)
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, vi, beforeEach } from 'vitest';
@@ -20,8 +20,8 @@ vi.mock('@fastify/rate-limit', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: (...args: any[]) => mockQuery(...args),
@@ -65,7 +65,7 @@ vi.mock('../../packages/academy-learning/src/services/minio', () => ({
 // Import routes after mocks
 // ---------------------------------------------------------------------------
 
-import { authPlugin } from '@aris-academy/shared';
+import { authPlugin } from '@topnet-academy/shared';
 import dashboardRoutes from '../../packages/academy-learning/src/routes/dashboard';
 import notificationRoutes from '../../packages/academy-learning/src/routes/notifications';
 import profileRoutes from '../../packages/academy-learning/src/routes/profile';

@@ -15,3 +15,5 @@ test-output.txt
 test-err.txt
 .claude/
 *.docx
+docker-compose.override.yml
+playwright-report/

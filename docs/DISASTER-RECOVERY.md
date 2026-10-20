@@ -1,6 +1,6 @@
 # Disaster Recovery Plan
 
-**ARIS Academy** — learning.au-ibar.org
+**Topnet Solutions Academy** — learning.topnet-solutions.com
 **Last updated**: 2026-04-17
 
 ---
@@ -68,7 +68,7 @@ Backups are triggered by cron (see `infra/scripts/backup-cron.conf`).
 ```bash
 # Full backup (custom format, compressed)
 docker exec academy-postgres pg_dump \
-  -U aris_user -d aris_academy \
+  -U topnet_user -d topnet_academy \
   -Fc -f /tmp/manual-backup.dump
 
 # Copy out of container
@@ -76,7 +76,7 @@ docker cp academy-postgres:/tmp/manual-backup.dump /backups/postgres/
 
 # Schema-only backup
 docker exec academy-postgres pg_dump \
-  -U aris_user -d aris_academy \
+  -U topnet_user -d topnet_academy \
   --schema-only -f /tmp/schema-backup.sql
 
 docker cp academy-postgres:/tmp/schema-backup.sql /backups/postgres/
@@ -88,10 +88,10 @@ Use the interactive restore script `infra/scripts/restore-postgres.sh` (213 line
 
 ```bash
 # Interactive restore (prompts for confirmation)
-./infra/scripts/restore-postgres.sh /backups/postgres/daily/aris_academy_2026-04-17.dump
+./infra/scripts/restore-postgres.sh /backups/postgres/daily/topnet_academy_2026-04-17.dump
 
 # Force restore (no confirmation, terminates active connections)
-./infra/scripts/restore-postgres.sh /backups/postgres/daily/aris_academy_2026-04-17.dump --force
+./infra/scripts/restore-postgres.sh /backups/postgres/daily/topnet_academy_2026-04-17.dump --force
 ```
 
 The restore script:
@@ -108,16 +108,16 @@ The restore script:
 docker compose stop course-service learning-service assessment-service live-service frontend
 
 # Terminate active connections
-docker exec academy-postgres psql -U aris_user -d postgres -c \
-  "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'aris_academy' AND pid <> pg_backend_pid();"
+docker exec academy-postgres psql -U topnet_user -d postgres -c \
+  "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'topnet_academy' AND pid <> pg_backend_pid();"
 
 # Drop and recreate
-docker exec academy-postgres psql -U aris_user -d postgres -c "DROP DATABASE IF EXISTS aris_academy;"
-docker exec academy-postgres psql -U aris_user -d postgres -c "CREATE DATABASE aris_academy OWNER aris_user;"
+docker exec academy-postgres psql -U topnet_user -d postgres -c "DROP DATABASE IF EXISTS topnet_academy;"
+docker exec academy-postgres psql -U topnet_user -d postgres -c "CREATE DATABASE topnet_academy OWNER topnet_user;"
 
 # Restore
-docker cp /backups/postgres/daily/aris_academy_2026-04-17.dump academy-postgres:/tmp/restore.dump
-docker exec academy-postgres pg_restore -U aris_user -d aris_academy /tmp/restore.dump
+docker cp /backups/postgres/daily/topnet_academy_2026-04-17.dump academy-postgres:/tmp/restore.dump
+docker exec academy-postgres pg_restore -U topnet_user -d topnet_academy /tmp/restore.dump
 
 # Restart services
 docker compose up -d
@@ -250,7 +250,7 @@ Kafka runs in **KRaft mode** (no ZooKeeper dependency). Data is stored in the `k
 
 ### Backup considerations
 
-Kafka is used as a **transient message bus** in ARIS Academy. Key characteristics:
+Kafka is used as a **transient message bus** in Topnet Solutions Academy. Key characteristics:
 
 - **Topics are auto-created** by backend services on startup
 - **Messages are event notifications** (enrollment events, assessment completions, live session updates)
@@ -309,7 +309,7 @@ cp .env.example .env
 docker compose up -d postgres redis kafka minio traefik
 
 # 5. Wait for PostgreSQL to be ready
-docker exec academy-postgres pg_isready -U aris_user
+docker exec academy-postgres pg_isready -U topnet_user
 # Retry until ready
 
 # 6. Restore PostgreSQL from backup
@@ -332,7 +332,7 @@ sudo cp infra/scripts/backup-cron.conf /etc/cron.d/academy-backup
 sudo systemctl restart cron
 
 # 11. Verify DNS and TLS
-curl -I https://learning.au-ibar.org
+curl -I https://learning.topnet-solutions.com
 ```
 
 ### VM-BBB (BigBlueButton) recovery
@@ -340,7 +340,7 @@ curl -I https://learning.au-ibar.org
 BigBlueButton runs on a separate VM (8 vCPU, 16 GB RAM, 200 GB storage). Recovery:
 
 1. Install BigBlueButton following official docs: https://docs.bigbluebutton.org/administration/install/
-2. Configure the shared secret in the ARIS `.env` file (`BBB_SECRET`)
+2. Configure the shared secret in the Topnet Solutions `.env` file (`BBB_SECRET`)
 3. Verify webhook integration with the live service (port 4004)
 
 ---
@@ -377,11 +377,11 @@ To reduce PostgreSQL RPO from 24 hours to seconds:
 
 ```bash
 # Monthly restore test
-docker run -d --name pg-test -e POSTGRES_USER=aris_user -e POSTGRES_PASSWORD=test postgres:16
+docker run -d --name pg-test -e POSTGRES_USER=topnet_user -e POSTGRES_PASSWORD=test postgres:16
 docker cp /backups/postgres/daily/latest.dump pg-test:/tmp/restore.dump
-docker exec pg-test pg_restore -U aris_user -d aris_academy /tmp/restore.dump
+docker exec pg-test pg_restore -U topnet_user -d topnet_academy /tmp/restore.dump
 # Verify
-docker exec pg-test psql -U aris_user -d aris_academy -c "SELECT count(*) FROM users;"
+docker exec pg-test psql -U topnet_user -d topnet_academy -c "SELECT count(*) FROM users;"
 # Cleanup
 docker rm -f pg-test
 ```
@@ -413,7 +413,7 @@ docker rm -f pg-test
 | DBA                | PostgreSQL restore, data integrity      |
 | Backend Lead       | Service configuration, Kafka, API       |
 | Frontend Lead      | Next.js deployment, CDN, Traefik       |
-| AU-IBAR IT         | VM provisioning, network, DNS           |
+| Topnet Solutions IT         | VM provisioning, network, DNS           |
 
 ---
 

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Kafka Producer & Consumer
+// Topnet Solutions Academy — Kafka Producer & Consumer
 // Graceful degradation: publishes are no-ops if Kafka is unavailable
 // ============================================================================
 import { Kafka, Producer, Consumer, EachMessagePayload } from 'kafkajs';
@@ -109,18 +109,35 @@ export async function createConsumer(
 
 // Topic constants
 export const TOPICS = {
+  // Course
   COURSE_PUBLISHED: 'academy.course.published.v1',
   COURSE_UPDATED: 'academy.course.updated.v1',
   COURSE_COMPLETED: 'academy.course.completed.v1',
+  // Learning
   ENROLLMENT_CREATED: 'academy.enrollment.created.v1',
   PROGRESS_UPDATED: 'academy.progress.updated.v1',
   LESSON_COMPLETED: 'academy.lesson.completed.v1',
+  // Assessment
   ASSESSMENT_SUBMITTED: 'academy.assessment.submitted.v1',
   ASSESSMENT_COMPLETED: 'academy.assessment.completed.v1',
+  // Certification
   CERTIFICATION_PENDING: 'academy.certification.pending.v1',
   CERTIFICATION_ISSUED: 'academy.certification.issued.v1',
+  // Live
   LIVE_SCHEDULED: 'academy.live.scheduled.v1',
   LIVE_STARTED: 'academy.live.started.v1',
   LIVE_RECORDED: 'academy.live.recorded.v1',
+  // Commerce
+  ORDER_CREATED: 'academy.order.created.v1',
+  ORDER_PAID: 'academy.order.paid.v1',
+  ORDER_FULFILLED: 'academy.order.fulfilled.v1',
+  ORDER_CANCELED: 'academy.order.canceled.v1',
+  ORDER_REFUNDED: 'academy.order.refunded.v1',
+  PAYMENT_INITIATED: 'academy.payment.initiated.v1',
+  PAYMENT_COMPLETED: 'academy.payment.completed.v1',
+  PAYMENT_FAILED: 'academy.payment.failed.v1',
+  WALLET_UPDATED: 'academy.wallet.updated.v1',
+  COUPON_REDEEMED: 'academy.coupon.redeemed.v1',
+  // Audit
   AUDIT_EVENTS: 'academy.audit.events',
 } as const;

@@ -1,17 +1,17 @@
 // ===========================================================================
-// AU-IBAR Learning — Service Worker
+// Topnet Solutions Academy — Service Worker
 // Simple caching strategy for offline support and performance
 // ===========================================================================
 
-const CACHE_NAME = 'au-ibar-learning-v1';
-const STATIC_CACHE = 'au-ibar-static-v1';
-const IMAGE_CACHE = 'au-ibar-images-v1';
+const CACHE_NAME = 'topnet-academy-v1';
+const STATIC_CACHE = 'topnet-static-v1';
+const IMAGE_CACHE = 'topnet-images-v1';
 
 // Static assets to pre-cache on install
 const PRECACHE_URLS = [
   '/',
   '/manifest.json',
-  '/au-logo.png',
+  '/logo-topnet.jpg',
 ];
 
 // ---------------------------------------------------------------------------

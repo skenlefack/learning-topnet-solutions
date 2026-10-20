@@ -1,8 +1,8 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Landing Page (Public Home)
+// Topnet Solutions Academy — Landing Page (Public Home)
 // Full e-learning homepage: navbar, hero slider, search, categories, courses,
-// login/register modal, footer — design aligned with au-ibar.org
+// login/register modal, footer — design aligned with topnet-solutions.com
 // ============================================================================
 import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -12,7 +12,7 @@ import {
   Loader2, Mail, Lock, AlertTriangle, ArrowRight, Search,
   ChevronLeft, ChevronRight, X, Menu, Play, Users, BookOpen,
   Award, Globe, Heart, ShieldCheck, Microscope, Leaf, Fish,
-  TrendingUp, Boxes, Bug, Beef, User, Layers,
+  TrendingUp, Boxes, Bug, Beef, User, Layers, Target,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
@@ -25,31 +25,31 @@ import { publicApi, categoryApi } from '@/lib/api';
 // DATA
 // ═══════════════════════════════════════════════════════════════════════════
 
-const SLIDE_BGS = [
-  'from-[#1A5632] via-[#144126] to-[#0e591a]',
-  'from-[#154528] via-[#1A5632] to-[#0e591a]',
-  'from-[#0e591a] via-[#1A5632] to-[#154528]',
-  'from-[#144126] via-[#0e591a] to-[#1A5632]',
-  'from-[#1A5632] via-[#154528] to-[#144126]',
+const SLIDE_IMAGES = [
+  '/slider1.jpg',
+  '/slider2.jpg',
+  '/slider3.jpg',
+  '/slider4.jpg',
+  '/slider5.jpg',
 ];
 
 const CATEGORIES_DATA = [
-  { key: 'animalHealth', icon: ShieldCheck, count: 12, color: '#1A5632' },
-  { key: 'epidemiology', icon: Microscope, count: 8, color: '#930e2d' },
-  { key: 'animalProduction', icon: Beef, count: 10, color: '#B8952E' },
-  { key: 'fisheries', icon: Fish, count: 7, color: '#0e591a' },
-  { key: 'tradeMarketing', icon: TrendingUp, count: 6, color: '#154528' },
-  { key: 'animalWelfare', icon: Heart, count: 5, color: '#930e2d' },
-  { key: 'geneticResources', icon: Boxes, count: 4, color: '#1A5632' },
-  { key: 'beekeeping', icon: Bug, count: 3, color: '#B8952E' },
-  { key: 'environment', icon: Leaf, count: 6, color: '#0e591a' },
+  { key: 'animalHealth', icon: ShieldCheck, count: 12, color: '#1B0CB3' },
+  { key: 'epidemiology', icon: Microscope, count: 8, color: '#00B341' },
+  { key: 'animalProduction', icon: Beef, count: 10, color: '#A09060' },
+  { key: 'fisheries', icon: Fish, count: 7, color: '#0D0670' },
+  { key: 'tradeMarketing', icon: TrendingUp, count: 6, color: '#1B0CB3' },
+  { key: 'animalWelfare', icon: Heart, count: 5, color: '#00B341' },
+  { key: 'geneticResources', icon: Boxes, count: 4, color: '#0D0670' },
+  { key: 'beekeeping', icon: Bug, count: 3, color: '#A09060' },
+  { key: 'environment', icon: Leaf, count: 6, color: '#00B341' },
 ];
 
 const LEVEL_COLORS: Record<string, string> = {
-  beginner: '#1A5632',
-  intermediate: '#B8952E',
-  advanced: '#930e2d',
-  expert: '#154528',
+  beginner: '#00B341',
+  intermediate: '#1B0CB3',
+  advanced: '#A09060',
+  expert: '#0D0670',
 };
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -113,7 +113,7 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
   return (
     <>
       {/* Top accent bar */}
-      <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+      <div className="h-1 bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#A09060]" />
 
       <nav
         className={clsx(
@@ -124,14 +124,11 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <Image src="/au-logo.png" alt="AU-IBAR" width={40} height={40} className="w-10 h-10 object-contain" />
-              <div>
-                <span className="text-lg font-bold text-[#930e2d]">AU-IBAR</span>
-                <span className="text-lg font-bold text-[#1A5632] ml-1">Learning</span>
-              </div>
+              <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={160} height={160} className="w-[160px] h-auto object-contain" />
+              <span className="text-lg font-bold text-[#00B341]">Academy</span>
             </div>
 
             {/* Desktop nav */}
@@ -140,7 +137,7 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
                 <a
                   key={link.key}
                   href={link.href}
-                  className="text-sm font-medium text-[#495057] hover:text-[#1A5632] transition-colors"
+                  className="text-sm font-medium text-[#495057] hover:text-[#1B0CB3] transition-colors"
                 >
                   {t_nav(link.key)}
                 </a>
@@ -151,13 +148,13 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
             <div className="flex items-center gap-3">
               <button
                 onClick={onSignup}
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold border border-[#1B0CB3] text-[#1B0CB3] hover:bg-[#1B0CB3]/5 transition-colors"
               >
                 {t_nav('signup')}
               </button>
               <button
                 onClick={onLogin}
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] transition-colors"
               >
                 {t_nav('login')}
               </button>
@@ -187,7 +184,7 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
                           className={clsx(
                             'w-full flex items-center gap-2 px-3 py-2 text-sm',
                             language === lang.code
-                              ? 'bg-[#1A5632]/5 text-[#1A5632] font-medium'
+                              ? 'bg-[#1B0CB3]/5 text-[#1B0CB3] font-medium'
                               : 'text-[#495057] hover:bg-gray-50',
                           )}
                         >
@@ -238,7 +235,7 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
                       className={clsx(
                         'flex-1 py-2 rounded-lg text-xs font-semibold transition-colors',
                         language === lang.code
-                          ? 'bg-[#1A5632] text-white'
+                          ? 'bg-[#1B0CB3] text-white'
                           : 'border border-gray-300 text-[#495057] hover:bg-gray-50',
                       )}
                     >
@@ -248,13 +245,13 @@ function Navbar({ onLogin, onSignup }: { onLogin: () => void; onSignup: () => vo
                 </div>
                 <button
                   onClick={() => { setMobileOpen(false); onSignup(); }}
-                  className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632]"
+                  className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold border border-[#1B0CB3] text-[#1B0CB3]"
                 >
                   {t_nav('signup')}
                 </button>
                 <button
                   onClick={() => { setMobileOpen(false); onLogin(); }}
-                  className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold bg-[#1A5632] text-white"
+                  className="w-full mt-2 py-2.5 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white"
                 >
                   {t_nav('login')}
                 </button>
@@ -276,15 +273,15 @@ function HeroSlider({ onLogin, onSignup }: { onLogin: () => void; onSignup: () =
   const [current, setCurrent] = useState(0);
 
   const SLIDES = [
-    { title: t_hero('slide1Title'), subtitle: t_hero('slide1Subtitle'), cta: t_hero('slide1CTA'), bg: SLIDE_BGS[0] },
-    { title: t_hero('slide2Title'), subtitle: t_hero('slide2Subtitle'), cta: t_hero('slide2CTA'), bg: SLIDE_BGS[1] },
-    { title: t_hero('slide3Title'), subtitle: t_hero('slide3Subtitle'), cta: t_hero('slide3CTA'), bg: SLIDE_BGS[2] },
-    { title: t_hero('slide4Title'), subtitle: t_hero('slide4Subtitle'), cta: t_hero('slide4CTA'), bg: SLIDE_BGS[3] },
-    { title: t_hero('slide5Title'), subtitle: t_hero('slide5Subtitle'), cta: t_hero('slide5CTA'), bg: SLIDE_BGS[4] },
+    { title: t_hero('slide1Title'), subtitle: t_hero('slide1Subtitle'), cta: t_hero('slide1CTA'), image: SLIDE_IMAGES[0] },
+    { title: t_hero('slide2Title'), subtitle: t_hero('slide2Subtitle'), cta: t_hero('slide2CTA'), image: SLIDE_IMAGES[1] },
+    { title: t_hero('slide3Title'), subtitle: t_hero('slide3Subtitle'), cta: t_hero('slide3CTA'), image: SLIDE_IMAGES[2] },
+    { title: t_hero('slide4Title'), subtitle: t_hero('slide4Subtitle'), cta: t_hero('slide4CTA'), image: SLIDE_IMAGES[3] },
+    { title: t_hero('slide5Title'), subtitle: t_hero('slide5Subtitle'), cta: t_hero('slide5CTA'), image: SLIDE_IMAGES[4] },
   ];
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDE_BGS.length), []);
-  const prev = useCallback(() => setCurrent((c) => (c - 1 + SLIDE_BGS.length) % SLIDE_BGS.length), []);
+  const next = useCallback(() => setCurrent((c) => (c + 1) % SLIDE_IMAGES.length), []);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + SLIDE_IMAGES.length) % SLIDE_IMAGES.length), []);
 
   useEffect(() => {
     const timer = setInterval(next, 6000);
@@ -300,25 +297,25 @@ function HeroSlider({ onLogin, onSignup }: { onLogin: () => void; onSignup: () =
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6 }}
-          className={clsx('relative bg-gradient-to-br', SLIDES[current].bg)}
+          className="relative"
         >
+          {/* Background image with overlay */}
+          <div className="absolute inset-0">
+            <Image
+              src={SLIDES[current].image}
+              alt=""
+              fill
+              className="object-cover"
+              priority={current === 0}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1B0CB3]/85 via-[#0D0670]/75 to-[#1B0CB3]/60" />
+          </div>
+
           {/* Decorative circles */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-white/[0.04]" />
-            <div className="absolute -left-10 bottom-0 w-72 h-72 rounded-full bg-[#C8A951]/[0.06]" />
+            <div className="absolute -left-10 bottom-0 w-72 h-72 rounded-full bg-[#00B341]/[0.08]" />
             <div className="absolute right-1/3 bottom-10 w-48 h-48 rounded-full bg-white/[0.03]" />
-          </div>
-
-          {/* Animal watermark */}
-          <div className="absolute bottom-0 left-0 right-0 pointer-events-none select-none">
-            <Image
-              src="/bd-bottom.png"
-              alt=""
-              width={1920}
-              height={300}
-              className="w-full h-auto object-cover opacity-[0.05]"
-              aria-hidden="true"
-            />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
@@ -337,7 +334,7 @@ function HeroSlider({ onLogin, onSignup }: { onLogin: () => void; onSignup: () =
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={onLogin}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold bg-[#C8A951] text-[#212529] hover:bg-[#B8952E] transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold bg-[#00B341] text-white hover:bg-[#009930] transition-colors"
                 >
                   {SLIDES[current].cta}
                   <ArrowRight className="w-4 h-4" />
@@ -370,13 +367,13 @@ function HeroSlider({ onLogin, onSignup }: { onLogin: () => void; onSignup: () =
 
       {/* Dots */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {SLIDE_BGS.map((_, i) => (
+        {SLIDE_IMAGES.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
             className={clsx(
               'h-2 rounded-full transition-all duration-300',
-              i === current ? 'w-8 bg-[#C8A951]' : 'w-2 bg-white/40 hover:bg-white/60',
+              i === current ? 'w-8 bg-[#00B341]' : 'w-2 bg-white/40 hover:bg-white/60',
             )}
           />
         ))}
@@ -405,7 +402,7 @@ function SearchSection() {
             placeholder={t_sections('searchPlaceholder')}
             className="flex-1 py-3.5 text-sm text-[#212529] placeholder:text-[#adb5bd] focus:outline-none bg-transparent"
           />
-          <button className="px-6 py-3 rounded-xl text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors shrink-0">
+          <button className="px-6 py-3 rounded-xl text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] transition-colors shrink-0">
             {t_sections('search')}
           </button>
         </div>
@@ -418,7 +415,7 @@ function SearchSection() {
 // STATS BAR
 // ═══════════════════════════════════════════════════════════════════════════
 
-function StatsBar() {
+function StatsBar({ onSignup }: { onSignup: () => void }) {
   const t_stats = useTranslations('stats');
   const [data, setData] = useState<{ courses: number; enrollments: number; certifications: number; paths: number } | null>(null);
 
@@ -429,25 +426,72 @@ function StatsBar() {
   }, []);
 
   const stats = [
-    { icon: BookOpen, value: data?.courses ?? '—', label: t_stats('coursesLabel') },
-    { icon: Users, value: data?.enrollments ?? '—', label: t_stats('learnersLabel') },
-    { icon: Layers, value: data?.paths ?? '—', label: t_stats('pathsLabel') },
-    { icon: Award, value: data?.certifications ?? '—', label: t_stats('certificatesLabel') },
+    { icon: BookOpen, value: data?.courses ?? '—', label: t_stats('coursesLabel'), color: '#1B0CB3', bg: 'from-[#1B0CB3]/10 to-[#1B0CB3]/5' },
+    { icon: Users, value: data?.enrollments ?? '—', label: t_stats('learnersLabel'), color: '#00B341', bg: 'from-[#00B341]/10 to-[#00B341]/5' },
+    { icon: Layers, value: data?.paths ?? '—', label: t_stats('pathsLabel'), color: '#0D0670', bg: 'from-[#0D0670]/10 to-[#0D0670]/5' },
+    { icon: Award, value: data?.certifications ?? '—', label: t_stats('certificatesLabel'), color: '#A09060', bg: 'from-[#A09060]/10 to-[#A09060]/5' },
   ];
 
   return (
-    <section className="py-12 bg-white border-y border-[#dee2e6]/50">
+    <section className="py-14 bg-[#f8f9fa]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-5">
           {stats.map((s, i) => (
-            <div key={i} className="text-center">
-              <s.icon className="w-8 h-8 text-[#1A5632] mx-auto mb-2" />
-              <div className="text-2xl font-bold text-[#212529]">
+            <motion.div
+              key={i}
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              className={clsx(
+                'relative overflow-hidden rounded-2xl bg-white p-6 text-center',
+                'shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)]',
+                'border border-gray-100 transition-shadow duration-300',
+              )}
+            >
+              {/* Decorative gradient top bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: `linear-gradient(90deg, ${s.color}, ${s.color}88)` }} />
+
+              <div
+                className={clsx('w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-3 bg-gradient-to-br', s.bg)}
+              >
+                <s.icon className="w-7 h-7" style={{ color: s.color }} />
+              </div>
+              <div className="text-3xl font-extrabold text-[#212529] mb-1">
                 {typeof s.value === 'number' ? s.value.toLocaleString('fr-FR') : s.value}
               </div>
-              <div className="text-sm font-semibold text-[#6c757d] mt-1">{s.label}</div>
-            </div>
+              <div className="text-xs font-semibold text-[#6c757d] uppercase tracking-wide">{s.label}</div>
+            </motion.div>
           ))}
+
+          {/* 5th card — Test de niveau CTA */}
+          <motion.div
+            whileHover={{ y: -4, scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+            className={clsx(
+              'relative overflow-hidden rounded-2xl p-6 text-center cursor-pointer',
+              'bg-gradient-to-br from-[#1B0CB3] to-[#0D0670]',
+              'shadow-[0_4px_20px_rgba(27,12,179,0.2)] hover:shadow-[0_8px_30px_rgba(27,12,179,0.35)]',
+              'border border-[#1B0CB3]/20 transition-shadow duration-300',
+            )}
+            onClick={onSignup}
+          >
+            {/* Decorative circles */}
+            <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/[0.06]" />
+            <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-[#00B341]/[0.1]" />
+
+            <div className="relative z-10">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-3 bg-white/15 backdrop-blur-sm">
+                <Target className="w-7 h-7 text-white" />
+              </div>
+              <div className="text-lg font-extrabold text-white mb-1">
+                {t_stats('testTitle')}
+              </div>
+              <div className="text-[11px] font-medium text-white/70 mb-3">{t_stats('testDesc')}</div>
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-[#00B341] text-white hover:bg-[#009930] transition-colors">
+                {t_stats('testCTA')}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -489,12 +533,12 @@ function CategoriesSection() {
               >
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: (cat.color || '#1A5632') + '15' }}
+                  style={{ backgroundColor: (cat.color || '#1B0CB3') + '15' }}
                 >
-                  <BookOpen className="w-6 h-6" style={{ color: cat.color || '#1A5632' }} />
+                  <BookOpen className="w-6 h-6" style={{ color: cat.color || '#1B0CB3' }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-[#212529] group-hover:text-[#1A5632] transition-colors">
+                  <div className="text-sm font-semibold text-[#212529] group-hover:text-[#1B0CB3] transition-colors">
                     {getLocalText(cat.name, 'fr')}
                   </div>
                   <div className="text-xs text-[#6c757d] mt-0.5">
@@ -506,7 +550,7 @@ function CategoriesSection() {
                     </div>
                   )}
                 </div>
-                <ArrowRight className="w-4 h-4 text-[#adb5bd] group-hover:text-[#1A5632] transition-colors shrink-0" />
+                <ArrowRight className="w-4 h-4 text-[#adb5bd] group-hover:text-[#1B0CB3] transition-colors shrink-0" />
               </motion.div>
             </Link>
           ))}
@@ -552,7 +596,7 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
               {t_sections('expertDeveloped')}
             </p>
           </div>
-          <button className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#1A5632] hover:text-[#154528]">
+          <button className="hidden sm:inline-flex items-center gap-2 text-sm font-semibold text-[#1B0CB3] hover:text-[#0D0670]">
             {t_sections('seeAll')} <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -578,7 +622,7 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => {
-              const color = LEVEL_COLORS[course.level] || '#1A5632';
+              const color = LEVEL_COLORS[course.level] || '#1B0CB3';
               const title = getLocalText(course.title, 'fr');
               const tags = course.tags || [];
               const category = tags[0] || course.level;
@@ -604,7 +648,7 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
                           className="w-full h-full flex items-center justify-center"
                           style={{ background: `linear-gradient(135deg, ${color}20, ${color}08)` }}
                         >
-                          <Image src="/au-logo.png" alt="" width={56} height={56} className="opacity-20" />
+                          <Image src="/logo-topnet.jpg" alt="" width={200} height={200} className="opacity-20" />
                         </div>
                       )}
                       <div className="absolute top-3 left-3">
@@ -623,7 +667,7 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
                   {/* Course body */}
                   <div className="p-5">
                     <Link href={`/catalog/${course.slug || course.id}`}>
-                      <h3 className="text-sm font-semibold text-[#212529] mb-3 line-clamp-2 group-hover:text-[#1A5632] transition-colors cursor-pointer">
+                      <h3 className="text-sm font-semibold text-[#212529] mb-3 line-clamp-2 group-hover:text-[#1B0CB3] transition-colors cursor-pointer">
                         {title}
                       </h3>
                     </Link>
@@ -640,7 +684,7 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
                     </div>
                     <button
                       onClick={onSignup}
-                      className="w-full py-2.5 rounded-lg text-xs font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632] hover:text-white transition-colors"
+                      className="w-full py-2.5 rounded-lg text-xs font-semibold border border-[#1B0CB3] text-[#1B0CB3] hover:bg-[#1B0CB3] hover:text-white transition-colors"
                     >
                       {t_sections('enrollCourse')}
                     </button>
@@ -652,7 +696,7 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
         )}
 
         <div className="sm:hidden mt-8 text-center">
-          <button className="inline-flex items-center gap-2 text-sm font-semibold text-[#1A5632]">
+          <button className="inline-flex items-center gap-2 text-sm font-semibold text-[#1B0CB3]">
             {t_sections('seeAll')} <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -666,10 +710,10 @@ function CoursesSection({ onLogin, onSignup }: { onLogin: () => void; onSignup: 
 // ═══════════════════════════════════════════════════════════════════════════
 
 const PATH_LEVEL_META: Record<string, { color: string; badge: string; icon: string }> = {
-  debutant: { color: '#1A5632', badge: 'Foundation', icon: '🌱' },
-  intermediaire: { color: '#0D47A1', badge: 'Practitioner', icon: '📘' },
-  avance: { color: '#930e2d', badge: 'Senior Specialist', icon: '🎯' },
-  expert: { color: '#7B1639', badge: 'Master', icon: '👑' },
+  debutant: { color: '#00B341', badge: 'Foundation', icon: '🌱' },
+  intermediaire: { color: '#1B0CB3', badge: 'Practitioner', icon: '📘' },
+  avance: { color: '#A09060', badge: 'Senior Specialist', icon: '🎯' },
+  expert: { color: '#0D0670', badge: 'Master', icon: '👑' },
 };
 
 function PathsSection({ onSignup }: { onSignup: () => void }) {
@@ -753,7 +797,7 @@ function PathsSection({ onSignup }: { onSignup: () => void }) {
                       {meta.badge}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-[#212529] mb-2 line-clamp-2 group-hover:text-[#1A5632] transition-colors">
+                  <h3 className="text-sm font-semibold text-[#212529] mb-2 line-clamp-2 group-hover:text-[#1B0CB3] transition-colors">
                     {title}
                   </h3>
                   <p className="text-xs text-[#6c757d] line-clamp-3 mb-4">
@@ -798,26 +842,16 @@ function PathsSection({ onSignup }: { onSignup: () => void }) {
 function AboutSection({ onLogin }: { onLogin: () => void }) {
   const t_about = useTranslations('about');
   return (
-    <section id="about" className="py-16 bg-gradient-to-br from-[#1A5632] via-[#154528] to-[#144126] relative overflow-hidden">
+    <section id="about" className="py-16 bg-gradient-to-br from-[#1B0CB3] via-[#0D0670] to-[#1B0CB3] relative overflow-hidden">
       {/* Decorative */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -right-20 top-10 w-80 h-80 rounded-full bg-[#C8A951]/[0.06]" />
+        <div className="absolute -right-20 top-10 w-80 h-80 rounded-full bg-[#00B341]/[0.08]" />
         <div className="absolute -left-10 -bottom-10 w-60 h-60 rounded-full bg-white/[0.03]" />
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 pointer-events-none select-none">
-        <Image
-          src="/bd-bottom.png"
-          alt=""
-          width={1920}
-          height={300}
-          className="w-full h-auto object-cover opacity-[0.04]"
-          aria-hidden="true"
-        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <Image src="/au-logo.png" alt="AU-IBAR" width={56} height={56} className="w-14 h-14 mx-auto mb-6 object-contain" />
+          <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={240} height={240} className="w-[240px] h-auto mx-auto mb-6 object-contain rounded-lg" />
           <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4">
             {t_about('title')}
           </h2>
@@ -827,13 +861,13 @@ function AboutSection({ onLogin }: { onLogin: () => void }) {
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={onLogin}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold bg-[#C8A951] text-[#212529] hover:bg-[#B8952E] transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold bg-[#00B341] text-white hover:bg-[#009930] transition-colors"
             >
               {t_about('startNow')}
               <ArrowRight className="w-4 h-4" />
             </button>
             <a
-              href="https://www.au-ibar.org"
+              href="https://topnet-solutions.com"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold border border-white/30 text-white hover:bg-white/10 transition-colors"
@@ -856,40 +890,17 @@ function Footer() {
   const t_cat = useTranslations('categories');
   return (
     <footer>
-      {/* ── Upper zone: links + filigranes ── */}
-      <div className="relative bg-[#efece7] overflow-hidden">
-        {/* Filigrane left */}
-        <div className="absolute left-0 top-0 bottom-0 w-64 sm:w-80 lg:w-[400px] pointer-events-none select-none overflow-hidden">
-          <Image
-            src="/filigrane-left.png"
-            alt=""
-            width={600}
-            height={800}
-            className="w-full h-auto object-cover object-top opacity-60"
-            aria-hidden="true"
-          />
-        </div>
-        {/* Filigrane right */}
-        <div className="absolute right-0 top-0 bottom-0 w-56 sm:w-72 lg:w-[350px] pointer-events-none select-none overflow-hidden">
-          <Image
-            src="/filigrane-right.png"
-            alt=""
-            width={600}
-            height={800}
-            className="w-full h-auto object-cover object-top opacity-60"
-            aria-hidden="true"
-          />
-        </div>
-
+      {/* ── Upper zone: links ── */}
+      <div className="relative bg-[#f0f0f5] overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
             <div className="md:col-span-1">
               <div className="flex items-center gap-3 mb-4">
-                <Image src="/au-logo.png" alt="AU-IBAR" width={36} height={36} className="w-9 h-9 object-contain" />
+                <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={130} height={130} className="w-[130px] h-auto object-contain" />
                 <div>
-                  <span className="text-sm font-bold text-[#930e2d]">AU-IBAR</span>
-                  <span className="text-sm font-bold text-[#1A5632] ml-1">Learning</span>
+                  <span className="text-sm font-bold text-[#1B0CB3]">Topnet Solutions</span>
+                  <span className="text-sm font-bold text-[#00B341] ml-1">Academy</span>
                 </div>
               </div>
               <p className="text-xs leading-relaxed text-[#6c757d]">
@@ -901,30 +912,30 @@ function Footer() {
             <div>
               <h4 className="text-sm font-semibold text-[#212529] mb-4">{t_footer('programs')}</h4>
               <ul className="space-y-2 text-xs text-[#6c757d]">
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_cat('animalHealth')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_cat('animalProduction')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_cat('tradeMarketing')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_cat('fisheries')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_cat('animalHealth')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_cat('animalProduction')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_cat('tradeMarketing')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_cat('fisheries')}</a></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-sm font-semibold text-[#212529] mb-4">{t_footer('resources')}</h4>
               <ul className="space-y-2 text-xs text-[#6c757d]">
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_footer('helpCenter')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_footer('privacyPolicy')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_footer('termsOfUse')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">{t_footer('accessibility')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_footer('helpCenter')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_footer('privacyPolicy')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_footer('termsOfUse')}</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">{t_footer('accessibility')}</a></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-sm font-semibold text-[#212529] mb-4">{t_footer('usefulLinks')}</h4>
               <ul className="space-y-2 text-xs text-[#6c757d]">
-                <li><a href="https://www.au-ibar.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A5632] transition-colors">{t_footer('website')}</a></li>
-                <li><a href="https://au.int" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A5632] transition-colors">{t_footer('africanUnion')}</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">AAGRIS</a></li>
-                <li><a href="#" className="hover:text-[#1A5632] transition-colors">ARIS</a></li>
+                <li><a href="https://topnet-solutions.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#1B0CB3] transition-colors">Topnet Solutions</a></li>
+                <li><a href="https://learning.topnet-solutions.com" className="hover:text-[#1B0CB3] transition-colors">Academy</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-[#1B0CB3] transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>
@@ -932,10 +943,10 @@ function Footer() {
       </div>
 
       {/* ── Lower zone: copyright ── */}
-      <div className="bg-[#af9c63]">
+      <div className="bg-[#1B0CB3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/90">
-          <p>&copy; {new Date().getFullYear()} AU-IBAR &mdash; {t_footer('copyright')}</p>
-          <div className="h-1 w-24 rounded bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+          <p>&copy; {new Date().getFullYear()} Topnet Solutions &mdash; {t_footer('copyright')}</p>
+          <div className="h-1 w-24 rounded bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#A09060]" />
         </div>
       </div>
     </footer>
@@ -1001,7 +1012,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
       }
 
       setAuth(data.user, data.token);
-      document.cookie = `aris-token=${data.token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
+      document.cookie = `topnet-token=${data.token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
       toast.success(t_login('welcome', { name: data.user.firstName }));
       const redirect = searchParams.get('redirect') || '/dashboard';
       router.replace(redirect);
@@ -1038,7 +1049,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
       }
 
       setAuth(data.user, data.token);
-      document.cookie = `aris-token=${data.token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
+      document.cookie = `topnet-token=${data.token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
       toast.success(t_login('registerSuccess'));
       const redirect = searchParams.get('redirect') || '/dashboard';
       router.replace(redirect);
@@ -1093,7 +1104,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
     }
   };
 
-  const inputClass = "w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-white border border-[#ced4da] text-[#212529] placeholder:text-[#adb5bd] focus:outline-none focus:ring-2 focus:ring-[rgba(26,86,50,0.25)] focus:border-[#1A5632] transition-all";
+  const inputClass = "w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-white border border-[#ced4da] text-[#212529] placeholder:text-[#adb5bd] focus:outline-none focus:ring-2 focus:ring-[rgba(27,12,179,0.25)] focus:border-[#1B0CB3] transition-all";
 
   const isOpen = open || mode === 'reset';
 
@@ -1118,7 +1129,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
             className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_1rem_3rem_rgba(0,0,0,0.15)] overflow-hidden"
           >
             {/* Modal top accent */}
-            <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+            <div className="h-1 bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#A09060]" />
 
             <button
               onClick={() => { if (mode === 'forgot') { setMode('login'); setError(null); setSuccess(null); } else onClose(); }}
@@ -1129,7 +1140,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
 
             <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
-                <Image src="/au-logo.png" alt="AU-IBAR" width={40} height={40} className="w-10 h-10 object-contain" />
+                <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={140} height={140} className="w-[140px] h-auto object-contain" />
                 <div>
                   <h2 className="text-lg font-bold text-[#212529]">
                     {mode === 'register' ? t_login('registerTitle') : mode === 'forgot' ? t_login('forgotTitle') : mode === 'reset' ? t_login('resetTitle') : t_login('title')}
@@ -1148,9 +1159,9 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
               )}
 
               {success && (
-                <div className="flex items-center gap-2 p-3 mb-5 rounded-lg bg-[#1A5632]/5 border border-[#1A5632]/20">
-                  <Mail className="w-4 h-4 text-[#1A5632] shrink-0" />
-                  <p className="text-sm text-[#1A5632]">{success}</p>
+                <div className="flex items-center gap-2 p-3 mb-5 rounded-lg bg-[#00B341]/5 border border-[#00B341]/20">
+                  <Mail className="w-4 h-4 text-[#00B341] shrink-0" />
+                  <p className="text-sm text-[#00B341]">{success}</p>
                 </div>
               )}
 
@@ -1172,16 +1183,16 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
                         <input id="modal-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className={inputClass} />
                       </div>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                       {loading ? <><Loader2 className="w-4 h-4 animate-spin" />{t_login('submitting')}</> : <>{t_login('submit')}<ArrowRight className="w-4 h-4" /></>}
                     </button>
                   </form>
-                  <button onClick={() => { setMode('forgot'); setError(null); setSuccess(null); }} className="mt-3 w-full text-center text-xs text-[#1A5632] font-semibold hover:underline">
+                  <button onClick={() => { setMode('forgot'); setError(null); setSuccess(null); }} className="mt-3 w-full text-center text-xs text-[#1B0CB3] font-semibold hover:underline">
                     {t_login('forgotPassword')}
                   </button>
                   <div className="mt-4 pt-4 border-t border-[#dee2e6]/60 text-center">
                     <span className="text-xs text-[#6c757d]">{t_login('noAccount')} </span>
-                    <button onClick={() => { setMode('register'); setError(null); setSuccess(null); }} className="text-xs text-[#1A5632] font-semibold hover:underline">
+                    <button onClick={() => { setMode('register'); setError(null); setSuccess(null); }} className="text-xs text-[#1B0CB3] font-semibold hover:underline">
                       {t_login('signup')}
                     </button>
                   </div>
@@ -1222,13 +1233,13 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
                         <input id="reg-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t_login('newPasswordPlaceholder')} required minLength={8} className={inputClass} />
                       </div>
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                       {loading ? <><Loader2 className="w-4 h-4 animate-spin" />{t_login('registering')}</> : <>{t_login('registerSubmit')}<ArrowRight className="w-4 h-4" /></>}
                     </button>
                   </form>
                   <div className="mt-4 pt-4 border-t border-[#dee2e6]/60 text-center">
                     <span className="text-xs text-[#6c757d]">{t_login('hasAccount')} </span>
-                    <button onClick={() => { setMode('login'); setError(null); setSuccess(null); }} className="text-xs text-[#1A5632] font-semibold hover:underline">
+                    <button onClick={() => { setMode('login'); setError(null); setSuccess(null); }} className="text-xs text-[#1B0CB3] font-semibold hover:underline">
                       {t_login('signinLink')}
                     </button>
                   </div>
@@ -1245,7 +1256,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
                       <input id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t_login('emailPlaceholder')} required className={inputClass} />
                     </div>
                   </div>
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                     {loading ? <><Loader2 className="w-4 h-4 animate-spin" /></> : <>{t_login('sendResetLink')}<ArrowRight className="w-4 h-4" /></>}
                   </button>
                   <button type="button" onClick={() => { setMode('login'); setError(null); }} className="w-full text-center text-xs text-[#6c757d] hover:underline">
@@ -1264,7 +1275,7 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
                       <input id="new-password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder={t_login('newPasswordPlaceholder')} required minLength={8} className={inputClass} />
                     </div>
                   </div>
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                     {loading ? <><Loader2 className="w-4 h-4 animate-spin" /></> : <>{t_login('resetPassword')}<ArrowRight className="w-4 h-4" /></>}
                   </button>
                 </form>
@@ -1282,29 +1293,21 @@ function LoginModal({ open, onClose, initialMode }: { open: boolean; onClose: ()
 // ═══════════════════════════════════════════════════════════════════════════
 
 function LandingPage() {
-  const searchParams = useSearchParams();
-  const urlMode = searchParams.get('mode') === 'register' ? 'register' : 'login';
-  const hasRedirect = !!searchParams.get('redirect') || !!searchParams.get('reset');
-
-  const [loginOpen, setLoginOpen] = useState(hasRedirect);
-  const [modalMode, setModalMode] = useState<'login' | 'register'>(urlMode);
-  const openLogin = useCallback(() => { setModalMode('login'); setLoginOpen(true); }, []);
-  const openSignup = useCallback(() => { setModalMode('register'); setLoginOpen(true); }, []);
+  const router = useRouter();
+  const openLogin = useCallback(() => { router.push('/login'); }, [router]);
+  const openSignup = useCallback(() => { router.push('/register'); }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#efece7]">
+    <div className="min-h-screen bg-[#f0f0f5]">
       <Navbar onLogin={openLogin} onSignup={openSignup} />
       <HeroSlider onLogin={openLogin} onSignup={openSignup} />
       <SearchSection />
-      <StatsBar />
+      <StatsBar onSignup={openSignup} />
       <CategoriesSection />
       <CoursesSection onLogin={openLogin} onSignup={openSignup} />
       <PathsSection onSignup={openSignup} />
       <AboutSection onLogin={openLogin} />
       <Footer />
-      <Suspense fallback={null}>
-        <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} initialMode={modalMode} />
-      </Suspense>
     </div>
   );
 }
@@ -1313,8 +1316,8 @@ export default function LandingPageWrapper() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#efece7]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#1A5632]" />
+        <div className="min-h-screen flex items-center justify-center bg-[#f0f0f5]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#1B0CB3]" />
         </div>
       }
     >

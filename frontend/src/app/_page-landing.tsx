@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Dashboard Page
+// Topnet Solutions Academy — Dashboard Page
 // Server component that renders the main dashboard
 // ============================================================================
 import { Suspense } from 'react';

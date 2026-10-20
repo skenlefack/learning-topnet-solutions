@@ -21,8 +21,8 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'www.au-ibar.org' },
-      { protocol: 'https', hostname: 'learning.au-ibar.org' },
+      { protocol: 'https', hostname: 'www.topnet-solutions.com' },
+      { protocol: 'https', hostname: 'learning.topnet-solutions.com' },
       { protocol: 'http', hostname: 'minio' },
     ],
   },
@@ -36,6 +36,7 @@ const nextConfig = {
       { source: '/api/learning/:path*', destination: `${host('academy-learning', 4002)}/:path*` },
       { source: '/api/assessment/:path*', destination: `${host('academy-assessment', 4003)}/:path*` },
       { source: '/api/live/:path*', destination: `${host('academy-live', 4004)}/:path*` },
+      { source: '/api/commerce/:path*', destination: `${host('academy-commerce', 4005)}/:path*` },
     ];
   },
 };

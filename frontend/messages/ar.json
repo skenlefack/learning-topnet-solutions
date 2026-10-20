@@ -8,6 +8,10 @@
     "certificates": "الشهادات",
     "resources": "الموارد",
     "community": "المجتمع",
+    "skills": "اختبارات تكنولوجيا المعلومات",
+    "shop": "المتجر",
+    "orders": "الطلبات",
+    "wallet": "المحفظة",
     "trainer": "دوراتي (مدرب)",
     "admin": "الإدارة",
     "progression": "التقدم",
@@ -25,7 +29,7 @@
   },
   "dashboard": {
     "welcome": "مرحبًا بك في",
-    "brandName": "AU-IBAR Learning",
+    "brandName": "Topnet Solutions Academy",
     "subtitle": "منصتك التدريبية عبر الإنترنت — بناء القدرات للدول الأعضاء الـ 55 في الاتحاد الأفريقي.",
     "enrolledCourses": "الدورات المسجلة",
     "learningHours": "ساعات التعلم",
@@ -40,7 +44,7 @@
   },
   "courses": {
     "title": "جميع الدورات",
-    "subtitle": "استكشف كتالوج تدريب AU-IBAR",
+    "subtitle": "استكشف كتالوج تدريب Topnet Solutions Academy",
     "myCoursesTitle": "دوراتي",
     "myCoursesSubtitle": "{count} دورات قيد التدريب",
     "myCoursesEmpty": "لم تسجل في أي دورة بعد.",
@@ -98,7 +102,7 @@
     "passingScore": "درجة النجاح",
     "tags": "الوسوم",
     "certification": "الشهادة",
-    "certificationDesc": "احصل على شهادة AU-IBAR عند إكمال هذه الدورة",
+    "certificationDesc": "احصل على شهادة Topnet Solutions عند إكمال هذه الدورة",
     "lesson": "درس",
     "lessonPlural": "دروس"
   },
@@ -135,7 +139,7 @@
     "locked": "مقفل",
     "obtained": "الشهادات المحصلة",
     "none": "لم يتم الحصول على شهادات بعد",
-    "noneDesc": "أكمل دورة وانجح في التقييم النهائي للحصول على شهادة AU-IBAR",
+    "noneDesc": "أكمل دورة وانجح في التقييم النهائي للحصول على شهادة Topnet Solutions",
     "browseCatalog": "تصفح الكتالوج",
     "valid": "صالح",
     "expired": "منتهي",
@@ -147,7 +151,7 @@
     "copyLink": "نسخ الرابط",
     "verifyTitle": "التحقق من شهادة",
     "verifySubtitle": "أدخل رقم الشهادة أو امسح رمز QR",
-    "verifyPlaceholder": "مثال: ARIS-2024-001234",
+    "verifyPlaceholder": "مثال: TOPNET-2024-001234",
     "verify": "تحقق",
     "scanQR": "مسح QR",
     "pdfNotAvailable": "ملف PDF غير متوفر حاليا",
@@ -213,7 +217,7 @@
   },
   "community": {
     "title": "المجتمع",
-    "subtitle": "تبادل وتعلم وتقدم مع مجتمع AU-IBAR",
+    "subtitle": "تبادل وتعلم وتقدم مع مجتمع Topnet Solutions Academy",
     "discussions": "مناقشات",
     "leaderboard": "لوحة المتصدرين",
     "studyGroups": "مجموعات الدراسة"
@@ -340,22 +344,22 @@
     "signinLink": "تسجيل الدخول"
   },
   "hero": {
-    "slide1Title": "تعزيز القدرات البيطرية في أفريقيا",
-    "slide1Subtitle": "برامج تدريب معتمدة للدول الأعضاء الـ 55 في الاتحاد الأفريقي",
+    "slide1Title": "طوّر مهاراتك مع Topnet Solutions Academy",
+    "slide1Subtitle": "برامج تدريبية معتمدة صممها خبراء. تعلّم بالوتيرة التي تناسبك، من أي مكان في العالم.",
     "slide1CTA": "استكشاف الدورات",
-    "slide2Title": "صحة الحيوان والمراقبة الوبائية",
-    "slide2Subtitle": "تدريب على PPR وإنفلونزا الطيور وحمى الخنازير الأفريقية والأمراض العابرة للحدود",
-    "slide2CTA": "عرض البرنامج",
-    "slide3Title": "الإنتاج الحيواني والموارد الوراثية",
-    "slide3Subtitle": "أنظمة تربية مرنة وتغذية حيوانية وإدارة الموارد الوراثية الأفريقية",
-    "slide3CTA": "اكتشف",
-    "slide4Title": "الصيد وتربية الأحياء المائية والاقتصاد الأزرق",
-    "slide4Subtitle": "إدارة مستدامة للمصايد وتطوير تربية الأحياء المائية وحفظ التنوع البيولوجي المائي",
-    "slide4CTA": "التسجيل",
-    "slide5Title": "التجارة وتسويق الموارد الحيوانية",
-    "slide5Subtitle": "المعايير الصحية وتسهيل التجارة وتطوير سلاسل القيمة في أفريقيا",
+    "slide2Title": "شهادات معترف بها، مسيرة مهنية متسارعة",
+    "slide2Subtitle": "احصل على شهادات يقدّرها أصحاب العمل. كل دورة مكتملة تقرّبك من أهدافك المهنية.",
+    "slide2CTA": "عرض الشهادات",
+    "slide3Title": "قيّم مستواك مجاناً",
+    "slide3Subtitle": "اجتز اختبارات تحديد المستوى لتحديد نقاط قوتك واستهداف نقاط ضعفك واتباع المسار المناسب لملفك الشخصي.",
+    "slide3CTA": "ابدأ الاختبار",
+    "slide4Title": "تدريب في تكنولوجيا المعلومات والرقمنة والإدارة",
+    "slide4Subtitle": "الشبكات، الأمن السيبراني، الحوسبة السحابية، تطوير الويب، الذكاء الاصطناعي، إدارة المشاريع — كل شيء هنا.",
+    "slide4CTA": "تصفح الكتالوج",
+    "slide5Title": "شريكك الرقمي الموثوق",
+    "slide5Subtitle": "Topnet Solutions تدعم الشركات والمهنيين في تحولهم الرقمي من الكاميرون إلى جميع أنحاء أفريقيا.",
     "slide5CTA": "اعرف المزيد",
-    "freeSignup": "سجل مجاناً"
+    "freeSignup": "سجّل مجاناً"
   },
   "categories": {
     "animalHealth": "صحة الحيوان",
@@ -378,7 +382,10 @@
     "coursesLabel": "دورات متاحة",
     "learnersLabel": "متعلمون مسجلون",
     "pathsLabel": "مسارات تعليمية",
-    "certificatesLabel": "شهادات صادرة"
+    "certificatesLabel": "شهادات صادرة",
+    "testTitle": "اختبار تحديد المستوى",
+    "testDesc": "قيّم مهاراتك واعثر على الدورة المناسبة لك",
+    "testCTA": "ابدأ الاختبار"
   },
   "catalog": {
     "program": "برنامج الدورة",
@@ -388,7 +395,7 @@
     "optional": "اختياري",
     "loginToAccess": "سجّل الدخول للوصول إلى محتوى الدروس",
     "enrollTitle": "هل أنت مستعد للبدء؟",
-    "enrollDesc": "سجّل مجاناً للوصول إلى كل المحتوى ومتابعة تقدمك والحصول على شهادة AU-IBAR.",
+    "enrollDesc": "سجّل مجاناً للوصول إلى كل المحتوى ومتابعة تقدمك والحصول على شهادة Topnet Solutions.",
     "enrollCTA": "التسجيل مجاناً",
     "login": "تسجيل الدخول",
     "signup": "التسجيل",
@@ -398,7 +405,7 @@
     "notFound": "الدورة غير موجودة",
     "notFoundDesc": "هذه الدورة غير موجودة أو لم تعد متاحة.",
     "backToHome": "العودة إلى الرئيسية",
-    "certificationBadge": "احصل على شهادة AU-IBAR بإكمال هذه الدورة واجتياز الامتحان النهائي.",
+    "certificationBadge": "احصل على شهادة Topnet Solutions بإكمال هذه الدورة واجتياز الامتحان النهائي.",
     "summary": "ملخص الدورة",
     "prerequisites": "المتطلبات المسبقة",
     "noPrerequisites": "لا توجد متطلبات مسبقة — هذه الدورة مفتوحة للجميع."
@@ -407,10 +414,10 @@
     "competencies": "مجالات الخبرة",
     "competenciesDesc": "استكشف مجالات التدريب الـ 9 التي تغطي جميع الموارد الحيوانية في القارة الأفريقية",
     "categoriesTitle": "فئات الدورات",
-    "categoriesDesc": "تصفح فئات التدريب التي طورها خبراء UA-BIRA",
+    "categoriesDesc": "تصفح فئات التدريب التي طورها خبراء Topnet Solutions",
     "coursesAvailable": "دورات متاحة",
     "latestCourses": "أحدث الدورات المنشورة",
-    "expertDeveloped": "تدريب معتمد طوره خبراء AU-IBAR",
+    "expertDeveloped": "تدريب معتمد طوره خبراء Topnet Solutions",
     "seeAll": "عرض الكل",
     "enrollCourse": "التسجيل في الدورة",
     "searchPlaceholder": "ابحث عن دورة، موضوع...",
@@ -419,9 +426,9 @@
   },
   "about": {
     "title": "التميز في خدمة تنمية أفريقيا",
-    "description": "AU-IBAR Learning هي المنصة الرسمية للتدريب عبر الإنترنت للمكتب الأفريقي للموارد الحيوانية التابع للاتحاد الأفريقي. مهمتنا: تعزيز قدرات المتخصصين في صحة الحيوان والإنتاج والصيد والتجارة عبر القارة.",
+    "description": "Topnet Solutions Academy هي المنصة الرسمية للتدريب عبر الإنترنت لشركة Topnet Solutions. مهمتنا: تطوير المهارات المهنية من خلال تدريب معتمد عالي الجودة.",
     "startNow": "ابدأ الآن",
-    "visitWebsite": "زيارة UA-BIRA"
+    "visitWebsite": "زيارة Topnet Solutions"
   },
   "footer": {
     "programs": "البرامج",
@@ -431,12 +438,12 @@
     "privacy": "سياسة الخصوصية",
     "terms": "شروط الاستخدام",
     "accessibility": "إمكانية الوصول",
-    "website": "UA-BIRA",
+    "website": "Topnet Solutions",
     "africanUnion": "الاتحاد الأفريقي",
     "aagris": "AAGRIS",
-    "aris": "ARIS",
-    "brandDescription": "المكتب الأفريقي للموارد الحيوانية التابع للاتحاد الأفريقي. كينينديا بيزنس بارك، نيروبي، كينيا.",
-    "copyright": "المكتب الأفريقي للموارد الحيوانية التابع للاتحاد الأفريقي",
+    "aris": "topnet",
+    "brandDescription": "Topnet Solutions — منصة التدريب المعتمد عبر الإنترنت.",
+    "copyright": "Topnet Solutions — جميع الحقوق محفوظة",
     "privacyPolicy": "سياسة الخصوصية",
     "termsOfUse": "شروط الاستخدام"
   },
@@ -668,12 +675,12 @@
     "validDesc": "تم التحقق من هذه الشهادة وهي صالحة حاليًا.",
     "expiredDesc": "كانت هذه الشهادة صالحة لكنها تجاوزت تاريخ انتهائها.",
     "revokedDesc": "تم إلغاء هذه الشهادة من قبل المسؤول.",
-    "notFoundDesc": "لم يتم العثور على شهادة مطابقة لهذا الرقم في نظام AU-IBAR Learning.",
+    "notFoundDesc": "لم يتم العثور على شهادة مطابقة لهذا الرقم في نظام Topnet Solutions Academy.",
     "detailsTitle": "تفاصيل الشهادة",
     "statusLabel": "الحالة",
     "scanLabel": "امسح للتحقق من هذه الشهادة",
-    "visitLink": "زيارة AU-IBAR Learning",
-    "footerCopyright": "الاتحاد الأفريقي — المكتب الأفريقي للموارد الحيوانية (AU-IBAR)"
+    "visitLink": "زيارة Topnet Solutions Academy",
+    "footerCopyright": "Topnet Solutions — جميع الحقوق محفوظة"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
@@ -707,6 +714,6 @@
     "no": "لا",
     "page": "صفحة",
     "of": "من",
-    "auIbarFooter": "AU-IBAR"
+    "auIbarFooter": "Topnet Solutions"
   }
 }

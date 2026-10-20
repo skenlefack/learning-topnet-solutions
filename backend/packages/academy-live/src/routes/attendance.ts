@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Attendance Tracking & Analytics Routes
+// Topnet Solutions Academy — Attendance Tracking & Analytics Routes
 // GET /sessions/:id/attendance — Attendance report (trainer/admin)
 // GET /sessions/:id/attendance/export — Export attendance as CSV
 // ============================================================================
@@ -7,7 +7,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   query, queryOne,
   UuidParam, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Helpers

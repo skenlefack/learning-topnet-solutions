@@ -1,6 +1,6 @@
 // ============================================================================
-// AU-IBAR Learning — Set Cookie API
-// POST { token } → verifies JWT, sets aris-token httpOnly cookie
+// Topnet Solutions Academy — Set Cookie API
+// POST { token } → verifies JWT, sets topnet-token httpOnly cookie
 // Used by SSO callback to persist auth server-side
 // ============================================================================
 import { NextRequest, NextResponse } from 'next/server';

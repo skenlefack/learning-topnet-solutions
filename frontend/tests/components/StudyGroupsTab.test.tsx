@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: StudyGroupsTab
+// Topnet Solutions Academy — Component Test: StudyGroupsTab
 // Study groups list, join/leave, create form
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

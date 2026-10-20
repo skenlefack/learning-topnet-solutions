@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Course Service (academy-course)
+// Topnet Solutions Academy — Course Service (academy-course)
 // Port: 4001
 // Manages: courses, modules, lessons, content, multi-tenant inheritance
 // ============================================================================
@@ -15,7 +15,7 @@ import {
   requestLoggerPlugin,
   swaggerPlugin,
   getCorsConfig,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { courseRoutes } from './routes/courses';
 import { moduleRoutes } from './routes/modules';
 import { lessonRoutes } from './routes/lessons';

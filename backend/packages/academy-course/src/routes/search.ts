@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — Global Search Routes
+// Topnet Solutions Academy — Global Search Routes
 // GET /search?q=&lang= — ILIKE on courses/modules/lessons JSONB, respects RLS
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { query, validateBody, BearerSecurity } from '@aris-academy/shared';
+import { query, validateBody, BearerSecurity } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schema

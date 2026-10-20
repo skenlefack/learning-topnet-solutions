@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Category Page (Public)
+// Topnet Solutions Academy — Category Page (Public)
 // Lists courses for a category + right sidebar with other categories,
 // latest courses, and popular courses
 // ============================================================================
@@ -26,7 +26,7 @@ function getLocalText(t: any, lang = 'fr') {
 }
 
 const LEVEL_COLORS: Record<string, string> = {
-  beginner: '#1A5632', intermediate: '#B8952E', advanced: '#930e2d', expert: '#154528',
+  beginner: '#1B0CB3', intermediate: '#009930', advanced: '#00B341', expert: '#0D0670',
 };
 const LEVEL_LABELS: Record<string, string> = {
   beginner: 'Débutant', intermediate: 'Intermédiaire', advanced: 'Avancé', expert: 'Expert',
@@ -37,7 +37,7 @@ const LEVEL_LABELS: Record<string, string> = {
 // ---------------------------------------------------------------------------
 
 function CourseCard({ course }: { course: any }) {
-  const color = LEVEL_COLORS[course.level] || '#1A5632';
+  const color = LEVEL_COLORS[course.level] || '#1B0CB3';
   const title = getLocalText(course.title, 'fr');
 
   return (
@@ -49,7 +49,7 @@ function CourseCard({ course }: { course: any }) {
             <Image src={course.thumbnail_url} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
           ) : (
             <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${color}20, ${color}08)` }}>
-              <Image src="/au-logo.png" alt="" width={48} height={48} className="opacity-20" />
+              <Image src="/logo-topnet.jpg" alt="" width={48} height={48} className="opacity-20" />
             </div>
           )}
           <div className="absolute top-3 left-3">
@@ -61,7 +61,7 @@ function CourseCard({ course }: { course: any }) {
 
         {/* Body */}
         <div className="p-4">
-          <h3 className="text-sm font-semibold text-[#212529] mb-2 line-clamp-2 group-hover:text-[#1A5632] transition-colors">{title}</h3>
+          <h3 className="text-sm font-semibold text-[#212529] mb-2 line-clamp-2 group-hover:text-[#1B0CB3] transition-colors">{title}</h3>
           <p className="text-xs text-[#6c757d] line-clamp-2 mb-3">{getLocalText(course.description, 'fr')}</p>
           <div className="flex items-center gap-3 text-xs text-[#6c757d] mb-3">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {course.estimated_hours || '—'}h</span>
@@ -70,7 +70,7 @@ function CourseCard({ course }: { course: any }) {
           </div>
           <Link
             href={`/?redirect=/courses/${course.id}&mode=register`}
-            className="block w-full py-2 rounded-lg text-xs font-semibold text-center border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632] hover:text-white transition-colors"
+            className="block w-full py-2 rounded-lg text-xs font-semibold text-center border border-[#1B0CB3] text-[#1B0CB3] hover:bg-[#1B0CB3] hover:text-white transition-colors"
             onClick={e => e.stopPropagation()}
           >
             S'inscrire
@@ -86,7 +86,7 @@ function CourseCard({ course }: { course: any }) {
 // ---------------------------------------------------------------------------
 
 function SmallCourseCard({ course }: { course: any }) {
-  const color = LEVEL_COLORS[course.level] || '#1A5632';
+  const color = LEVEL_COLORS[course.level] || '#1B0CB3';
   const title = getLocalText(course.title, 'fr');
 
   return (
@@ -99,7 +99,7 @@ function SmallCourseCard({ course }: { course: any }) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-[#212529] line-clamp-2 group-hover:text-[#1A5632] transition-colors">{title}</p>
+        <p className="text-xs font-medium text-[#212529] line-clamp-2 group-hover:text-[#1B0CB3] transition-colors">{title}</p>
         <p className="text-[10px] text-[#6c757d] mt-0.5">{course.estimated_hours || '—'}h &bull; {LEVEL_LABELS[course.level] || ''}</p>
       </div>
     </Link>
@@ -158,7 +158,7 @@ export default function CategoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#efece7] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#1A5632]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1B0CB3]" />
       </div>
     );
   }
@@ -166,17 +166,17 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-[#efece7]">
       {/* Top accent */}
-      <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+      <div className="h-1 bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#00B341]" />
 
       {/* Header */}
       <header className="bg-white border-b border-[#dee2e6]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/au-logo.png" alt="AU-IBAR" width={36} height={36} className="w-9 h-9 object-contain" />
+              <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={130} height={130} className="w-[130px] h-auto object-contain" />
               <div>
-                <span className="text-sm font-bold text-[#930e2d]">AU-IBAR</span>
-                <span className="text-sm font-bold text-[#1A5632] ml-1">Learning</span>
+                <span className="text-sm font-bold text-[#1B0CB3]">Topnet Solutions</span>
+                <span className="text-sm font-bold text-[#1B0CB3] ml-1">Academy</span>
               </div>
             </Link>
           </div>
@@ -185,14 +185,14 @@ export default function CategoryPage() {
 
       {/* Hero banner */}
       {category && (
-        <div className="relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${category.color || '#1A5632'}15, ${category.color || '#1A5632'}05)` }}>
+        <div className="relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${category.color || '#1B0CB3'}15, ${category.color || '#1B0CB3'}05)` }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6c757d] hover:text-[#1A5632] mb-4 transition-colors">
+            <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6c757d] hover:text-[#1B0CB3] mb-4 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Retour à l'accueil
             </Link>
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: (category.color || '#1A5632') + '20' }}>
-                <BookOpen className="w-7 h-7" style={{ color: category.color || '#1A5632' }} />
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: (category.color || '#1B0CB3') + '20' }}>
+                <BookOpen className="w-7 h-7" style={{ color: category.color || '#1B0CB3' }} />
               </div>
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-[#212529]">{getLocalText(category.name, 'fr')}</h1>
@@ -215,7 +215,7 @@ export default function CategoryPage() {
               <div className="text-center py-16">
                 <BookOpen className="w-14 h-14 mx-auto text-[#dee2e6] mb-4" />
                 <p className="text-[#6c757d]">Aucun cours dans cette catégorie pour le moment.</p>
-                <Link href="/" className="text-sm text-[#1A5632] hover:underline mt-2 inline-block">
+                <Link href="/" className="text-sm text-[#1B0CB3] hover:underline mt-2 inline-block">
                   Voir tous les cours
                 </Link>
               </div>
@@ -240,14 +240,14 @@ export default function CategoryPage() {
                   {otherCategories.map(cat => (
                     <Link key={cat.id} href={`/category/${cat.slug || cat.id}`}>
                       <div className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8f9fa] transition-colors group">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: (cat.color || '#1A5632') + '15' }}>
-                          <BookOpen className="w-4 h-4" style={{ color: cat.color || '#1A5632' }} />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: (cat.color || '#1B0CB3') + '15' }}>
+                          <BookOpen className="w-4 h-4" style={{ color: cat.color || '#1B0CB3' }} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#212529] group-hover:text-[#1A5632] transition-colors truncate">{getLocalText(cat.name, 'fr')}</p>
+                          <p className="text-sm font-medium text-[#212529] group-hover:text-[#1B0CB3] transition-colors truncate">{getLocalText(cat.name, 'fr')}</p>
                           <p className="text-[10px] text-[#adb5bd]">{cat.course_count || 0} cours</p>
                         </div>
-                        <ChevronRight className="w-3.5 h-3.5 text-[#adb5bd] group-hover:text-[#1A5632]" />
+                        <ChevronRight className="w-3.5 h-3.5 text-[#adb5bd] group-hover:text-[#1B0CB3]" />
                       </div>
                     </Link>
                   ))}
@@ -293,8 +293,8 @@ export default function CategoryPage() {
       {/* Footer */}
       <footer className="bg-[#af9c63] mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between text-xs text-white/90">
-          <p>&copy; {new Date().getFullYear()} AU-IBAR — African Union Interafrican Bureau for Animal Resources</p>
-          <div className="h-1 w-24 rounded bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+          <p>&copy; {new Date().getFullYear()} Topnet Solutions — All rights reserved</p>
+          <div className="h-1 w-24 rounded bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#00B341]" />
         </div>
       </footer>
     </div>

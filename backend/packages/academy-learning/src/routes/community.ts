@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Community Routes
+// Topnet Solutions Academy — Community Routes
 // Forum posts (CRUD + replies + upvote) + Study groups (CRUD + join/leave)
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -15,7 +15,7 @@ import {
   PaginationQuery,
   MultiLangTextSchema,
   UuidParam,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schemas

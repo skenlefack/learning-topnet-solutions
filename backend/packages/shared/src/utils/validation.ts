@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Zod Validation Schemas & Helpers
+// Topnet Solutions Academy — Zod Validation Schemas & Helpers
 // Reusable schemas for all microservices
 // ============================================================================
 import { z, ZodSchema } from 'zod';

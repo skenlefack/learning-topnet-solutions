@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Shared Mock Data for Tests
+// Topnet Solutions Academy — Shared Mock Data for Tests
 // ============================================================================
 
 export const mockUser = {
@@ -17,7 +17,7 @@ export const mockUser = {
 export const mockAdminUser = {
   ...mockUser,
   id: 'usr-admin-001',
-  email: 'admin@au-ibar.org',
+  email: 'admin@topnet-solutions.com',
   firstName: 'Jean',
   lastName: 'Admin',
   role: 'admin_continental',
@@ -189,7 +189,7 @@ export const mockQuizLesson = {
         id: 'q3',
         text: { fr: 'Quel organisme gère ARIS ?', en: 'Which organization manages ARIS?' },
         options: [
-          { id: 'q3-a', text: { fr: 'AU-IBAR', en: 'AU-IBAR' }, isCorrect: true },
+          { id: 'q3-a', text: { fr: 'Topnet Solutions', en: 'Topnet Solutions' }, isCorrect: true },
           { id: 'q3-b', text: { fr: 'FAO', en: 'FAO' }, isCorrect: false },
           { id: 'q3-c', text: { fr: 'OMS', en: 'WHO' }, isCorrect: false },
         ],

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: Sidebar
+// Topnet Solutions Academy — Component Test: Sidebar
 // Navigation items, active state, admin link, certification levels, close btn
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -52,10 +52,10 @@ describe('Sidebar', () => {
 
   // ---- Brand ----
 
-  it('shows AU-IBAR brand text', () => {
+  it('shows Topnet Solutions brand text', () => {
     render(<Sidebar open={true} onClose={onClose} />);
-    expect(screen.getByText('AU-IBAR')).toBeInTheDocument();
-    expect(screen.getByText('Learning')).toBeInTheDocument();
+    expect(screen.getByText('Topnet Solutions')).toBeInTheDocument();
+    expect(screen.getByText('Academy')).toBeInTheDocument();
   });
 
   // ---- Active state ----

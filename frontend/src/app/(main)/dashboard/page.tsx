@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Dashboard Home (Server Component)
+// Topnet Solutions Academy — Dashboard Home (Server Component)
 // Renders the client-side dashboard with initial data when available
 // ============================================================================
 import { cookies } from 'next/headers';
@@ -24,7 +24,7 @@ async function fetchInitial(token: string) {
 
 export default async function DashboardPage() {
   const cookieStore = cookies();
-  const token = cookieStore.get('aris-token')?.value ?? null;
+  const token = cookieStore.get('topnet-token')?.value ?? null;
 
   // Pre-fetch when server-side auth cookie is available
   const initialDashboard = token ? await fetchInitial(token) : null;

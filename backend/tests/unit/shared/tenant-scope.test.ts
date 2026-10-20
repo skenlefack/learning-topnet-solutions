@@ -6,7 +6,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
 import { signTestJwt } from '../../helpers/auth';
 
-// Mock external deps that @aris-academy/shared barrel transitively imports
+// Mock external deps that @topnet-academy/shared barrel transitively imports
 vi.mock('@fastify/rate-limit', () => ({ default: vi.fn() }));
 
 // Mock the DB query used by tenant-scope plugin (SET search_path)

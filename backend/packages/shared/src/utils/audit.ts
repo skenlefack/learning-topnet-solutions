@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Audit Log Helper
+// Topnet Solutions Academy — Audit Log Helper
 // Writes to academy_core.audit_log AND publishes to Kafka AUDIT_EVENTS topic
 // ============================================================================
 import { query } from '../db';

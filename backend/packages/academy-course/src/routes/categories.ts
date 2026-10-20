@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — Course Categories Routes
+// Topnet Solutions Academy — Course Categories Routes
 // CRUD for course categories (hierarchical, multilingual)
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { query, queryOne, validateBody, BearerSecurity } from '@aris-academy/shared';
+import { query, queryOne, validateBody, BearerSecurity } from '@topnet-academy/shared';
 
 const categorySchema = z.object({
   name: z.record(z.string()).refine((v) => v.fr || v.en, 'Name required in FR or EN'),

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: CourseFormModal
+// Topnet Solutions Academy — Component Test: CourseFormModal
 // Tests form rendering, validation, edit mode
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

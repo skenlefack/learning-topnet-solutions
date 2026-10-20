@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — StudyGroupsTab
+// Topnet Solutions Academy — StudyGroupsTab
 // Grid of study groups: join, create, leave
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';

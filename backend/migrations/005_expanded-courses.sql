@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Migration 005: Expanded course catalog
--- 6 additional courses covering AU-IBAR real training domains
+-- 6 additional courses covering Topnet Solutions Academy training domains
 -- + modules for each, + demo enrollments & certifications for stats
 -- ============================================================================
 
@@ -12,7 +12,7 @@ DECLARE
   _tenant_au UUID;
   _trainer_id UUID;
 BEGIN
-  SELECT id INTO _tenant_au FROM tenants WHERE code = 'AU-IBAR' LIMIT 1;
+  SELECT id INTO _tenant_au FROM tenants WHERE code = 'TOPNET' LIMIT 1;
   SELECT id INTO _trainer_id FROM users WHERE role = 'trainer' LIMIT 1;
 
   -- If no tenant found, use first available

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: NotificationDropdown
+// Topnet Solutions Academy — Component Test: NotificationDropdown
 // Bell icon, unread badge, dropdown panel, empty state, loading skeletons
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

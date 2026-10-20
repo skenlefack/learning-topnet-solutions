@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Dashboard Routes
+// Topnet Solutions Academy — Dashboard Routes
 // GET /dashboard                        — learner personal dashboard
 // GET /dashboard/leaderboard            — ranked learners (Redis sorted sets)
 // GET /dashboard/stats                  — admin aggregate stats
@@ -9,7 +9,7 @@ import { z } from 'zod';
 import {
   query, queryOne, getRedis, isRedisAvailable, validateBody, uuidSchema,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Schemas

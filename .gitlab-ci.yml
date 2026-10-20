@@ -1,5 +1,5 @@
 ###############################################################################
-# ARIS Academy — GitLab CI/CD Pipeline
+# Topnet Solutions Academy — GitLab CI/CD Pipeline
 # Stages: test → build → deploy
 # Target: VM-ACADEMY (10.202.101.144) via SSH
 ###############################################################################
@@ -71,7 +71,7 @@ build:
       sshpass -p "$VM_ACADEMY_PASSWORD" ssh -o StrictHostKeyChecking=no \
         ${VM_ACADEMY_USER}@${VM_ACADEMY_HOST} << 'ENDSSH'
         set -e
-        cd /opt/aris-academy
+        cd /opt/topnet-academy
 
         # Pull latest code
         git pull origin main
@@ -98,7 +98,7 @@ deploy-production:
       sshpass -p "$VM_ACADEMY_PASSWORD" ssh -o StrictHostKeyChecking=no \
         ${VM_ACADEMY_USER}@${VM_ACADEMY_HOST} << 'ENDSSH'
         set -e
-        cd /opt/aris-academy
+        cd /opt/topnet-academy
 
         # Stop and recreate containers with prod overlay
         docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
@@ -122,7 +122,7 @@ deploy-production:
       ENDSSH
   environment:
     name: production
-    url: http://learning.au-ibar.org
+    url: http://learning.topnet-solutions.com
   only:
     - main
   when: manual

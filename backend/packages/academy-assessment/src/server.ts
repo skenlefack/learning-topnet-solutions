@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Assessment Service (academy-assessment)
+// Topnet Solutions Academy — Assessment Service (academy-assessment)
 // Port: 4003
 // Manages: question bank, adaptive exams, scoring, certification (PDF+QR)
 // ============================================================================
@@ -14,12 +14,13 @@ import {
   requestLoggerPlugin,
   swaggerPlugin,
   getCorsConfig,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { assessmentRoutes } from './routes/assessments';
 import { attemptRoutes } from './routes/attempts';
 import { certificationRoutes } from './routes/certifications';
 import { questionRoutes } from './routes/questions';
 import { pathExamRoutes } from './routes/path-exam';
+import { skillRoutes } from './routes/skills';
 import { initConsumers } from './consumers';
 import { initBucket } from './services/certificate-generator';
 
@@ -52,6 +53,7 @@ async function bootstrap() {
   await app.register(certificationRoutes);
   await app.register(questionRoutes, { prefix: '/questions' });
   await app.register(pathExamRoutes);
+  await app.register(skillRoutes, { prefix: '/skills' });
 
   // Health check
   app.get('/health', async () => ({

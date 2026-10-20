@@ -1,6 +1,6 @@
-# ARIS Academy -- API Reference
+# Topnet Solutions Academy -- API Reference
 
-> **Base domain (production):** `https://learning.au-ibar.org`
+> **Base domain (production):** `https://learning.topnet-solutions.com`
 > **Swagger UI:** Each service exposes interactive docs at `GET /docs`.
 
 ---
@@ -64,16 +64,16 @@ Authorization: Bearer <token>
 | `trainer`            | Facilitator who manages live sessions      |
 | `admin_country`      | Country-level administrator                |
 | `admin_rec`          | Regional Economic Community administrator  |
-| `admin_continental`  | Continental (AU-IBAR) super administrator  |
+| `admin_continental`  | Continental (Topnet Solutions) super administrator  |
 
 ---
 
 ## Multi-Tenant Model
 
-ARIS Academy uses a three-tier tenant hierarchy enforced via PostgreSQL Row-Level Security (RLS):
+Topnet Solutions Academy uses a three-tier tenant hierarchy enforced via PostgreSQL Row-Level Security (RLS):
 
 ```
-Continental  (AU-IBAR)
+Continental  (Topnet Solutions)
   +-- REC        (e.g. ECOWAS, IGAD, SADC, ...)
        +-- Country   (e.g. NG, KE, ZA, ...)
 ```
@@ -408,7 +408,7 @@ Manages assessments, exam attempts, certifications, and question banks.
 ```json
 {
   "valid": true,
-  "certNumber": "ARIS-2026-00001",
+  "certNumber": "TOPNET-2026-00001",
   "holder": "Alice Doe",
   "course": "Animal Health 101",
   "level": "beginner",
@@ -538,4 +538,4 @@ Retry-After: 60
 
 ---
 
-*Generated for ARIS Academy v1.0 -- April 2026*
+*Generated for Topnet Solutions Academy v1.0 -- April 2026*

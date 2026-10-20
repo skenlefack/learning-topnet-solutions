@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — BigBlueButton API Client
+// Topnet Solutions Academy — BigBlueButton API Client
 // Centralized BBB interaction with checksum, retry, XML parsing
 // ============================================================================
 import { createHash } from 'crypto';
 
-const BBB_URL = process.env.BBB_URL || 'https://bbb.au-ibar.org/bigbluebutton/';
+const BBB_URL = process.env.BBB_URL || 'https://bbb.topnet-solutions.com/bigbluebutton/';
 const BBB_PUBLIC_URL = process.env.BBB_PUBLIC_URL || BBB_URL;
 const BBB_SECRET = process.env.BBB_SECRET || 'bbb-shared-secret';
 
@@ -141,8 +141,8 @@ export class BBBClient {
       autoStartRecording: 'true',
       allowStartStopRecording: 'true',
       maxParticipants: String(params.maxParticipants || 300),
-      logoutURL: params.logoutURL || 'https://learning.au-ibar.org/live',
-      welcome: params.welcomeMessage || 'Bienvenue dans la session AU-IBAR Learning!',
+      logoutURL: params.logoutURL || 'https://learning.topnet-solutions.com/live',
+      welcome: params.welcomeMessage || 'Bienvenue dans la session Topnet Solutions Academy!',
       meetingExpireIfNoUserJoinedInMinutes: '30',
       meetingExpireWhenLastUserLeftInMinutes: '5',
     });

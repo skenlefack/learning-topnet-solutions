@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Document Converter Client
+// Topnet Solutions Academy — Document Converter Client
 // Calls the converter microservice (LibreOffice headless container)
 // Falls back gracefully if converter is unavailable
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — E2E: Live Sessions Page
+// Topnet Solutions Academy — E2E: Live Sessions Page
 // Live/upcoming/recordings tabs, join button, schedule display
 // ============================================================================
 import { test, expect } from '@playwright/test';
@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 // Helper: inject auth state
 async function injectAuth(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-001',

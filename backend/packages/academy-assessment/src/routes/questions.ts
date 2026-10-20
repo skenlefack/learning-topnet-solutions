@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Question Bank Routes
+// Topnet Solutions Academy — Question Bank Routes
 // CRUD for assessment questions (trainer+ only)
 // + bulk-import (POST /bulk-import) + export (GET /export)
 // ============================================================================
@@ -8,7 +8,7 @@ import { z } from 'zod';
 import {
   query, queryOne, transaction, validateBody,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schemas

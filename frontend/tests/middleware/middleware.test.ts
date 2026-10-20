@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Middleware Test
+// Topnet Solutions Academy — Middleware Test
 // Tests route protection, public paths, cookie checks, redirects
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -15,7 +15,7 @@ vi.mock('next/server', () => {
 
   return {
     NextRequest: vi.fn().mockImplementation((url: string) => {
-      const parsedUrl = new URL(url, 'https://learning.au-ibar.org');
+      const parsedUrl = new URL(url, 'https://learning.topnet-solutions.com');
       // Next.js NextURL extends URL with a clone() method — replicate for tests
       (parsedUrl as any).clone = () => {
         const cloned = new URL(parsedUrl.toString());
@@ -46,9 +46,9 @@ import { middleware } from '@/middleware';
 // ---------------------------------------------------------------------------
 
 function createRequest(pathname: string, token?: string) {
-  const req = new NextRequest(`https://learning.au-ibar.org${pathname}`);
+  const req = new NextRequest(`https://learning.topnet-solutions.com${pathname}`);
   if (token) {
-    (req.cookies as any)._set('aris-token', token);
+    (req.cookies as any)._set('topnet-token', token);
   }
   return req;
 }

@@ -1,16 +1,16 @@
 // ============================================================================
-// ARIS Academy — E2E: Admin Course Creation
+// Topnet Solutions Academy — E2E: Admin Course Creation
 // Admin creates a course via the admin dashboard
 // ============================================================================
 import { test, expect } from '@playwright/test';
 
 function injectAdmin(page: import('@playwright/test').Page) {
   return page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-admin-001',
-          email: 'admin@au-ibar.org',
+          email: 'admin@topnet-solutions.com',
           firstName: 'Jean',
           lastName: 'Admin',
           role: 'admin_continental',
@@ -30,7 +30,7 @@ function injectAdmin(page: import('@playwright/test').Page) {
 
 function injectLearner(page: import('@playwright/test').Page) {
   return page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-001',

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Swagger / OpenAPI Plugin (Fastify)
+// Topnet Solutions Academy — Swagger / OpenAPI Plugin (Fastify)
 // Registers @fastify/swagger + @fastify/swagger-ui on each microservice.
 // Usage: fastify.register(swaggerPlugin, { serviceName, servicePort })
 // Exposes:
@@ -44,13 +44,13 @@ async function swaggerPluginImpl(
         title: `ARIS Academy — ${serviceName}`,
         description,
         version: '1.0.0',
-        contact: { name: 'AU-IBAR / ARIS Team', email: 'ops-team@au-ibar.org' },
+        contact: { name: 'Topnet Solutions Team', email: 'ops-team@topnet-solutions.com' },
       },
       servers: [
         ...(servicePort
           ? [{ url: `http://localhost:${servicePort}`, description: 'Development' }]
           : []),
-        { url: 'https://learning.au-ibar.org', description: 'Production' },
+        { url: 'https://learning.topnet-solutions.com', description: 'Production' },
       ],
       components: {
         securitySchemes: {

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: ProgressRing
+// Topnet Solutions Academy — Component Test: ProgressRing
 // SVG geometry, stroke-dashoffset calculations, edge cases
 // ============================================================================
 import { describe, it, expect } from 'vitest';

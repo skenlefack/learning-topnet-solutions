@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: DashboardClient
+// Topnet Solutions Academy — Component Test: DashboardClient
 // SWR orchestrator rendering sub-panels
 // ============================================================================
 import { describe, it, expect, vi } from 'vitest';

@@ -1,4 +1,4 @@
-# Pre-Deployment Checklist — ARIS Academy
+# Pre-Deployment Checklist — Topnet Solutions Academy
 
 ## GitHub Secrets Required
 
@@ -9,15 +9,15 @@
 | `VM_SSH_KEY` | Clef SSH privee | `ssh-keygen` puis ajouter pub sur VM |
 | `VM_ACADEMY_PASSWORD` | (optionnel si key) | Mot de passe SSH |
 | `CI_REGISTRY` | (optionnel) | Default: `ghcr.io` |
-| `CI_REGISTRY_IMAGE` | (optionnel) | Default: `ghcr.io/<owner>/aris-academy` |
+| `CI_REGISTRY_IMAGE` | (optionnel) | Default: `ghcr.io/<owner>/topnet-academy` |
 
 ## .env.production — Secrets a recuperer
 
 | Variable | Source | Action |
 |----------|--------|--------|
 | `BBB_SECRET` | VM-BBB | `ssh vm-bbb "cat /etc/bigbluebutton/bbb-web-config \| grep securitySalt"` |
-| `ARIS_SSO_CLIENT_SECRET` | ARIS Core Admin | Demander a l'equipe ARIS Core |
-| `SMTP_PASSWORD` | IT Admin | Mot de passe pour `lms-alerts@au-ibar.org` |
+| `TOPNET_SSO_CLIENT_SECRET` | Topnet Solutions Core Admin | Demander a l'equipe Topnet Solutions Core |
+| `SMTP_PASSWORD` | IT Admin | Mot de passe pour `lms-alerts@topnet-solutions.com` |
 
 ## VM-ACADEMY — Setup initial (une seule fois)
 
@@ -27,8 +27,8 @@ curl -fsSL https://get.docker.com | sh
 apt install docker-compose-plugin -y
 
 # 2. Cloner le repo
-git clone <repo-url> /opt/aris-academy
-cd /opt/aris-academy
+git clone <repo-url> /opt/topnet-academy
+cd /opt/topnet-academy
 
 # 3. Copier .env.production -> .env
 cp .env.production .env
@@ -41,8 +41,8 @@ docker network create academy-net || true
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 # 6. Installer les crons de backup
-cp infra/scripts/backup-cron.conf /etc/cron.d/aris-backup
-chmod 644 /etc/cron.d/aris-backup
+cp infra/scripts/backup-cron.conf /etc/cron.d/topnet-backup
+chmod 644 /etc/cron.d/topnet-backup
 
 # 7. Verifier la sante
 ./infra/scripts/health-check.sh
@@ -52,25 +52,25 @@ chmod 644 /etc/cron.d/aris-backup
 
 | Domaine | Type | Valeur |
 |---------|------|--------|
-| `learning.au-ibar.org` | A | `10.202.101.144` (IP publique VM-ACADEMY) |
+| `learning.topnet-solutions.com` | A | `10.202.101.144` (IP publique VM-ACADEMY) |
 
 ## Verification post-deploiement
 
-- [ ] `https://learning.au-ibar.org/login` charge la page de login
-- [ ] `https://learning.au-ibar.org/api/courses/health` retourne `{"status":"ok"}`
-- [ ] `https://learning.au-ibar.org/api/learning/health` retourne `{"status":"ok"}`
-- [ ] `https://learning.au-ibar.org/api/assessment/health` retourne `{"status":"ok"}`
-- [ ] `https://learning.au-ibar.org/api/live/health` retourne `{"status":"ok"}`
+- [ ] `https://learning.topnet-solutions.com/login` charge la page de login
+- [ ] `https://learning.topnet-solutions.com/api/courses/health` retourne `{"status":"ok"}`
+- [ ] `https://learning.topnet-solutions.com/api/learning/health` retourne `{"status":"ok"}`
+- [ ] `https://learning.topnet-solutions.com/api/assessment/health` retourne `{"status":"ok"}`
+- [ ] `https://learning.topnet-solutions.com/api/live/health` retourne `{"status":"ok"}`
 - [ ] Certificat TLS valide (Let's Encrypt)
 - [ ] Login avec credentials de demo fonctionne
 - [ ] Dashboard charge les donnees
-- [ ] Grafana accessible a `https://learning.au-ibar.org/grafana`
-- [ ] Backup cron actif : `crontab -l | grep aris`
+- [ ] Grafana accessible a `https://learning.topnet-solutions.com/grafana`
+- [ ] Backup cron actif : `crontab -l | grep topnet`
 
 ## Rollback
 
 ```bash
-cd /opt/aris-academy
+cd /opt/topnet-academy
 # Revenir au commit precedent
 git log --oneline -5
 git checkout <previous-sha>

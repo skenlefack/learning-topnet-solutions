@@ -1,4 +1,4 @@
-# ARIS Academy — Testing Guide
+# Topnet Solutions Academy — Testing Guide
 
 ## Test Architecture
 
@@ -66,11 +66,11 @@ All route/unit tests must mock `@fastify/rate-limit` due to the shared barrel im
 vi.mock('@fastify/rate-limit', () => ({ default: vi.fn() }));
 ```
 
-When using `importOriginal` for `@aris-academy/shared`:
+When using `importOriginal` for `@topnet-academy/shared`:
 
 ```typescript
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: (...args: any[]) => mockQuery(...args),
@@ -91,9 +91,9 @@ const TEST_SECRET = 'test-secret';
 function signToken(overrides = {}) {
   return jwt.sign({
     sub: 'user-1',
-    email: 'test@au-ibar.org',
+    email: 'test@topnet-solutions.com',
     role: 'learner',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     ...overrides,
   }, TEST_SECRET, { expiresIn: '1h' });

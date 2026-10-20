@@ -1,7 +1,7 @@
 // ============================================================================
-// ARIS Academy — Production CORS Configuration
+// Topnet Solutions Academy — Production CORS Configuration
 // Provides strict origin control based on NODE_ENV and CORS_ORIGINS env var.
-// Usage: import { getCorsConfig } from '@aris-academy/shared';
+// Usage: import { getCorsConfig } from '@topnet-academy/shared';
 //        await app.register(cors, getCorsConfig());
 // ============================================================================
 import type { FastifyCorsOptions } from '@fastify/cors';
@@ -11,8 +11,8 @@ import type { FastifyCorsOptions } from '@fastify/cors';
 // ---------------------------------------------------------------------------
 
 const PRODUCTION_ORIGINS = [
-  'https://learn.au-ibar.org',
-  'https://www.learn.au-ibar.org',
+  'https://learn.topnet-solutions.com',
+  'https://www.learn.topnet-solutions.com',
 ];
 
 const DEVELOPMENT_ORIGINS = [

@@ -1,10 +1,10 @@
 ###############################################################################
-# ARIS Academy — learning.au-ibar.org
+# Topnet Solutions Academy — learning.topnet-solutions.com
 # Docker Compose — Production-Ready Containerized Platform
-# AU-IBAR © 2026
+# Topnet Solutions © 2026
 ###############################################################################
 
-name: aris-academy
+name: topnet-academy
 
 services:
   # =========================================================================
@@ -68,7 +68,7 @@ services:
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_LOG_RETENTION_HOURS: 168
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CLUSTER_ID: "aris-academy-kafka-cluster-01"
+      CLUSTER_ID: "topnet-academy-kafka-cluster-01"
     volumes:
       - kafka_data:/tmp/kraft-combined-logs
     ports:
@@ -138,7 +138,7 @@ services:
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+      JWT_SECRET: ${JWT_SECRET:-topnet-academy-jwt-secret-2026}
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
@@ -171,7 +171,7 @@ services:
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+      JWT_SECRET: ${JWT_SECRET:-topnet-academy-jwt-secret-2026}
     ports:
       - "4002:4002"
     networks:
@@ -199,7 +199,7 @@ services:
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
+      JWT_SECRET: ${JWT_SECRET:-topnet-academy-jwt-secret-2026}
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
@@ -231,18 +231,48 @@ services:
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET:-aris-academy-jwt-secret-2026}
-      BBB_URL: ${BBB_URL:-https://bbb.au-ibar.org/bigbluebutton/}
-      BBB_PUBLIC_URL: ${BBB_PUBLIC_URL:-https://bbb.au-ibar.org/bigbluebutton/}
+      JWT_SECRET: ${JWT_SECRET:-topnet-academy-jwt-secret-2026}
+      BBB_URL: ${BBB_URL:-https://bbb.topnet-solutions.com/bigbluebutton/}
+      BBB_PUBLIC_URL: ${BBB_PUBLIC_URL:-https://bbb.topnet-solutions.com/bigbluebutton/}
       BBB_SECRET: ${BBB_SECRET:-bbb-shared-secret}
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-academy_minio}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-academy_minio_secret}
     extra_hosts:
-      - "bbb.au-ibar.org:10.202.101.145"
+      - "bbb.topnet-solutions.com:10.202.101.145"
     ports:
       - "4004:4004"
+    networks:
+      - academy-net
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  academy-commerce:
+    build:
+      context: ./backend
+      dockerfile: ../infra/docker/Dockerfile.service
+      args:
+        SERVICE_NAME: academy-commerce
+    container_name: academy-commerce
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: academy-commerce
+      SERVICE_PORT: 4005
+      DATABASE_URL: postgres://${POSTGRES_USER:-academy}:${POSTGRES_PASSWORD:-academy_secret_2026}@postgres:5432/academy
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-topnet-academy-jwt-secret-2026}
+      PAYMENT_ENCRYPTION_KEY: ${PAYMENT_ENCRYPTION_KEY:-topnet-payment-encryption-key-2026}
+      APP_URL: ${APP_URL:-https://learning.topnet-solutions.com}
+    ports:
+      - "4005:4005"
     networks:
       - academy-net
     depends_on:
@@ -265,8 +295,8 @@ services:
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
-      NEXT_PUBLIC_BBB_URL: ${BBB_URL:-https://bbb.au-ibar.org}
-      NEXT_PUBLIC_APP_URL: ${APP_URL:-https://learning.au-ibar.org}
+      NEXT_PUBLIC_BBB_URL: ${BBB_URL:-https://bbb.topnet-solutions.com}
+      NEXT_PUBLIC_APP_URL: ${APP_URL:-https://learning.topnet-solutions.com}
     ports:
       - "3000:3000"
     networks:
@@ -276,6 +306,7 @@ services:
       - academy-learning
       - academy-assessment
       - academy-live
+      - academy-commerce
 
   # =========================================================================
   # REVERSE PROXY (Traefik)
@@ -292,7 +323,7 @@ services:
       - "--providers.file.filename=/etc/traefik/dynamic.yml"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.email=admin@au-ibar.org"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@topnet-solutions.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
     ports:

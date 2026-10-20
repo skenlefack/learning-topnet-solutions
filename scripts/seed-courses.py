@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AU-IBAR Learning — Seed 8 ARIS courses from Word documents
+Topnet Solutions Academy — Seed 8 courses from Word documents
 Extracts structure, content, generates HTML, translates titles, outputs SQL
 """
 import docx

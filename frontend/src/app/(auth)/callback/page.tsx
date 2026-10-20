@@ -1,7 +1,7 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — SSO Callback Page
-// Receives JWT from ARIS Credential Service, stores in zustand + cookie,
+// Topnet Solutions Academy — SSO Callback Page
+// Receives JWT from Credential Service, stores in zustand + cookie,
 // redirects to dashboard
 // ============================================================================
 import { Suspense, useEffect, useState } from 'react';
@@ -52,7 +52,7 @@ function SSOCallbackInner() {
       setAuth(user, token);
 
       // Set client-side cookie immediately
-      document.cookie = `aris-token=${token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
+      document.cookie = `topnet-token=${token}; path=/; max-age=${60 * 60 * 24}; samesite=lax`;
 
       // Also set httpOnly cookie via server endpoint for SSR
       fetch('/api/auth/set-cookie', {

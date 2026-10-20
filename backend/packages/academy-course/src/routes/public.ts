@@ -1,9 +1,9 @@
 // ============================================================================
-// ARIS Academy — Public Routes (no authentication required)
+// Topnet Solutions Academy — Public Routes (no authentication required)
 // Platform stats, published courses listing, course detail with program
 // ============================================================================
 import { FastifyInstance } from 'fastify';
-import { query, queryOne } from '@aris-academy/shared';
+import { query, queryOne } from '@topnet-academy/shared';
 
 export async function publicRoutes(app: FastifyInstance) {
   // ─────────────────────────────────────────────────────────────────────────

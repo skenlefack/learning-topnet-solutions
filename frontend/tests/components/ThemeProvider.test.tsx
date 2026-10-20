@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: ThemeProvider
+// Topnet Solutions Academy — Component Test: ThemeProvider
 // Applies dark class to documentElement based on Zustand theme
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

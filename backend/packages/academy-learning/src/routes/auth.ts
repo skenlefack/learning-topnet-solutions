@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Auth Route
+// Topnet Solutions Academy — Auth Route
 // POST /auth/login — DEV: seed credentials, PRODUCTION: DB + bcrypt
 // ============================================================================
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -10,7 +10,7 @@ import {
   queryOne,
   sendPasswordResetEmail,
   sendPasswordChangedEmail,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -38,21 +38,21 @@ const DEMO_USERS: Record<string, {
   id: string; firstName: string; lastName: string;
   role: string; tenantId: string; tenantLevel: string; preferredLanguage: string;
 }> = {
-  'serge@au-ibar.org': {
+  'serge@topnet-solutions.com': {
     id: 'usr_serge_001',
     firstName: 'Serge',
     lastName: 'Nakouzi',
     role: 'admin_continental',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     preferredLanguage: 'fr',
   },
-  'amina@au-ibar.org': {
+  'amina@topnet-solutions.com': {
     id: 'usr_amina_002',
     firstName: 'Amina',
     lastName: 'Diallo',
     role: 'trainer',
-    tenantId: 'au-ibar',
+    tenantId: 'topnet-solutions',
     tenantLevel: 'continental',
     preferredLanguage: 'fr',
   },
@@ -100,7 +100,7 @@ export default async function authRoutes(app: FastifyInstance) {
       if (process.env.NODE_ENV === 'production') {
         try {
           const bcrypt = await import('bcryptjs');
-          const { query } = await import('@aris-academy/shared');
+          const { query } = await import('@topnet-academy/shared');
 
           const rows = await query<{
             id: string;
@@ -399,7 +399,7 @@ export default async function authRoutes(app: FastifyInstance) {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           role: 'learner',
-          tenantId: 'au-ibar',
+          tenantId: 'topnet-solutions',
           tenantLevel: 'continental',
           preferredLanguage: 'fr',
         };
@@ -433,7 +433,7 @@ export default async function authRoutes(app: FastifyInstance) {
 
         const passwordHash = await bcrypt.hash(password, 12);
 
-        // Default tenant: AU-IBAR Continental
+        // Default tenant: Topnet Solutions Continental
         const defaultTenantId = '00000000-0000-0000-0000-000000000001';
 
         const newUser = await queryOne<{

@@ -1,5 +1,5 @@
 # ============================================================================
-# ARIS Academy — CI Pipeline
+# Topnet Solutions Academy — CI Pipeline
 # Runs on PR and push to main/develop
 # Frontend: type-check, lint, unit tests, build
 # Backend: type-check, lint, integration tests (testcontainers)
@@ -108,4 +108,4 @@ jobs:
           fail_ci_if_error: false
 
       - name: Migration dry-run
-        run: npx node-pg-migrate up --dry-run --migrations-dir migrations --migration-file-language sql --database-url "postgresql://test:test@localhost:5432/aris_test" 2>&1 || echo "Dry-run check complete (no DB expected in CI)"
+        run: npx node-pg-migrate up --dry-run --migrations-dir migrations --migration-file-language sql --database-url "postgresql://test:test@localhost:5432/topnet_test" 2>&1 || echo "Dry-run check complete (no DB expected in CI)"

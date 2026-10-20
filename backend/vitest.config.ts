@@ -34,7 +34,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@aris-academy/shared': path.resolve(__dirname, 'packages/shared/src'),
+      '@topnet-academy/shared': path.resolve(__dirname, 'packages/shared/src'),
     },
   },
 });

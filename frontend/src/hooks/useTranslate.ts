@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — SYSTRAN Translation Hook
+// Topnet Solutions Academy — SYSTRAN Translation Hook
 // Translates dynamic content (course titles, descriptions, etc.) via SYSTRAN
 // Uses in-memory cache to avoid redundant API calls
 // ============================================================================

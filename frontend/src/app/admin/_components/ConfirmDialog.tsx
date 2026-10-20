@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Modern Confirm Dialog
+// Topnet Solutions Academy — Modern Confirm Dialog
 // Replaces native confirm() with an animated modal
 // Usage: const confirm = useConfirm();
 //        const ok = await confirm({ title, message, confirmLabel, variant });

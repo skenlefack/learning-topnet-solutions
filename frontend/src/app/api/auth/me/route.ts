@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Me Endpoint
+// Topnet Solutions Academy — Me Endpoint
 // GET with Authorization: Bearer <token> → returns user from JWT claims
 // ============================================================================
 import { NextRequest, NextResponse } from 'next/server';

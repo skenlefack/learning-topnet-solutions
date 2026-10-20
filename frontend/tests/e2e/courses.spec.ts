@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — E2E: Course Listing, Search, and Navigation
+// Topnet Solutions Academy — E2E: Course Listing, Search, and Navigation
 // Tests the course catalogue page with authenticated user
 // ============================================================================
 import { test, expect } from '@playwright/test';
@@ -26,7 +26,7 @@ async function injectAuth(page: import('@playwright/test').Page) {
       },
       version: 0,
     };
-    localStorage.setItem('aris-academy-auth', JSON.stringify(state));
+    localStorage.setItem('topnet-academy-auth', JSON.stringify(state));
   });
 }
 

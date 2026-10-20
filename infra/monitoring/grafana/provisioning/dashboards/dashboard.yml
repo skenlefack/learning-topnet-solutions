@@ -1,14 +1,14 @@
 ###############################################################################
-# ARIS Academy — Grafana Dashboard Provisioning
+# Topnet Solutions Academy — Grafana Dashboard Provisioning
 # Auto-loads dashboards from the filesystem
 ###############################################################################
 
 apiVersion: 1
 
 providers:
-  - name: "ARIS Academy"
+  - name: "Topnet Solutions Academy"
     orgId: 1
-    folder: "ARIS Academy"
+    folder: "Topnet Solutions Academy"
     type: file
     disableDeletion: false
     editable: true

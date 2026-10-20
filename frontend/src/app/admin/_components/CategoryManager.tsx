@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Category Manager (Admin)
+// Topnet Solutions Academy — Category Manager (Admin)
 // CRUD for course categories with icons and colors
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';
@@ -36,7 +36,7 @@ export default function CategoryManager() {
   const [description, setDescription] = useState<Record<string, string>>({});
   const [slug, setSlug] = useState('');
   const [icon, setIcon] = useState('BookOpen');
-  const [color, setColor] = useState('#1A5632');
+  const [color, setColor] = useState('#1B0CB3');
   const [saving, setSaving] = useState(false);
 
   const fetchCategories = useCallback(async () => {
@@ -50,7 +50,7 @@ export default function CategoryManager() {
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
   const resetForm = () => {
-    setName({}); setDescription({}); setSlug(''); setIcon('BookOpen'); setColor('#1A5632');
+    setName({}); setDescription({}); setSlug(''); setIcon('BookOpen'); setColor('#1B0CB3');
     setEditing(null); setShowForm(false);
   };
 
@@ -62,7 +62,7 @@ export default function CategoryManager() {
     setDescription(d);
     setSlug(cat.slug);
     setIcon(cat.icon || 'BookOpen');
-    setColor(cat.color || '#1A5632');
+    setColor(cat.color || '#1B0CB3');
     setShowForm(true);
   };
 

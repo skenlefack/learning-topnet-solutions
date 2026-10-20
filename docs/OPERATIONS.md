@@ -1,6 +1,6 @@
-# ARIS Academy -- Operations Runbook
+# Topnet Solutions Academy -- Operations Runbook
 
-> **Production domain:** `https://learning.au-ibar.org`
+> **Production domain:** `https://learning.topnet-solutions.com`
 > **Infrastructure:** Docker Compose on Ubuntu VMs
 
 ---
@@ -22,7 +22,7 @@
 
 ## 1. Service Architecture
 
-ARIS Academy is composed of four Fastify microservices, a Next.js frontend, and supporting infrastructure services.
+Topnet Solutions Academy is composed of four Fastify microservices, a Next.js frontend, and supporting infrastructure services.
 
 ### Application Services
 
@@ -214,7 +214,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}"
 
 ### Grafana
 
-- **Production:** `https://learning.au-ibar.org/grafana`
+- **Production:** `https://learning.topnet-solutions.com/grafana`
 - **Development:** `http://localhost:3001`
 - **Default credentials:** Set via `GF_SECURITY_ADMIN_PASSWORD` in `.env`
 
@@ -239,7 +239,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}"
 ### AlertManager
 
 - **Internal only** -- routes alerts from Prometheus.
-- Email notifications sent to: `ops-team@au-ibar.org`
+- Email notifications sent to: `ops-team@topnet-solutions.com`
 - Config: `infra/alertmanager/alertmanager.yml`
 
 ### Key Alerts
@@ -326,7 +326,7 @@ docker compose logs academy-learning 2>&1 | grep 'req-abc123'
 |-----------|----------------------|-------------------------------|
 | Host      | localhost            | postgres (Docker network)     |
 | Port      | 5432                 | 5432                          |
-| Database  | aris_academy         | aris_academy                  |
+| Database  | topnet_academy         | topnet_academy                  |
 | User      | from `.env`          | from `.env`                   |
 | Password  | from `.env`          | from `.env`                   |
 
@@ -364,10 +364,10 @@ bash infra/scripts/reset-db.sh
 ```bash
 # Backup
 bash infra/scripts/backup-db.sh
-# Creates: backups/aris_academy_YYYYMMDD_HHMMSS.sql.gz
+# Creates: backups/topnet_academy_YYYYMMDD_HHMMSS.sql.gz
 
 # Restore from backup
-bash infra/scripts/restore-db.sh backups/aris_academy_20260417_120000.sql.gz
+bash infra/scripts/restore-db.sh backups/topnet_academy_20260417_120000.sql.gz
 ```
 
 ### Useful Queries
@@ -572,11 +572,11 @@ curl http://localhost:4001/health/ready
 
 ```bash
 # Check active connections
-docker compose exec postgres psql -U $POSTGRES_USER -d aris_academy \
+docker compose exec postgres psql -U $POSTGRES_USER -d topnet_academy \
   -c "SELECT count(*) FROM pg_stat_activity;"
 
 # Kill idle connections (if pool exhausted)
-docker compose exec postgres psql -U $POSTGRES_USER -d aris_academy \
+docker compose exec postgres psql -U $POSTGRES_USER -d topnet_academy \
   -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'idle' AND query_start < now() - interval '10 minutes';"
 
 # Check connection pool settings in .env:
@@ -680,7 +680,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 docker compose stop academy-course academy-learning academy-assessment academy-live frontend
 
 # 2. Restore
-bash infra/scripts/restore-db.sh backups/aris_academy_YYYYMMDD_HHMMSS.sql.gz
+bash infra/scripts/restore-db.sh backups/topnet_academy_YYYYMMDD_HHMMSS.sql.gz
 
 # 3. Restart services
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
@@ -699,4 +699,4 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ---
 
-*ARIS Academy Operations Runbook -- April 2026*
+*Topnet Solutions Academy Operations Runbook -- April 2026*

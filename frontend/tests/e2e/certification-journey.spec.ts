@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — E2E: Full Certification Journey
+// Topnet Solutions Academy — E2E: Full Certification Journey
 // Enroll → Complete Lessons → Pass Exam → Certificate Issued → Public Verify
 // ============================================================================
 import { test, expect } from '@playwright/test';
 
 async function injectAuth(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-001',
@@ -134,7 +134,7 @@ test.describe('Full Certification Journey', () => {
     await page.waitForLoadState('networkidle');
 
     // Certification panel should be visible on dashboard
-    await expect(page.locator('text=Certifications AU-IBAR')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('text=Certifications Topnet Solutions')).toBeVisible({ timeout: 10_000 });
 
     // Should show level progression
     const levels = page.locator('text=/Foundation|Intermediate|Advanced|Expert/');
@@ -157,7 +157,7 @@ test.describe('Full Certification Journey', () => {
   test('Step 8: Verify certificate publicly (no auth)', async ({ page }) => {
     // Clear auth — this is a public page
     await page.addInitScript(() => {
-      localStorage.removeItem('aris-academy-auth');
+      localStorage.removeItem('topnet-academy-auth');
     });
 
     await page.goto('/verify/ARIS-2024-KE-00142');
@@ -169,8 +169,8 @@ test.describe('Full Certification Journey', () => {
     // Should display the certificate number
     await expect(page.locator('text=ARIS-2024-KE-00142')).toBeVisible({ timeout: 10_000 });
 
-    // AU-IBAR branding should be present
-    await expect(page.locator('text=AU-IBAR').first()).toBeVisible({ timeout: 5000 });
+    // Topnet Solutions branding should be present
+    await expect(page.locator('text=Topnet Solutions').first()).toBeVisible({ timeout: 5000 });
   });
 
   test('Step 9: Dashboard shows progress after completing lessons', async ({ page }) => {

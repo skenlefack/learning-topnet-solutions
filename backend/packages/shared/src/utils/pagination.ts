@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Pagination Helper
+// Topnet Solutions Academy — Pagination Helper
 // Generic paginate<T> that wraps any SELECT with COUNT + LIMIT/OFFSET
 // ============================================================================
 import { query } from '../db';

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Sidebar
+// Topnet Solutions Academy — Sidebar
 // Navigation, certification levels, tenant selector, responsive collapsible
 // ============================================================================
 import { usePathname } from 'next/navigation';
@@ -60,7 +60,11 @@ const NAV_KEYS = [
   { href: '/courses', key: 'myCourses', icon: BookOpen },
   { href: '/live', key: 'live', icon: Video },
   { href: '/resources', key: 'resources', icon: FileText },
+  { href: '/skills', key: 'skills', icon: BarChart3 },
   { href: '/certificates', key: 'certificates', icon: Award },
+  { href: '/shop', key: 'shop', icon: Settings },
+  { href: '/orders', key: 'orders', icon: FileText },
+  { href: '/wallet', key: 'wallet', icon: Award },
   { href: '/community', key: 'community', icon: Users },
 ] as const;
 
@@ -135,24 +139,19 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         )}
       >
         {/* Brand header */}
-        <div className="flex items-center justify-between h-14 px-4 border-b border-[var(--border)]">
+        <div className="flex items-center justify-between h-20 px-4 border-b border-[var(--border)]">
           <Link href="/" className="flex items-center gap-2.5 group" onClick={onClose}>
             <Image
-              src="/au-logo.png"
-              alt="AU-IBAR Learning"
-              width={36}
-              height={36}
-              className="w-9 h-9 object-contain"
+              src="/logo-topnet.jpg"
+              alt="Topnet Solutions Academy"
+              width={130}
+              height={130}
+              className="w-[130px] h-auto object-contain"
               priority
             />
-            <div className="leading-none">
-              <span className="font-display text-lg text-brand-navy dark:text-white tracking-tight">
-                AU-IBAR
-              </span>
-              <span className="block text-[9px] font-semibold tracking-[0.2em] text-brand-gold uppercase mt-0.5">
-                Learning
-              </span>
-            </div>
+            <span className="block text-[10px] font-semibold tracking-[0.15em] text-[#00B341] uppercase">
+              Academy
+            </span>
           </Link>
           <button
             onClick={onClose}
@@ -275,8 +274,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               )}
             >
               <span className="truncate">
-                {user?.tenantLevel === 'continental' && 'AU-IBAR (Continental)'}
-                {user?.tenantLevel === 'rec' && 'ECOWAS (REC)'}
+                {user?.tenantLevel === 'continental' && 'Topnet (Continental)'}
+                {user?.tenantLevel === 'rec' && 'Regional (REC)'}
                 {user?.tenantLevel === 'country' && user?.tenantId?.slice(0, 8) + '...'}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)] shrink-0" />
@@ -287,7 +286,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Footer */}
         <div className="px-3 pb-3 pt-1 border-t border-[var(--border)]">
           <div className="text-[10px] text-center text-[var(--text-secondary)]">
-            AU-IBAR &copy; {new Date().getFullYear()}
+            Topnet Solutions &copy; {new Date().getFullYear()}
           </div>
         </div>
       </aside>

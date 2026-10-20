@@ -8,9 +8,9 @@ global:
   # -------------------------------------------------------------------------
   # SMTP settings — configure via setup-vm-academy.sh or edit manually
   # -------------------------------------------------------------------------
-  smtp_smarthost: "mail.au-ibar.org:587"
-  smtp_from: "lms-alerts@au-ibar.org"
-  smtp_auth_username: "lms-alerts@au-ibar.org"
+  smtp_smarthost: "mail.topnet-solutions.com:587"
+  smtp_from: "lms-alerts@topnet-solutions.com"
+  smtp_auth_username: "lms-alerts@topnet-solutions.com"
   # Set via: export SMTP_PASSWORD=... then sed -i in setup-vm-academy.sh
   # Or configure in .env and inject via docker-compose env_file
   smtp_auth_password: "${SMTP_PASSWORD:-SMTP_PASSWORD_SET_BY_SETUP}"
@@ -67,14 +67,14 @@ inhibit_rules:
 receivers:
   - name: "email-default"
     email_configs:
-      - to: "ops-team@au-ibar.org"
+      - to: "ops-team@topnet-solutions.com"
         send_resolved: true
         headers:
           Subject: "[ARIS Academy] {{ .GroupLabels.alertname }} — {{ .Status | toUpper }}"
 
   - name: "email-critical"
     email_configs:
-      - to: "ops-critical@au-ibar.org"
+      - to: "ops-critical@topnet-solutions.com"
         send_resolved: true
         headers:
           Subject: "[CRITICAL] ARIS Academy — {{ .GroupLabels.alertname }}"
@@ -91,11 +91,11 @@ receivers:
           <p><strong>Started:</strong> {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}</p>
           {{ end }}
           <br>
-          <p style="color: #6b7280; font-size: 12px;">ARIS Academy Monitoring — learning.au-ibar.org</p>
+          <p style="color: #6b7280; font-size: 12px;">ARIS Academy Monitoring — learning.topnet-solutions.com</p>
 
   - name: "email-warning"
     email_configs:
-      - to: "ops-team@au-ibar.org"
+      - to: "ops-team@topnet-solutions.com"
         send_resolved: true
         headers:
           Subject: "[WARNING] ARIS Academy — {{ .GroupLabels.alertname }}"

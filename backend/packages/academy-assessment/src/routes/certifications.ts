@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — Certification Routes
+// Topnet Solutions Academy — Certification Routes
 // Issue, verify, download, revoke, stats
 // ============================================================================
 import { FastifyInstance } from 'fastify';
 import {
   query, queryOne, publishEvent, TOPICS, auditLog,
   UuidParam, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { randomUUID } from 'crypto';
 import { generateCertificate, getSignedDownloadUrl } from '../services/certificate-generator';
 
@@ -20,7 +20,7 @@ export async function issueCertification(
   level: string,
   tenantId: string,
 ): Promise<any> {
-  const certNumber = `ARIS-CERT-${new Date().getFullYear()}-${randomUUID().split('-')[0].toUpperCase()}`;
+  const certNumber = `TOPNET-CERT-${new Date().getFullYear()}-${randomUUID().split('-')[0].toUpperCase()}`;
 
   const expiresAt = new Date();
   expiresAt.setFullYear(expiresAt.getFullYear() + 3);
@@ -110,7 +110,7 @@ export async function certificationRoutes(app: FastifyInstance) {
           course_id: 'mock-course-3',
           level: 'beginner',
           status: 'issued',
-          certificate_number: 'ARIS-CERT-2026-MOCK01',
+          certificate_number: 'TOPNET-CERT-2026-MOCK01',
           issued_at: '2026-01-15T00:00:00Z',
           expires_at: '2029-01-15T00:00:00Z',
           course_title: { fr: 'Santé animale de base', en: 'Basic Animal Health' },
@@ -287,7 +287,7 @@ export async function certificationRoutes(app: FastifyInstance) {
         success: true,
         data: {
           levels: {
-            foundation: { status: 'issued', certNumber: 'ARIS-CERT-2026-MOCK01', issuedAt: '2026-01-15T00:00:00Z', courseTitle: { fr: 'Santé animale de base' } },
+            foundation: { status: 'issued', certNumber: 'TOPNET-CERT-2026-MOCK01', issuedAt: '2026-01-15T00:00:00Z', courseTitle: { fr: 'Santé animale de base' } },
             intermediate: { status: 'available', certNumber: null, issuedAt: null, courseTitle: null },
             advanced: { status: 'locked', certNumber: null, issuedAt: null, courseTitle: null },
             expert: { status: 'locked', certNumber: null, issuedAt: null, courseTitle: null },

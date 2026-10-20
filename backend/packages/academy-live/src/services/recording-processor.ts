@@ -1,18 +1,18 @@
 // ============================================================================
-// ARIS Academy — Recording Processor
+// Topnet Solutions Academy — Recording Processor
 // Downloads BBB recordings, uploads to MinIO, creates replay lessons
 // ============================================================================
 import { Readable } from 'stream';
 import { randomUUID } from 'crypto';
-import { queryOne, publishEvent, TOPICS } from '@aris-academy/shared';
+import { queryOne, publishEvent, TOPICS } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // MinIO client (S3-compatible)
 // ---------------------------------------------------------------------------
 
-const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'minio.au-ibar.org';
+const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'minio.topnet-solutions.com';
 const MINIO_PORT = parseInt(process.env.MINIO_PORT || '9000', 10);
-const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'aris-academy';
+const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'topnet-academy';
 const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'aris-secret';
 const MINIO_USE_SSL = process.env.MINIO_USE_SSL !== 'false';
 const MINIO_BUCKET = 'academy-recordings';

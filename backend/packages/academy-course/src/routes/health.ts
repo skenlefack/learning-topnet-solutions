@@ -1,8 +1,8 @@
 // ============================================================================
-// ARIS Academy — Health Check Routes
+// Topnet Solutions Academy — Health Check Routes
 // ============================================================================
 import { FastifyInstance } from 'fastify';
-import { getPool } from '@aris-academy/shared';
+import { getPool } from '@topnet-academy/shared';
 
 export async function healthRoutes(app: FastifyInstance) {
   app.get('/', {

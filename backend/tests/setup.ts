@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Test Global Setup
+// Topnet Solutions Academy — Test Global Setup
 // Starts PostgreSQL via testcontainers, runs init.sql + seed.sql
 // Redis/Kafka not needed — graceful degradation is already implemented
 // ============================================================================

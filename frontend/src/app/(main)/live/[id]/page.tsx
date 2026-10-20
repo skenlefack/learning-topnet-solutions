@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Enhanced BBB Live Session Room
+// Topnet Solutions Academy — Enhanced BBB Live Session Room
 // Pre-join lobby with device preview, enriched header, session sidebar,
 // embedded iframe with controls, recording player
 // ============================================================================
@@ -97,8 +97,8 @@ function PreJoinLobby({
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Image src="/au-logo.png" alt="" width={28} height={28} className="w-7 h-7" />
-            <span className="text-white/50 text-sm">AU-IBAR Learning</span>
+            <Image src="/logo-topnet.jpg" alt="" width={120} height={120} className="w-[120px] h-auto" />
+            <span className="text-white/50 text-sm">Topnet Solutions Academy</span>
           </div>
           <h1 className="text-xl font-bold text-white mb-1">{title}</h1>
           <p className="text-sm text-gray-400 flex items-center justify-center gap-2">

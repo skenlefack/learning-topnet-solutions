@@ -25,7 +25,7 @@ export interface TestJwtPayload {
 export function signTestJwt(payload: Partial<TestJwtPayload> = {}, secret = TEST_SECRET): string {
   const defaults: TestJwtPayload = {
     sub: 'test-user-001',
-    email: 'test@au-ibar.org',
+    email: 'test@topnet-solutions.com',
     role: 'learner',
     tenantId: 'tenant-continental-001',
     tenantLevel: 'continental',

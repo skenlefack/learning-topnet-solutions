@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Public Path Detail Page
+// Topnet Solutions Academy — Public Path Detail Page
 // Shows path info, courses, certification requirements, enroll CTA
 // ============================================================================
 import { useState, useEffect } from 'react';
@@ -23,14 +23,14 @@ function t(text: any, lang = 'fr') {
 }
 
 const LEVEL_META: Record<string, { color: string; label: string; badge: string; icon: string; prerequisite: string }> = {
-  debutant: { color: '#1A5632', label: 'Débutant', badge: 'Foundation Certificate', icon: '🌱', prerequisite: '' },
+  debutant: { color: '#1B0CB3', label: 'Débutant', badge: 'Foundation Certificate', icon: '🌱', prerequisite: '' },
   intermediaire: { color: '#0D47A1', label: 'Intermédiaire', badge: 'Practitioner Certificate', icon: '📘', prerequisite: 'Certificat Débutant requis' },
-  avance: { color: '#930e2d', label: 'Avancé', badge: 'Senior Specialist Certificate', icon: '🎯', prerequisite: 'Certificat Intermédiaire requis' },
-  expert: { color: '#7B1639', label: 'Expert', badge: 'Master Certificate', icon: '👑', prerequisite: 'Certificat Avancé requis' },
+  avance: { color: '#1B0CB3', label: 'Avancé', badge: 'Senior Specialist Certificate', icon: '🎯', prerequisite: 'Certificat Intermédiaire requis' },
+  expert: { color: '#A09060', label: 'Expert', badge: 'Master Certificate', icon: '👑', prerequisite: 'Certificat Avancé requis' },
 };
 
 const LEVEL_COLORS: Record<string, string> = {
-  beginner: '#1A5632', intermediate: '#B8952E', advanced: '#930e2d', expert: '#154528',
+  beginner: '#1B0CB3', intermediate: '#009930', advanced: '#1B0CB3', expert: '#0D0670',
 };
 
 // ---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ export default function PathDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#efece7] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#1A5632]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#1B0CB3]" />
       </div>
     );
   }
@@ -63,7 +63,7 @@ export default function PathDetailPage() {
       <div className="min-h-screen bg-[#efece7] flex items-center justify-center">
         <div className="text-center">
           <p className="text-[#6c757d]">Parcours non trouvé</p>
-          <Link href="/" className="text-sm text-[#1A5632] hover:underline mt-2 inline-block">Retour à l'accueil</Link>
+          <Link href="/" className="text-sm text-[#1B0CB3] hover:underline mt-2 inline-block">Retour à l'accueil</Link>
         </div>
       </div>
     );
@@ -79,16 +79,16 @@ export default function PathDetailPage() {
   return (
     <div className="min-h-screen bg-[#efece7]">
       {/* Top accent */}
-      <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+      <div className="h-1 bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#1B0CB3]" />
 
       {/* Header */}
       <header className="bg-white border-b border-[#dee2e6]/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/au-logo.png" alt="AU-IBAR" width={36} height={36} className="w-9 h-9 object-contain" />
+            <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={130} height={130} className="w-[130px] h-auto object-contain" />
             <div>
-              <span className="text-sm font-bold text-[#930e2d]">AU-IBAR</span>
-              <span className="text-sm font-bold text-[#1A5632] ml-1">Learning</span>
+              <span className="text-sm font-bold text-[#1B0CB3]">Topnet Solutions</span>
+              <span className="text-sm font-bold text-[#1B0CB3] ml-1">Academy</span>
             </div>
           </Link>
         </div>
@@ -138,7 +138,7 @@ export default function PathDetailPage() {
               const course = pc.course || pc;
               const cTitle = t(course.title);
               const cDesc = t(course.description);
-              const cColor = LEVEL_COLORS[course.level] || '#1A5632';
+              const cColor = LEVEL_COLORS[course.level] || '#1B0CB3';
 
               return (
                 <div key={course.id || i} className="flex items-start gap-4 p-5 rounded-xl bg-white border border-[#dee2e6]/60 hover:shadow-md transition-shadow group">
@@ -152,7 +152,7 @@ export default function PathDetailPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-sm font-semibold text-[#212529] group-hover:text-[#1A5632] transition-colors">
+                      <h3 className="text-sm font-semibold text-[#212529] group-hover:text-[#1B0CB3] transition-colors">
                         {cTitle}
                       </h3>
                       {pc.is_required && (
@@ -170,7 +170,7 @@ export default function PathDetailPage() {
                   </div>
 
                   <Link href={`/catalog/${course.slug || course.id}`} className="shrink-0">
-                    <ChevronRight className="w-5 h-5 text-[#adb5bd] group-hover:text-[#1A5632] transition-colors" />
+                    <ChevronRight className="w-5 h-5 text-[#adb5bd] group-hover:text-[#1B0CB3] transition-colors" />
                   </Link>
                 </div>
               );
@@ -228,7 +228,7 @@ export default function PathDetailPage() {
             <div className="rounded-xl bg-white border border-[#dee2e6]/60 p-5 space-y-3">
               <h4 className="text-xs font-semibold text-[#495057] uppercase tracking-wider">Ce que vous obtiendrez</h4>
               {[
-                { icon: Award, text: `Certificat ${meta.badge} officiel AU-IBAR` },
+                { icon: Award, text: `Certificat ${meta.badge} officiel Topnet Solutions` },
                 { icon: CheckCircle2, text: 'Certificat vérifiable avec QR code' },
                 { icon: BookOpen, text: `${courses.length} cours complets avec exercices pratiques` },
                 { icon: Target, text: 'Examen final de validation des compétences' },
@@ -271,8 +271,8 @@ export default function PathDetailPage() {
       {/* Footer */}
       <footer className="bg-[#af9c63] mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between text-xs text-white/90">
-          <p>&copy; {new Date().getFullYear()} AU-IBAR — African Union Interafrican Bureau for Animal Resources</p>
-          <div className="h-1 w-24 rounded bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+          <p>&copy; {new Date().getFullYear()} Topnet Solutions — Tous droits réservés</p>
+          <div className="h-1 w-24 rounded bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#1B0CB3]" />
         </div>
       </footer>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Course Detail
+// Topnet Solutions Academy — Course Detail
 // Header, accordion modules, lesson status, progress, sidebar, live sessions
 // ============================================================================
 import { useState, useMemo, useCallback } from 'react';

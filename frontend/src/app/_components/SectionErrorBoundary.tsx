@@ -24,7 +24,7 @@ export default class SectionErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error(`[AU-IBAR Learning] Section "${this.props.name || 'unknown'}" crashed:`, error, info);
+    console.error(`[Topnet Solutions Academy] Section "${this.props.name || 'unknown'}" crashed:`, error, info);
   }
 
   handleRetry = () => {

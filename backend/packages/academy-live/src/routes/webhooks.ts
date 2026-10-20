@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — BBB Webhook Handler
+// Topnet Solutions Academy — BBB Webhook Handler
 // POST /webhooks/bbb — Receives callbacks from BigBlueButton server
 // No auth required (BBB signs webhooks with shared secret checksum)
 // ============================================================================
@@ -7,7 +7,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { createHash } from 'crypto';
 import {
   query, queryOne, publishEvent, TOPICS,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { processRecording } from '../services/recording-processor';
 
 const BBB_SECRET = process.env.BBB_SECRET || 'bbb-shared-secret';

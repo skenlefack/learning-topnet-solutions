@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Auth Store (Zustand)
+// Topnet Solutions Academy — Auth Store (Zustand)
 // Persisted to localStorage with hydration tracking
 // ============================================================================
 import { create } from 'zustand';
@@ -46,13 +46,13 @@ export const useAuthStore = create<AuthState>()(
         const current = get().language;
         set({ language: lang });
         if (typeof window !== 'undefined' && current !== lang) {
-          document.cookie = `aris-locale=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+          document.cookie = `topnet-locale=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
           window.location.reload();
         }
       },
     }),
     {
-      name: 'aris-academy-auth',
+      name: 'topnet-academy-auth',
       onRehydrateStorage: () => () => {
         useAuthStore.setState({ _hydrated: true });
       },

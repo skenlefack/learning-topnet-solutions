@@ -16,7 +16,7 @@ export default function CoursesError({
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[AU-IBAR Learning] Courses error:', error);
+      console.error('[Topnet Solutions Academy] Courses error:', error);
     }
   }, [error]);
 

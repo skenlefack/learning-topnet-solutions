@@ -1,10 +1,10 @@
 ###############################################################################
-# ARIS Academy — Docker Compose Production Overlay
+# Topnet Solutions Academy — Docker Compose Production Overlay
 # Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-# AU-IBAR (c) 2026
+# Topnet Solutions (c) 2026
 ###############################################################################
 
-name: aris-academy
+name: topnet-academy
 
 services:
   # =========================================================================
@@ -111,7 +111,7 @@ services:
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1
       KAFKA_LOG_RETENTION_HOURS: 168
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CLUSTER_ID: "aris-academy-kafka-cluster-01"
+      CLUSTER_ID: "topnet-academy-kafka-cluster-01"
     logging:
       driver: json-file
       options:
@@ -262,11 +262,11 @@ services:
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET}
       BBB_URL: ${BBB_URL}
-      BBB_PUBLIC_URL: ${BBB_PUBLIC_URL:-https://bbb.au-ibar.org/bigbluebutton/}
+      BBB_PUBLIC_URL: ${BBB_PUBLIC_URL:-https://bbb.topnet-solutions.com/bigbluebutton/}
       BBB_SECRET: ${BBB_SECRET}
       METRICS_ENABLED: "true"
     extra_hosts:
-      - "bbb.au-ibar.org:10.202.101.145"
+      - "bbb.topnet-solutions.com:10.202.101.145"
     logging:
       driver: json-file
       options:
@@ -426,8 +426,8 @@ services:
           memory: 256M
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-aris-grafana-2026}
-      GF_SERVER_ROOT_URL: https://learning.au-ibar.org/grafana
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-topnet-grafana-2026}
+      GF_SERVER_ROOT_URL: https://learning.topnet-solutions.com/grafana
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_USERS_ALLOW_ORG_CREATE: "false"
@@ -573,7 +573,7 @@ services:
     command:
       - "--config.file=/etc/alertmanager/alertmanager.yml"
       - "--storage.path=/alertmanager"
-      - "--web.external-url=https://learning.au-ibar.org/alertmanager"
+      - "--web.external-url=https://learning.topnet-solutions.com/alertmanager"
     volumes:
       - ./infra/monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_data:/alertmanager

@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — Progression Engine
+// Topnet Solutions Academy — Progression Engine
 // Core logic: recalculate progress, level unlock, certification, leaderboard
 // ============================================================================
 import {
   query, queryOne, publishEvent, TOPICS,
   cacheDel, getRedis,
-} from '@aris-academy/shared';
-import type { CourseLevel } from '@aris-academy/shared';
+} from '@topnet-academy/shared';
+import type { CourseLevel } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Constants

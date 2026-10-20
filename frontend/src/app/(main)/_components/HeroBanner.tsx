@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// ARIS Academy — Hero Banner
+// Topnet Solutions Academy — Hero Banner
 // Gradient navy background, progress ring, resume button
 // ============================================================================
 import clsx from 'clsx';
@@ -48,7 +48,7 @@ export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerPr
         {/* Text content */}
         <div className="space-y-2">
           <p className="text-[var(--text-secondary)] text-sm">
-            {firstName ? `Bienvenue, ${firstName}` : 'Bienvenue sur AU-IBAR Learning'}
+            {firstName ? `Bienvenue, ${firstName}` : 'Bienvenue sur Topnet Solutions Academy'}
           </p>
           <h1 className="text-2xl lg:text-3xl font-bold text-[var(--text-primary)]">
             Continuez votre parcours de certification
@@ -82,7 +82,7 @@ export default function HeroBanner({ user, enrollment, isLoading }: HeroBannerPr
               size={96}
               strokeWidth={7}
               trailColor="rgba(0,0,0,0.08)"
-              strokeColor="#1A5632"
+              strokeColor="#1B0CB3"
             >
               <span className="text-lg font-bold text-[var(--text-primary)]">{Math.round(progress)}%</span>
             </ProgressRing>

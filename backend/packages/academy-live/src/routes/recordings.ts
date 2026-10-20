@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — Recording Routes
+// Topnet Solutions Academy — Recording Routes
 // Manage recorded sessions: list, stream, delete, per-session listings, process
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   query, queryOne, paginate, publishEvent,
   UuidParam, UuidParamNamed, PaginationQuery, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { getPresignedUrl, deleteRecordingObject, processRecording } from '../services/recording-processor';
 import { bbbClient } from '../services/bbb-client';
 

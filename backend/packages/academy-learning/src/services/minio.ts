@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — MinIO Object Storage Service (academy-learning)
+// Topnet Solutions Academy — MinIO Object Storage Service (academy-learning)
 // Manages: avatar uploads
 // ============================================================================
 import { Client as MinioClient } from 'minio';

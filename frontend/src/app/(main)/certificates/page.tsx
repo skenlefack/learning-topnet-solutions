@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Certifications Page
+// Topnet Solutions Academy — Certifications Page
 // My certifications grid + certificate verification (number or QR code)
 // ============================================================================
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -72,7 +72,7 @@ const CERT_LEVELS = [
   { key: 'expert', icon: Crown, color: 'text-brand-gold', bg: 'bg-brand-gold-pale dark:bg-yellow-900/20', status: 'locked' as const },
 ];
 
-const VERIFY_URL_BASE = 'https://learning.au-ibar.org/verify/';
+const VERIFY_URL_BASE = 'https://learning.topnet-solutions.com/verify/';
 
 function getLocalizedText(text: Record<string, string> | string | undefined): string {
   if (!text) return '';
@@ -130,7 +130,7 @@ export default function CertificatesPage() {
 
   const handleShareLinkedIn = useCallback((cert: Certification) => {
     const url = encodeURIComponent(`${VERIFY_URL_BASE}${cert.certificate_number}`);
-    const title = encodeURIComponent(`AU-IBAR Learning - Certification ${t_levels(LEVEL_CONFIG[cert.level]?.key || cert.level)}`);
+    const title = encodeURIComponent(`Topnet Solutions Academy - Certification ${t_levels(LEVEL_CONFIG[cert.level]?.key || cert.level)}`);
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}`, '_blank');
     setShareOpen(null);
   }, []);
@@ -279,7 +279,7 @@ export default function CertificatesPage() {
                 >
                   {/* Top accent */}
                   <div className="h-1.5" style={{
-                    background: cert.level === 'expert' ? '#C8A951' : cert.level === 'advanced' ? '#a855f7' : cert.level === 'intermediate' ? '#3b82f6' : '#22c55e',
+                    background: cert.level === 'expert' ? '#00B341' : cert.level === 'advanced' ? '#a855f7' : cert.level === 'intermediate' ? '#3b82f6' : '#22c55e',
                   }} />
 
                   <div className="p-5 space-y-4">

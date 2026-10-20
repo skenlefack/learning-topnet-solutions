@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Resources Page
+// Topnet Solutions Academy — Resources Page
 // Full-page layout: hero header, search/filters, resource grid
 // ============================================================================
 import { useState, useEffect, useMemo } from 'react';

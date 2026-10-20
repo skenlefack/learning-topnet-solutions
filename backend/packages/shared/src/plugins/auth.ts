@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Auth Plugin (Fastify)
+// Topnet Solutions Academy — Auth Plugin (Fastify)
 // Registers: authenticate, requireRole, tenant context extraction
 // Usage: fastify.register(authPlugin)
 // ============================================================================

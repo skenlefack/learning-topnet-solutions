@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — Unit Tests: Zod Validation Schemas & Helpers
+// Topnet Solutions Academy — Unit Tests: Zod Validation Schemas & Helpers
 // Pure unit tests — no DB, no Fastify, no external deps
 // ============================================================================
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock external deps that @aris-academy/shared barrel transitively imports
+// Mock external deps that @topnet-academy/shared barrel transitively imports
 vi.mock('@fastify/rate-limit', () => ({ default: vi.fn() }));
 
 import {
@@ -14,7 +14,7 @@ import {
   tenantLevelSchema,
   courseLevelSchema,
   validateBody,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------

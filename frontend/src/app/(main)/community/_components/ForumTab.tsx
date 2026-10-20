@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — ForumTab
+// Topnet Solutions Academy — ForumTab
 // Discussions list with categories, new post modal, nested replies
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';

@@ -1,6 +1,6 @@
-# ARIS Academy -- Deployment Guide
+# Topnet Solutions Academy -- Deployment Guide
 
-Complete deployment guide for the ARIS Academy LMS platform on two Ubuntu VMs.
+Complete deployment guide for the Topnet Solutions Academy LMS platform on two Ubuntu VMs.
 
 ## Architecture Overview
 
@@ -34,7 +34,7 @@ Lv = Live Service (4004)
 
 - **OS**: Ubuntu 22.04 LTS on both VMs
 - **Docker**: Docker Engine 24+ and Docker Compose v2
-- **Domain**: DNS A record for `learning.au-ibar.org` pointing to VM-ACADEMY
+- **Domain**: DNS A record for `learning.topnet-solutions.com` pointing to VM-ACADEMY
 - **Ports**: 80 (HTTP), 443 (HTTPS), 22 (SSH)
 - **Git**: For cloning the repository
 
@@ -106,9 +106,9 @@ su - academy
 
 # Clone the repository
 cd /opt
-sudo git clone https://github.com/AU-IBAR/aris-academy.git /opt/aris-academy
-sudo chown -R academy:academy /opt/aris-academy
-cd /opt/aris-academy
+sudo git clone https://github.com/topnet-solutions/topnet-academy.git /opt/topnet-academy
+sudo chown -R academy:academy /opt/topnet-academy
+cd /opt/topnet-academy
 ```
 
 ### 4. Configure Environment
@@ -140,15 +140,15 @@ grep "CHANGE_ME" .env && echo "WARNING: Some secrets still need to be set!" || e
 
 ```bash
 # BigBlueButton (from VM-BBB setup)
-BBB_URL=https://bbb.au-ibar.org/bigbluebutton/
+BBB_URL=https://bbb.topnet-solutions.com/bigbluebutton/
 BBB_SECRET=<shared-secret-from-bbb-server>
 
-# ARIS Core SSO (if applicable)
-ARIS_SSO_CLIENT_SECRET=<from-aris-core-admin>
+# Topnet Solutions Core SSO (if applicable)
+TOPNET_SSO_CLIENT_SECRET=<from-topnet-core-admin>
 
 # Domain URLs
-APP_URL=https://learning.au-ibar.org
-NEXT_PUBLIC_API_URL=https://learning.au-ibar.org/api
+APP_URL=https://learning.topnet-solutions.com
+NEXT_PUBLIC_API_URL=https://learning.topnet-solutions.com/api
 ```
 
 ### 5. SSL/TLS Setup
@@ -160,10 +160,10 @@ Traefik automatically manages Let's Encrypt certificates. Ensure:
 sudo ufw status
 
 # Verify DNS points to this server
-dig +short learning.au-ibar.org
+dig +short learning.topnet-solutions.com
 
 # The ACME email is configured in docker-compose.yml:
-# --certificatesresolvers.letsencrypt.acme.email=admin@au-ibar.org
+# --certificatesresolvers.letsencrypt.acme.email=admin@topnet-solutions.com
 ```
 
 No manual certificate management is needed. Traefik handles renewal automatically.
@@ -195,7 +195,7 @@ EOF
 ### 7. Start Services
 
 ```bash
-cd /opt/aris-academy
+cd /opt/topnet-academy
 
 # Pull images and build
 docker compose build
@@ -233,7 +233,7 @@ docker compose run --rm migrate
 
 ```bash
 # Check that the frontend loads
-curl -sI https://learning.au-ibar.org | head -5
+curl -sI https://learning.topnet-solutions.com | head -5
 
 # Check API health endpoints
 curl -s http://localhost:4001/health
@@ -264,10 +264,10 @@ docker exec academy-postgres psql -U academy -d academy -c "SELECT COUNT(*) FROM
 # - Port 80, 443, 16384-32768/UDP open
 
 # Install BigBlueButton 2.7+ using the official script
-wget -qO- https://raw.githubusercontent.com/bigbluebutton/bbb-install/v2.7.x-release/bbb-install.sh | bash -s -- -v jammy-27 -s bbb.au-ibar.org -e admin@au-ibar.org -w
+wget -qO- https://raw.githubusercontent.com/bigbluebutton/bbb-install/v2.7.x-release/bbb-install.sh | bash -s -- -v jammy-27 -s bbb.topnet-solutions.com -e admin@topnet-solutions.com -w
 
 # This installs BBB with:
-# - Let's Encrypt SSL for bbb.au-ibar.org
+# - Let's Encrypt SSL for bbb.topnet-solutions.com
 # - Greenlight frontend (optional)
 # - TURN server for NAT traversal
 ```
@@ -278,7 +278,7 @@ SSL is handled by the install script with Let's Encrypt. Verify:
 
 ```bash
 # Check SSL certificate
-curl -sI https://bbb.au-ibar.org | head -10
+curl -sI https://bbb.topnet-solutions.com | head -10
 
 # Check BBB status
 sudo bbb-conf --check
@@ -292,7 +292,7 @@ sudo bbb-conf --status
 sudo bbb-conf --secret
 
 # Output will show:
-#   URL: https://bbb.au-ibar.org/bigbluebutton/
+#   URL: https://bbb.topnet-solutions.com/bigbluebutton/
 #   Secret: <your-shared-secret>
 ```
 
@@ -308,16 +308,16 @@ sudo apt install -y bbb-webhooks
 sudo tee /etc/bigbluebutton/bbb-webhooks.yml > /dev/null << 'EOF'
 hooks:
   permanentURLs:
-    - url: "https://learning.au-ibar.org/api/live/webhooks/bbb"
+    - url: "https://learning.topnet-solutions.com/api/live/webhooks/bbb"
       getRaw: false
   queueSize: 100
   retries: 5
   permanentURLs:
-    - url: "https://learning.au-ibar.org/api/live/webhooks/bbb"
+    - url: "https://learning.topnet-solutions.com/api/live/webhooks/bbb"
 EOF
 
 # Enable recording
-sudo bbb-conf --setip bbb.au-ibar.org
+sudo bbb-conf --setip bbb.topnet-solutions.com
 
 # Restart BBB
 sudo bbb-conf --restart
@@ -340,8 +340,8 @@ sudo ufw enable
 On **VM-ACADEMY**, update the `.env` file:
 
 ```bash
-# In /opt/aris-academy/.env
-BBB_URL=https://bbb.au-ibar.org/bigbluebutton/
+# In /opt/topnet-academy/.env
+BBB_URL=https://bbb.topnet-solutions.com/bigbluebutton/
 BBB_SECRET=<secret-from-step-3>
 
 # Restart the live service to pick up new config
@@ -352,7 +352,7 @@ Test the connection:
 
 ```bash
 # From VM-ACADEMY, test BBB API
-curl -s "https://bbb.au-ibar.org/bigbluebutton/api?checksum=$(echo -n 'getMeetings<BBB_SECRET>' | sha1sum | cut -d' ' -f1)"
+curl -s "https://bbb.topnet-solutions.com/bigbluebutton/api?checksum=$(echo -n 'getMeetings<BBB_SECRET>' | sha1sum | cut -d' ' -f1)"
 ```
 
 ---
@@ -383,7 +383,7 @@ ls -lh /backups/postgres/
 ### Updates
 
 ```bash
-cd /opt/aris-academy
+cd /opt/topnet-academy
 
 # Pull latest code
 git pull origin main
@@ -507,7 +507,7 @@ docker exec academy-kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server loca
 
 ```bash
 # Check certificate expiry
-echo | openssl s_client -connect learning.au-ibar.org:443 2>/dev/null | openssl x509 -noout -dates
+echo | openssl s_client -connect learning.topnet-solutions.com:443 2>/dev/null | openssl x509 -noout -dates
 
 # Force certificate renewal (Traefik handles this automatically)
 docker compose restart traefik
@@ -568,7 +568,7 @@ The repository includes GitHub Actions workflows for automated deployment:
 
 ```bash
 # On VM-ACADEMY
-cd /opt/aris-academy
+cd /opt/topnet-academy
 git pull origin main
 docker compose build
 docker compose run --rm migrate

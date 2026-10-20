@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# ARIS Academy — Health Check Script
+# Topnet Solutions Academy — Health Check Script
 # Checks all services, endpoints, disk space, DB connections, Redis memory
 #
 # Usage:
@@ -63,7 +63,7 @@ print_crit() {
 
 # ============================================================================
 echo "=============================================="
-echo " ARIS Academy — Health Check"
+echo " Topnet Solutions Academy — Health Check"
 echo " $(date '+%Y-%m-%d %H:%M:%S')"
 echo "=============================================="
 echo ""
@@ -244,7 +244,7 @@ echo ""
 # ============================================================================
 echo "--- Docker Volumes ---"
 
-VOLUME_USAGE=$(docker system df -v 2>/dev/null | grep "aris-academy" || true)
+VOLUME_USAGE=$(docker system df -v 2>/dev/null | grep "topnet-academy" || true)
 if [ -n "$VOLUME_USAGE" ]; then
     echo "$VOLUME_USAGE" | while read -r line; do
         print_ok "$line"

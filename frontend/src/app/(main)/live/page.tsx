@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Live Sessions Page
+// Topnet Solutions Academy — Live Sessions Page
 // Lists: live sessions (pulsing), upcoming (week calendar), recordings (grid)
 // Filters: by course, by trainer
 // ============================================================================

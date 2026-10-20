@@ -16,7 +16,7 @@ export default function MainLayoutError({
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[AU-IBAR Learning] Main layout error:', error);
+      console.error('[Topnet Solutions Academy] Main layout error:', error);
     }
   }, [error]);
 

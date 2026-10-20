@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — PostgreSQL Connection Pool
+// Topnet Solutions Academy — PostgreSQL Connection Pool
 // Graceful degradation: queries return empty results if DB is unavailable
 // ============================================================================
 import { Pool, PoolConfig } from 'pg';

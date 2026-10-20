@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Unit Tests: BBB Client
+// Topnet Solutions Academy — Unit Tests: BBB Client
 // Tests checksum generation, URL building, XML parsing, retry logic.
 // Uses mock fetch — no real BigBlueButton server needed.
 // ============================================================================

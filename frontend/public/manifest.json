@@ -1,11 +1,11 @@
 {
-  "name": "AU-IBAR Learning Platform",
-  "short_name": "AU-IBAR Learning",
-  "description": "Online training platform for the 55 Member States of the African Union",
+  "name": "Topnet Solutions Academy",
+  "short_name": "Topnet Academy",
+  "description": "Plateforme de formation en ligne de Topnet Solutions",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F7F5EF",
-  "theme_color": "#1A5632",
+  "background_color": "#F5F6FA",
+  "theme_color": "#1B0CB3",
   "orientation": "any",
   "icons": [
     {

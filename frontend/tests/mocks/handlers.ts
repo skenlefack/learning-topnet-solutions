@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — MSW Request Handlers
+// Topnet Solutions Academy — MSW Request Handlers
 // ============================================================================
 import { http, HttpResponse } from 'msw';
 import {

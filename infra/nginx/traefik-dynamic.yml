@@ -1,6 +1,6 @@
 ###############################################################################
-# ARIS Academy — Traefik Dynamic Routing
-# learning.au-ibar.org | 10.202.101.144
+# Topnet Solutions Academy — Traefik Dynamic Routing
+# learning.topnet-solutions.com | 10.202.101.144
 ###############################################################################
 
 http:
@@ -10,7 +10,7 @@ http:
   routers:
     # --- Frontend (HTTP) ---------------------------------------------------
     academy-web-http:
-      rule: "Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)"
+      rule: "Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)"
       entryPoints: ["web"]
       service: academy-frontend
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
@@ -18,7 +18,7 @@ http:
 
     # --- API: Public (HTTP, no auth) ----------------------------------------
     academy-api-public-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/public`)"
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/public`)"
       entryPoints: ["web"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress"]
@@ -26,7 +26,7 @@ http:
 
     # --- API: Course (HTTP) ------------------------------------------------
     academy-api-course-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
       entryPoints: ["web"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -34,7 +34,7 @@ http:
 
     # --- API: Learning (HTTP) ----------------------------------------------
     academy-api-learning-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/learning`)"
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/learning`)"
       entryPoints: ["web"]
       service: academy-learning-svc
       middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -42,7 +42,7 @@ http:
 
     # --- API: Assessment (HTTP) --------------------------------------------
     academy-api-assessment-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/assessment`)"
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/assessment`)"
       entryPoints: ["web"]
       service: academy-assessment-svc
       middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -50,7 +50,7 @@ http:
 
     # --- API: Live (HTTP) --------------------------------------------------
     academy-api-live-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/api/live`)"
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/live`)"
       entryPoints: ["web"]
       service: academy-live-svc
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -58,7 +58,7 @@ http:
 
     # --- Traefik Dashboard (HTTP, secured) ----------------------------------
     academy-dashboard-http:
-      rule: "(Host(`learning.au-ibar.org`) || Host(`10.202.101.144`)) && PathPrefix(`/traefik`)"
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/traefik`)"
       entryPoints: ["web"]
       service: api@internal
       middlewares: ["dashboard-auth"]
@@ -68,7 +68,7 @@ http:
     # These activate automatically once Let's Encrypt issues the cert
     # =====================================================================
     academy-web-https:
-      rule: "Host(`learning.au-ibar.org`)"
+      rule: "Host(`learning.topnet-solutions.com`)"
       entryPoints: ["websecure"]
       service: academy-frontend
       middlewares: ["security-headers", "compress", "rate-limit-frontend"]
@@ -77,7 +77,7 @@ http:
         certResolver: letsencrypt
 
     academy-api-public-https:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/public`)"
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/public`)"
       entryPoints: ["websecure"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress"]
@@ -86,7 +86,7 @@ http:
         certResolver: letsencrypt
 
     academy-api-course-https:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/courses`)"
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/courses`)"
       entryPoints: ["websecure"]
       service: academy-course-svc
       middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -95,7 +95,7 @@ http:
         certResolver: letsencrypt
 
     academy-api-learning-https:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/learning`)"
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/learning`)"
       entryPoints: ["websecure"]
       service: academy-learning-svc
       middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -104,7 +104,7 @@ http:
         certResolver: letsencrypt
 
     academy-api-assessment-https:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/assessment`)"
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/assessment`)"
       entryPoints: ["websecure"]
       service: academy-assessment-svc
       middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -113,7 +113,7 @@ http:
         certResolver: letsencrypt
 
     academy-api-live-https:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/api/live`)"
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/live`)"
       entryPoints: ["websecure"]
       service: academy-live-svc
       middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
@@ -122,7 +122,7 @@ http:
         certResolver: letsencrypt
 
     academy-dashboard-https:
-      rule: "Host(`learning.au-ibar.org`) && PathPrefix(`/traefik`)"
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/traefik`)"
       entryPoints: ["websecure"]
       service: api@internal
       middlewares: ["dashboard-auth"]
@@ -207,10 +207,10 @@ http:
     cors:
       headers:
         accessControlAllowOriginList:
-          - "https://learning.au-ibar.org"
-          - "https://au-ibar.org"
-          - "https://bbb.au-ibar.org"
-          - "http://learning.au-ibar.org"
+          - "https://learning.topnet-solutions.com"
+          - "https://topnet-solutions.com"
+          - "https://bbb.topnet-solutions.com"
+          - "http://learning.topnet-solutions.com"
           - "http://10.202.101.144"
         accessControlAllowMethods:
           - GET
@@ -261,7 +261,7 @@ http:
         stsSeconds: 31536000
         customFrameOptionsValue: "SAMEORIGIN"
         referrerPolicy: "strict-origin-when-cross-origin"
-        permissionsPolicy: "camera=(self \"https://bbb.au-ibar.org\"), microphone=(self \"https://bbb.au-ibar.org\"), fullscreen=(self \"https://bbb.au-ibar.org\"), display-capture=(self \"https://bbb.au-ibar.org\"), geolocation=(), payment=()"
+        permissionsPolicy: "camera=(self \"https://bbb.topnet-solutions.com\"), microphone=(self \"https://bbb.topnet-solutions.com\"), fullscreen=(self \"https://bbb.topnet-solutions.com\"), display-capture=(self \"https://bbb.topnet-solutions.com\"), geolocation=(), payment=()"
         customResponseHeaders:
           X-Content-Type-Options: "nosniff"
           X-Download-Options: "noopen"
@@ -285,4 +285,4 @@ http:
     dashboard-auth:
       basicAuth:
         users:
-          - "admin:$apr1$ARIS2026$ly1e4f69xCaUOzHH6mYFv0"
+          - "admin:$apr1$TOPNET2026$ly1e4f69xCaUOzHH6mYFv0"

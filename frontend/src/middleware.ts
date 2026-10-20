@@ -1,10 +1,10 @@
 // ============================================================================
-// AU-IBAR Learning — Edge Middleware
+// Topnet Solutions Academy — Edge Middleware
 // Protects all routes except public paths; redirects to /login if no cookie
 // ============================================================================
 import { NextRequest, NextResponse } from 'next/server';
 
-const AUTH_COOKIE_NAME = 'aris-token';
+const AUTH_COOKIE_NAME = 'topnet-token';
 
 const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/', '/verify', '/catalog', '/category', '/paths'];
 

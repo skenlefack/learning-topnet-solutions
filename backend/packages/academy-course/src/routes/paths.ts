@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — Learning Paths Routes
+// Topnet Solutions Academy — Learning Paths Routes
 // CRUD for multi-course learning paths (parcours de formation)
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { query, queryOne, validateBody, BearerSecurity } from '@aris-academy/shared';
+import { query, queryOne, validateBody, BearerSecurity } from '@topnet-academy/shared';
 
 const pathSchema = z.object({
   title: z.record(z.string()).refine((v) => v.fr || v.en, 'Title required'),

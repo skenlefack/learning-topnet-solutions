@@ -23,7 +23,7 @@ interface IconPickerProps {
   color?: string;
 }
 
-export default function IconPicker({ value, onChange, color = '#1A5632' }: IconPickerProps) {
+export default function IconPicker({ value, onChange, color = '#1B0CB3' }: IconPickerProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<string>('Popular');

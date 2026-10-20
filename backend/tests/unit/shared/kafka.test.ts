@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Kafka Unit Tests
+// Topnet Solutions Academy — Kafka Unit Tests
 // Tests publishEvent, createConsumer, and consumer handler patterns
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -34,7 +34,7 @@ vi.mock('kafkajs', () => ({
   })),
 }));
 
-import { publishEvent, createConsumer, TOPICS } from '@aris-academy/shared';
+import { publishEvent, createConsumer, TOPICS } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -242,7 +242,7 @@ describe('Kafka — Consumer Handler Patterns (course service)', () => {
       eventType: TOPICS.COURSE_PUBLISHED,
       version: 'v1',
       timestamp: new Date().toISOString(),
-      tenantId: 'au-ibar',
+      tenantId: 'topnet-solutions',
       payload: { id: 'course-xyz', status: 'published' },
     };
 

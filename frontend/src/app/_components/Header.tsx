@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Header
+// Topnet Solutions Academy — Header
 // Search, notifications, dark mode toggle, language selector, user avatar
 // Sticky with backdrop blur
 // ============================================================================
@@ -112,7 +112,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
 
   const handleLogout = () => {
     useAuthStore.getState().logout();
-    document.cookie = 'aris-token=; path=/; max-age=0; samesite=lax';
+    document.cookie = 'topnet-token=; path=/; max-age=0; samesite=lax';
     toast.success(t('logoutSuccess'));
     window.location.href = '/';
   };
@@ -120,7 +120,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   // User initials
   const initials = user
     ? `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase()
-    : 'AA';
+    : 'TS';
 
   const currentLang = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
 
@@ -145,26 +145,21 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         {/* Mobile brand — hidden on desktop (sidebar shows it) */}
         <div className="lg:hidden flex items-center gap-2">
           <Image
-            src="/au-logo.png"
-            alt="AU-IBAR"
-            width={28}
-            height={28}
-            className="w-7 h-7 object-contain"
+            src="/logo-topnet.jpg"
+            alt="Topnet Solutions"
+            width={120}
+            height={120}
+            className="w-[120px] h-auto object-contain"
           />
-          <div className="leading-none">
-            <span className="font-display text-lg text-brand-navy dark:text-white tracking-tight">
-              AU-IBAR
-            </span>
-            <span className="text-[9px] font-medium tracking-widest text-brand-gold uppercase ms-1">
-              Learning
-            </span>
-          </div>
+          <span className="text-[10px] font-semibold tracking-[0.15em] text-[#00B341] uppercase">
+            Academy
+          </span>
         </div>
 
         {/* Page context — visible on desktop */}
         <div className="hidden lg:flex items-center gap-2">
           <span className="text-sm font-medium text-[var(--text-secondary)]">
-            learning.au-ibar.org
+            learning.topnet-solutions.com
           </span>
         </div>
 

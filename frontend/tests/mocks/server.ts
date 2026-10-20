@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — MSW Server (Node / Vitest)
+// Topnet Solutions Academy — MSW Server (Node / Vitest)
 // ============================================================================
 import { setupServer } from 'msw/node';
 import { handlers } from './handlers';

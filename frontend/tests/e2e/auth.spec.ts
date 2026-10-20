@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — E2E: Authentication Flow
+// Topnet Solutions Academy — E2E: Authentication Flow
 // SSO login → callback → dashboard redirect
 // ============================================================================
 import { test, expect } from '@playwright/test';
 
-const SSO_URL = process.env.NEXT_PUBLIC_ARIS_SSO_URL || 'https://au-ibar.org/api/auth';
+const SSO_URL = process.env.NEXT_PUBLIC_ARIS_SSO_URL || 'https://topnet-solutions.com/api/auth';
 
 // Helper: inject auth state into localStorage (Zustand persist store)
 async function injectAuth(page: import('@playwright/test').Page) {
@@ -28,7 +28,7 @@ async function injectAuth(page: import('@playwright/test').Page) {
       },
       version: 0,
     };
-    localStorage.setItem('aris-academy-auth', JSON.stringify(state));
+    localStorage.setItem('topnet-academy-auth', JSON.stringify(state));
   });
 }
 
@@ -36,7 +36,7 @@ test.describe('Authentication', () => {
   test('unauthenticated user is redirected to SSO login', async ({ page }) => {
     // The useAuth hook redirects to SSO when not authenticated
     const responsePromise = page.waitForURL((url) =>
-      url.href.includes('/auth') || url.href.includes('au-ibar.org') || url.href.includes('/'),
+      url.href.includes('/auth') || url.href.includes('topnet-solutions.com') || url.href.includes('/'),
       { timeout: 10_000 },
     );
     await page.goto('/');
@@ -65,7 +65,7 @@ test.describe('Authentication', () => {
 
     // Verify token was stored in localStorage
     const stored = await page.evaluate(() => {
-      const raw = localStorage.getItem('aris-academy-auth');
+      const raw = localStorage.getItem('topnet-academy-auth');
       return raw ? JSON.parse(raw) : null;
     });
     expect(stored?.state?.token).toBeTruthy();
@@ -89,7 +89,7 @@ test.describe('Authentication', () => {
 
     // Check auth is present
     const beforeLogout = await page.evaluate(() => {
-      const raw = localStorage.getItem('aris-academy-auth');
+      const raw = localStorage.getItem('topnet-academy-auth');
       return raw ? JSON.parse(raw) : null;
     });
     expect(beforeLogout?.state?.isAuthenticated).toBe(true);
@@ -100,7 +100,7 @@ test.describe('Authentication', () => {
       await logoutBtn.click();
 
       const afterLogout = await page.evaluate(() => {
-        const raw = localStorage.getItem('aris-academy-auth');
+        const raw = localStorage.getItem('topnet-academy-auth');
         return raw ? JSON.parse(raw) : null;
       });
       expect(afterLogout?.state?.isAuthenticated).toBe(false);

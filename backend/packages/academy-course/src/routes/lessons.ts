@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Lesson Routes
+// Topnet Solutions Academy — Lesson Routes
 // CRUD + video/file upload via MinIO + reordering
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -20,7 +20,7 @@ import {
   UuidParamNamed,
   MultiLangTextSchema,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { uploadFile, BUCKETS } from '../services/minio';
 import { invalidateResolvedCache } from '../services/course-resolver';
 

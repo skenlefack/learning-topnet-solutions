@@ -88,9 +88,9 @@ echo "[1/4] Inserting tenant hierarchy (Continental > RECs > Countries)..."
 exec_sql "
 SET search_path TO academy_core, public;
 
--- Continental level: AU-IBAR
+-- Continental level: Topnet Solutions
 INSERT INTO tenants (id, name, code, level, parent_id) VALUES
-    ('00000000-0000-0000-0000-000000000001', 'AU-IBAR Continental', 'AU-IBAR', 'continental', NULL)
+    ('00000000-0000-0000-0000-000000000001', 'Topnet Solutions Continental', 'TOPNET', 'continental', NULL)
 ON CONFLICT (code) DO NOTHING;
 
 -- Regional Economic Communities (RECs)
@@ -170,9 +170,9 @@ SET search_path TO academy_core, public;
 
 INSERT INTO users (id, email, first_name, last_name, role, tenant_id, preferred_language) VALUES
     -- Continental admins
-    ('00000000-0000-0000-0000-000000000201', 'serge@au-ibar.org', 'Serge', 'Admin', 'admin_continental', '00000000-0000-0000-0000-000000000001', 'fr'),
+    ('00000000-0000-0000-0000-000000000201', 'serge@topnet-solutions.com', 'Serge', 'Admin', 'admin_continental', '00000000-0000-0000-0000-000000000001', 'fr'),
     -- Trainers
-    ('00000000-0000-0000-0000-000000000202', 'amina.osei@au-ibar.org', 'Amina', 'Osei', 'trainer', '00000000-0000-0000-0000-000000000001', 'en'),
+    ('00000000-0000-0000-0000-000000000202', 'amina.osei@topnet-solutions.com', 'Amina', 'Osei', 'trainer', '00000000-0000-0000-0000-000000000001', 'en'),
     ('00000000-0000-0000-0000-000000000203', 'jean.baptiste@eac.int', 'Jean-Baptiste', 'Nkurunziza', 'trainer', '00000000-0000-0000-0000-000000000011', 'fr'),
     ('00000000-0000-0000-0000-000000000204', 'fatima.diallo@ecowas.int', 'Fatima', 'Diallo', 'trainer', '00000000-0000-0000-0000-000000000010', 'fr'),
     -- REC admins
@@ -345,7 +345,7 @@ echo "  Enrollments   : $ENROLLMENT_COUNT"
 echo "  Certifications: $CERT_COUNT"
 echo "  Live sessions : $LIVE_COUNT"
 echo ""
-echo "Demo admin login: serge@au-ibar.org (no password set — use init-admin.sh)"
+echo "Demo admin login: serge@topnet-solutions.com (no password set — use init-admin.sh)"
 echo ""
 
 exit 0

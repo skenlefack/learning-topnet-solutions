@@ -1,9 +1,9 @@
 // ============================================================================
-// ARIS Academy — Assessment Service Consumers
+// Topnet Solutions Academy — Assessment Service Consumers
 // Listens: LESSON_COMPLETED, ASSESSMENT_COMPLETED, CERTIFICATION_PENDING
 // ============================================================================
-import { createConsumer, TOPICS, query, queryOne, publishEvent } from '@aris-academy/shared';
-import type { AcademyEvent } from '@aris-academy/shared';
+import { createConsumer, TOPICS, query, queryOne, publishEvent } from '@topnet-academy/shared';
+import type { AcademyEvent } from '@topnet-academy/shared';
 
 async function handleLessonCompleted(event: AcademyEvent): Promise<void> {
   const { enrollmentId, userId } = event.payload as any;
@@ -227,11 +227,11 @@ async function handleCertificationPending(event: AcademyEvent): Promise<void> {
     return;
   }
 
-  // Generate a unique certificate number: ARIS-{LEVEL_PREFIX}-{YEAR}-{RANDOM}
+  // Generate a unique certificate number: TOPNET-{LEVEL_PREFIX}-{YEAR}-{RANDOM}
   const levelPrefix = (course.level || 'GEN').substring(0, 3).toUpperCase();
   const year = new Date().getFullYear();
   const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const certNumber = `ARIS-${levelPrefix}-${year}-${randomPart}`;
+  const certNumber = `TOPNET-${levelPrefix}-${year}-${randomPart}`;
 
   // Create the certification record
   const certification = await queryOne<any>(`

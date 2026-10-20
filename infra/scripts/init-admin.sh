@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================================
 # ARIS Academy — Initial Super-Admin User Creation
-# Creates the first admin_continental user for AU-IBAR
+# Creates the first admin_continental user for Topnet Solutions
 #
 # Usage:
 #   ./infra/scripts/init-admin.sh
@@ -52,12 +52,12 @@ TENANT_EXISTS=$(docker exec "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" -
     "SELECT COUNT(*) FROM academy_core.tenants WHERE id = '$CONTINENTAL_TENANT_ID';" 2>/dev/null)
 
 if [ "$TENANT_EXISTS" != "1" ]; then
-    echo "ERROR: AU-IBAR continental tenant not found (ID: $CONTINENTAL_TENANT_ID)"
+    echo "ERROR: Topnet Solutions continental tenant not found (ID: $CONTINENTAL_TENANT_ID)"
     echo "Run the database initialization first (init.sql / seed.sql)"
     exit 1
 fi
 
-echo "AU-IBAR continental tenant found."
+echo "Topnet Solutions continental tenant found."
 echo ""
 
 # ---------------------------------------------------------------------------
@@ -218,7 +218,7 @@ if [ $? -eq 0 ]; then
     echo "  Email : $ADMIN_EMAIL"
     echo "  Name  : $ADMIN_FIRST_NAME $ADMIN_LAST_NAME"
     echo "  Role  : admin_continental"
-    echo "  Tenant: AU-IBAR Continental ($CONTINENTAL_TENANT_ID)"
+    echo "  Tenant: Topnet Solutions Continental ($CONTINENTAL_TENANT_ID)"
     echo "  Lang  : $PREFERRED_LANG"
     echo ""
 
@@ -227,7 +227,7 @@ if [ $? -eq 0 ]; then
         "SELECT id, email, role, is_active FROM academy_core.users WHERE email = '${ESCAPED_EMAIL}';" 2>/dev/null)
     echo "  Verification: $VERIFY"
     echo ""
-    echo "You can now log in at https://learning.au-ibar.org"
+    echo "You can now log in at https://learning.topnet-solutions.com"
 else
     echo "ERROR: Failed to create user"
     echo "$RESULT"

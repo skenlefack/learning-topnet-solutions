@@ -6,7 +6,7 @@ const DEFAULT_LOCALE = 'fr';
 
 export default getRequestConfig(async () => {
   const cookieStore = cookies();
-  const raw = cookieStore.get('aris-locale')?.value;
+  const raw = cookieStore.get('topnet-locale')?.value;
   const locale =
     raw && (SUPPORTED_LOCALES as readonly string[]).includes(raw)
       ? raw

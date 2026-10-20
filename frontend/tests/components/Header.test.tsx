@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: Header
+// Topnet Solutions Academy — Component Test: Header
 // Search, theme toggle, language selector, user menu
 // ============================================================================
 import { describe, it, expect, vi } from 'vitest';
@@ -124,6 +124,6 @@ describe('Header', () => {
 
   it('renders domain name on desktop', () => {
     render(<Header onMenuToggle={onMenuToggle} />);
-    expect(screen.getByText('learning.au-ibar.org')).toBeInTheDocument();
+    expect(screen.getByText('learning.topnet-solutions.com')).toBeInTheDocument();
   });
 });

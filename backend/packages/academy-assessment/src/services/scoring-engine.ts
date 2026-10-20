@@ -1,8 +1,8 @@
 // ============================================================================
-// ARIS Academy — Adaptive Scoring Engine
+// Topnet Solutions Academy — Adaptive Scoring Engine
 // Selects questions based on learner history + scores with time bonus
 // ============================================================================
-import { query, queryOne } from '@aris-academy/shared';
+import { query, queryOne } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -309,6 +309,301 @@ export async function scoreAttempt(
     timeBonus,
     timeTakenSeconds,
   };
+}
+
+// ===========================================================================
+// SKILLS — Skill level mapping, readiness scoring, domain stratification
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Skill level classification (percentage → level label)
+// ---------------------------------------------------------------------------
+
+const SKILL_LEVELS: [number, string][] = [
+  [85, 'Senior'],
+  [68, 'Confirmé'],
+  [50, 'Intermédiaire'],
+  [30, 'Junior'],
+  [0, 'Débutant'],
+];
+
+export function skillLevelFor(pct: number): string {
+  for (const [min, label] of SKILL_LEVELS) {
+    if (pct >= min) return label;
+  }
+  return 'Débutant';
+}
+
+// ---------------------------------------------------------------------------
+// Certification readiness (weighted by domain)
+// ---------------------------------------------------------------------------
+
+const READINESS_LEVELS: [number, string][] = [
+  [80, 'Prêt'],
+  [70, 'Presque prêt'],
+  [55, 'À préparer'],
+  [0, 'Pas prêt'],
+];
+
+export function readinessFor(pct: number): string {
+  for (const [min, label] of READINESS_LEVELS) {
+    if (pct >= min) return label;
+  }
+  return 'Pas prêt';
+}
+
+// ---------------------------------------------------------------------------
+// Domain scores — per-domain breakdown
+// ---------------------------------------------------------------------------
+
+export interface DomainScore {
+  domain: string;
+  correct: number;
+  total: number;
+  earned: number;
+  max: number;
+  pct: number;
+}
+
+export interface SkillScoreResult {
+  totalScore: number;
+  maxScore: number;
+  percentage: number;
+  skillLevel: string;
+  readiness: number | null;
+  readinessLevel: string | null;
+  domains: Record<string, DomainScore>;
+  breakdown: ScoreBreakdown[];
+  passed: boolean;
+  timeTakenSeconds: number;
+}
+
+/**
+ * Score a skills test with domain-by-domain breakdown and level/readiness.
+ */
+export async function scoreSkillAttempt(
+  questionOrder: string[],
+  answers: Record<string, number>,
+  weights?: Record<string, number>,  // domain weights (cert only)
+  isCert: boolean = false,
+): Promise<SkillScoreResult> {
+  const domains: Record<string, DomainScore> = {};
+  const breakdown: ScoreBreakdown[] = [];
+  let maxScore = 0;
+  let earnedScore = 0;
+
+  for (const qId of questionOrder) {
+    const question = await queryOne<QuestionRow & { domain: string }>(
+      'SELECT * FROM academy_core.questions WHERE id = $1',
+      [qId],
+    );
+    if (!question) continue;
+
+    const domain = question.domain || 'general';
+    if (!domains[domain]) {
+      domains[domain] = { domain, correct: 0, total: 0, earned: 0, max: 0, pct: 0 };
+    }
+
+    const d = domains[domain];
+    const answer = answers[qId];
+    const correct = answer !== undefined && answer !== -1
+      && question.options?.[answer]?.is_correct === true;
+
+    const pts = question.points || question.difficulty || 1;
+    d.total++;
+    d.max += pts;
+    maxScore += pts;
+
+    if (correct) {
+      d.correct++;
+      d.earned += pts;
+      earnedScore += pts;
+    }
+
+    breakdown.push({
+      questionId: qId,
+      correct,
+      pointsEarned: correct ? pts : 0,
+      pointsAvailable: pts,
+      explanation: correct ? null : question.explanation,
+    });
+  }
+
+  // Calculate per-domain percentages
+  for (const d of Object.values(domains)) {
+    d.pct = d.max > 0 ? Math.round(d.earned / d.max * 100) : 0;
+  }
+
+  const pct = maxScore > 0 ? Math.round(earnedScore / maxScore * 1000) / 10 : 0;
+  const skillLevel = skillLevelFor(pct);
+
+  // Readiness: weighted average by domain (for certifications)
+  let readiness: number | null = null;
+  let readinessLevel: string | null = null;
+  if (isCert && weights && Object.keys(weights).length > 0) {
+    let wSum = 0;
+    let wTotal = 0;
+    for (const [dom, domScore] of Object.entries(domains)) {
+      const w = weights[dom] ?? 0;
+      wSum += w * domScore.pct;
+      wTotal += w;
+    }
+    readiness = wTotal > 0 ? Math.round(wSum / wTotal * 10) / 10 : 0;
+    readinessLevel = readinessFor(readiness);
+  }
+
+  return {
+    totalScore: earnedScore,
+    maxScore,
+    percentage: pct,
+    skillLevel,
+    readiness,
+    readinessLevel,
+    domains,
+    breakdown,
+    passed: pct >= 70,
+    timeTakenSeconds: 0, // caller sets this
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Stratified question selection — proportional by domain + mixed difficulty
+// ---------------------------------------------------------------------------
+
+export async function selectSkillQuestions(
+  skillTrackId: string,
+  count: number,
+): Promise<{ questionIds: string[]; questions: SanitizedQuestion[] }> {
+  // Load all questions for this skill track
+  const allQuestions = await query<QuestionRow & { domain: string }>(
+    'SELECT * FROM academy_core.questions WHERE skill_track_id = $1',
+    [skillTrackId],
+  );
+
+  if (allQuestions.length === 0) {
+    return { questionIds: [], questions: [] };
+  }
+
+  const total = allQuestions.length;
+  const n = count <= 0 || count >= total ? total : count;
+
+  // Group by domain
+  const byDomain: Record<string, (QuestionRow & { domain: string })[]> = {};
+  for (const q of allQuestions) {
+    const dom = q.domain || 'general';
+    if (!byDomain[dom]) byDomain[dom] = [];
+    byDomain[dom].push(q);
+  }
+
+  // Calculate proportional quotas per domain
+  const quota: Record<string, number> = {};
+  const remainder: Record<string, number> = {};
+  let used = 0;
+
+  for (const [dom, list] of Object.entries(byDomain)) {
+    const exact = (list.length * n) / total;
+    quota[dom] = Math.floor(exact);
+    remainder[dom] = exact - quota[dom];
+    used += quota[dom];
+  }
+
+  // Distribute remaining slots by largest remainder
+  const sortedDomains = Object.keys(remainder).sort(
+    (a, b) => remainder[b] - remainder[a],
+  );
+  let idx = 0;
+  while (used < n && idx < sortedDomains.length) {
+    quota[sortedDomains[idx]]++;
+    used++;
+    idx++;
+  }
+
+  // Ensure at least 1 question per domain if enough quota
+  if (n >= Object.keys(byDomain).length) {
+    for (const dom of Object.keys(quota)) {
+      if (quota[dom] === 0) {
+        // Steal from the largest domain
+        const biggest = Object.keys(quota).reduce((a, b) =>
+          quota[a] > quota[b] ? a : b,
+        );
+        if (quota[biggest] > 1) {
+          quota[biggest]--;
+          quota[dom] = 1;
+        }
+      }
+    }
+  }
+
+  // Pick from each domain, mixing difficulty levels (1, 2, 3)
+  const selected: (QuestionRow & { domain: string })[] = [];
+
+  for (const [dom, list] of Object.entries(byDomain)) {
+    const needed = quota[dom] || 0;
+    if (needed === 0) continue;
+
+    // Bucket by difficulty
+    const byLevel: (QuestionRow & { domain: string })[][] = [[], [], []];
+    for (const q of list) {
+      const lvl = Math.min(Math.max(q.difficulty, 1), 3) - 1;
+      byLevel[lvl].push(q);
+    }
+    // Shuffle each level
+    byLevel[0] = shuffle(byLevel[0]);
+    byLevel[1] = shuffle(byLevel[1]);
+    byLevel[2] = shuffle(byLevel[2]);
+
+    // Round-robin pick across levels
+    let picked = 0;
+    let round = 0;
+    while (picked < needed) {
+      const lvl = round % 3;
+      if (byLevel[lvl].length > 0) {
+        selected.push(byLevel[lvl].shift()!);
+        picked++;
+      }
+      round++;
+      // Safety: break if all pools exhausted
+      if (byLevel[0].length === 0 && byLevel[1].length === 0 && byLevel[2].length === 0) break;
+    }
+  }
+
+  // Final shuffle
+  const finalQuestions = shuffle(selected);
+
+  // Sanitize — no correct answers exposed
+  const sanitized: SanitizedQuestion[] = finalQuestions.map((q) => ({
+    id: q.id,
+    questionText: q.question_text,
+    questionType: q.question_type,
+    options: q.options?.map((o: any) => ({ text: o.text })) ?? [],
+    points: q.points || q.difficulty || 1,
+    difficulty: q.difficulty,
+  }));
+
+  return {
+    questionIds: finalQuestions.map((q) => q.id),
+    questions: sanitized,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Answer key for unlocked tests (corrections with explanations)
+// ---------------------------------------------------------------------------
+
+export async function getAnswerKey(
+  questionIds: string[],
+): Promise<Record<string, { answer: number; explanation: any }>> {
+  const key: Record<string, { answer: number; explanation: any }> = {};
+  for (const qId of questionIds) {
+    const q = await queryOne<QuestionRow>(
+      'SELECT * FROM academy_core.questions WHERE id = $1',
+      [qId],
+    );
+    if (!q || !q.options) continue;
+    const correctIdx = q.options.findIndex((o: any) => o.is_correct === true);
+    key[qId] = { answer: correctIdx, explanation: q.explanation };
+  }
+  return key;
 }
 
 // ---------------------------------------------------------------------------

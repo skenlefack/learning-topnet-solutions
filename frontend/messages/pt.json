@@ -8,6 +8,10 @@
     "certificates": "Certificações",
     "resources": "Recursos",
     "community": "Comunidade",
+    "skills": "Testes de TI",
+    "shop": "Loja",
+    "orders": "Pedidos",
+    "wallet": "Carteira",
     "trainer": "Meus Cursos (Formador)",
     "admin": "Administração",
     "progression": "Progressão",
@@ -25,7 +29,7 @@
   },
   "dashboard": {
     "welcome": "Bem-vindo ao",
-    "brandName": "AU-IBAR Learning",
+    "brandName": "Topnet Solutions Academy",
     "subtitle": "Sua plataforma de formação online — Capacitação para os 55 Estados membros da União Africana.",
     "enrolledCourses": "Cursos inscritos",
     "learningHours": "Horas de aprendizagem",
@@ -40,7 +44,7 @@
   },
   "courses": {
     "title": "Todos os cursos",
-    "subtitle": "Explore o catálogo de formação AU-IBAR",
+    "subtitle": "Explore o catálogo de formação Topnet Solutions Academy",
     "myCoursesTitle": "Meus cursos",
     "myCoursesSubtitle": "{count} cursos em formação",
     "myCoursesEmpty": "Ainda não está inscrito em nenhum curso.",
@@ -98,7 +102,7 @@
     "passingScore": "Nota de aprovação",
     "tags": "Etiquetas",
     "certification": "Certificação",
-    "certificationDesc": "Obtenha a sua certificação AU-IBAR ao concluir este curso",
+    "certificationDesc": "Obtenha a sua certificação Topnet Solutions ao concluir este curso",
     "lesson": "lição",
     "lessonPlural": "lições"
   },
@@ -135,7 +139,7 @@
     "locked": "Bloqueado",
     "obtained": "Certificados obtidos",
     "none": "Nenhuma certificação obtida ainda",
-    "noneDesc": "Conclua um curso e passe na avaliação final para obter a sua certificação AU-IBAR",
+    "noneDesc": "Conclua um curso e passe na avaliação final para obter a sua certificação Topnet Solutions",
     "browseCatalog": "Explorar o catálogo",
     "valid": "Válido",
     "expired": "Expirado",
@@ -147,7 +151,7 @@
     "copyLink": "Copiar ligação",
     "verifyTitle": "Verificar um certificado",
     "verifySubtitle": "Introduza um número de certificado ou digitalize o código QR",
-    "verifyPlaceholder": "Ex: ARIS-2024-001234",
+    "verifyPlaceholder": "Ex: TOPNET-2024-001234",
     "verify": "Verificar",
     "scanQR": "Digitalizar QR",
     "pdfNotAvailable": "PDF ainda não disponível",
@@ -213,7 +217,7 @@
   },
   "community": {
     "title": "Comunidade",
-    "subtitle": "Troque, aprenda e progrida com a comunidade AU-IBAR",
+    "subtitle": "Troque, aprenda e progrida com a comunidade Topnet Solutions Academy",
     "discussions": "Discussões",
     "leaderboard": "Classificação",
     "studyGroups": "Grupos de estudo"
@@ -340,20 +344,20 @@
     "signinLink": "Iniciar sessão"
   },
   "hero": {
-    "slide1Title": "Reforçar as capacidades veterinárias em África",
-    "slide1Subtitle": "Programas de formação certificados para os 55 Estados membros da União Africana",
-    "slide1CTA": "Explorar cursos",
-    "slide2Title": "Saúde Animal e Vigilância Epidemiológica",
-    "slide2Subtitle": "Formação sobre PPR, gripe aviária, peste suína africana e doenças transfronteiriças",
-    "slide2CTA": "Ver programa",
-    "slide3Title": "Produção Animal e Recursos Genéticos",
-    "slide3Subtitle": "Sistemas pecuários resilientes, alimentação animal e gestão dos recursos genéticos africanos",
-    "slide3CTA": "Descobrir",
-    "slide4Title": "Pesca, Aquicultura e Economia Azul",
-    "slide4Subtitle": "Gestão sustentável das pescas, desenvolvimento da aquicultura e conservação da biodiversidade aquática",
-    "slide4CTA": "Registar-se",
-    "slide5Title": "Comércio e Marketing dos Recursos Animais",
-    "slide5Subtitle": "Normas sanitárias, facilitação do comércio e desenvolvimento das cadeias de valor em África",
+    "slide1Title": "Desenvolva as suas competências com a Topnet Solutions Academy",
+    "slide1Subtitle": "Formações profissionais certificadas concebidas por especialistas. Aprenda ao seu ritmo, onde quer que esteja.",
+    "slide1CTA": "Explorar formações",
+    "slide2Title": "Certificações reconhecidas, carreira acelerada",
+    "slide2Subtitle": "Obtenha certificações valorizadas pelos empregadores. Cada formação concluída aproxima-o dos seus objetivos profissionais.",
+    "slide2CTA": "Ver certificações",
+    "slide3Title": "Avalie o seu nível gratuitamente",
+    "slide3Subtitle": "Faça os nossos testes de posicionamento para identificar os seus pontos fortes, visar as suas lacunas e seguir o percurso adaptado ao seu perfil.",
+    "slide3CTA": "Fazer o teste",
+    "slide4Title": "Formações em IT, Digital e Gestão",
+    "slide4Subtitle": "Redes, cibersegurança, cloud computing, desenvolvimento web, inteligência artificial, gestão de projetos — está tudo aqui.",
+    "slide4CTA": "Descobrir o catálogo",
+    "slide5Title": "O seu parceiro digital de confiança",
+    "slide5Subtitle": "A Topnet Solutions acompanha empresas e profissionais na sua transformação digital, dos Camarões para toda a África.",
     "slide5CTA": "Saber mais",
     "freeSignup": "Registo gratuito"
   },
@@ -378,7 +382,10 @@
     "coursesLabel": "Cursos disponíveis",
     "learnersLabel": "Aprendizes inscritos",
     "pathsLabel": "Percursos",
-    "certificatesLabel": "Certificados emitidos"
+    "certificatesLabel": "Certificados emitidos",
+    "testTitle": "Teste de nível",
+    "testDesc": "Avalie as suas competências e encontre a formação certa",
+    "testCTA": "Fazer o teste"
   },
   "catalog": {
     "program": "Programa do curso",
@@ -388,7 +395,7 @@
     "optional": "Opcional",
     "loginToAccess": "Faça login para aceder ao conteúdo das lições",
     "enrollTitle": "Pronto para começar?",
-    "enrollDesc": "Inscreva-se gratuitamente para aceder a todo o conteúdo, acompanhar o seu progresso e obter a sua certificação AU-IBAR.",
+    "enrollDesc": "Inscreva-se gratuitamente para aceder a todo o conteúdo, acompanhar o seu progresso e obter a sua certificação Topnet Solutions.",
     "enrollCTA": "Inscrever-se gratuitamente",
     "login": "Entrar",
     "signup": "Registar-se",
@@ -398,7 +405,7 @@
     "notFound": "Curso não encontrado",
     "notFoundDesc": "Este curso não existe ou já não está disponível.",
     "backToHome": "Voltar ao início",
-    "certificationBadge": "Obtenha a sua certificação AU-IBAR completando este curso e aprovando no exame final.",
+    "certificationBadge": "Obtenha a sua certificação Topnet Solutions completando este curso e aprovando no exame final.",
     "summary": "Resumo do curso",
     "prerequisites": "Pré-requisitos",
     "noPrerequisites": "Sem pré-requisitos — este curso é aberto a todos."
@@ -407,10 +414,10 @@
     "competencies": "Áreas de competência",
     "competenciesDesc": "Explore as nossas 9 áreas de formação que abrangem todos os recursos animais do continente africano",
     "categoriesTitle": "Categorias de cursos",
-    "categoriesDesc": "Navegue pelas nossas categorias de formação desenvolvidas por especialistas AU-IBAR",
+    "categoriesDesc": "Navegue pelas nossas categorias de formação desenvolvidas por especialistas Topnet Solutions",
     "coursesAvailable": "cursos disponíveis",
     "latestCourses": "Últimos cursos publicados",
-    "expertDeveloped": "Formação certificada desenvolvida por especialistas AU-IBAR",
+    "expertDeveloped": "Formação certificada desenvolvida por especialistas Topnet Solutions",
     "seeAll": "Ver tudo",
     "enrollCourse": "Inscrever-se no curso",
     "searchPlaceholder": "Pesquisar um curso, tema...",
@@ -419,9 +426,9 @@
   },
   "about": {
     "title": "Excelência ao serviço do desenvolvimento de África",
-    "description": "AU-IBAR Learning é a plataforma oficial de formação online do Bureau Interafricano dos Recursos Animais da União Africana. A nossa missão: reforçar as capacidades dos profissionais de saúde animal, produção, pesca e comércio em todo o continente.",
+    "description": "Topnet Solutions Academy é a plataforma oficial de formação online da Topnet Solutions. A nossa missão: desenvolver competências profissionais através de formações certificadas de qualidade.",
     "startNow": "Começar agora",
-    "visitWebsite": "Visitar UA-BIRA"
+    "visitWebsite": "Visitar Topnet Solutions"
   },
   "footer": {
     "programs": "Programas",
@@ -431,12 +438,12 @@
     "privacy": "Política de privacidade",
     "terms": "Termos de utilização",
     "accessibility": "Acessibilidade",
-    "website": "UA-BIRA",
+    "website": "Topnet Solutions",
     "africanUnion": "União Africana",
     "aagris": "AAGRIS",
-    "aris": "ARIS",
-    "brandDescription": "Bureau Interafricano de Recursos Animais da União Africana. Kenindia Business Park, Nairobi, Quénia.",
-    "copyright": "Bureau Interafricano de Recursos Animais da União Africana",
+    "aris": "topnet",
+    "brandDescription": "Topnet Solutions — Plataforma oficial de formação online certificada.",
+    "copyright": "Topnet Solutions — Todos os direitos reservados",
     "privacyPolicy": "Política de privacidade",
     "termsOfUse": "Termos de utilização"
   },
@@ -668,12 +675,12 @@
     "validDesc": "Este certificado foi verificado e é atualmente válido.",
     "expiredDesc": "Este certificado era válido mas ultrapassou a data de expiração.",
     "revokedDesc": "Este certificado foi revogado por um administrador.",
-    "notFoundDesc": "Nenhum certificado correspondente a este número foi encontrado no sistema AU-IBAR Learning.",
+    "notFoundDesc": "Nenhum certificado correspondente a este número foi encontrado no sistema Topnet Solutions Academy.",
     "detailsTitle": "Detalhes do certificado",
     "statusLabel": "Estado",
     "scanLabel": "Digitalize para verificar este certificado",
-    "visitLink": "Visitar AU-IBAR Learning",
-    "footerCopyright": "União Africana — Bureau Interafricano de Recursos Animais (AU-IBAR)"
+    "visitLink": "Visitar Topnet Solutions Academy",
+    "footerCopyright": "Topnet Solutions — Todos os direitos reservados"
   },
   "auth": {
     "loginTitle": "Iniciar sessão",
@@ -707,6 +714,6 @@
     "no": "Não",
     "page": "Página",
     "of": "de",
-    "auIbarFooter": "AU-IBAR"
+    "auIbarFooter": "Topnet Solutions"
   }
 }

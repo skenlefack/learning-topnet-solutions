@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Hook Test: useAuth
+// Topnet Solutions Academy — Hook Test: useAuth
 // Tests login, logout, token refresh, redirect behavior
 // ============================================================================
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll, afterEach } from 'vitest';
@@ -113,7 +113,7 @@ describe('useAuth hook', () => {
     expect(state.user).toEqual(mockUser);
     expect(state.token).toBe(mockToken);
     expect(state.isAuthenticated).toBe(true);
-    expect(document.cookie).toContain('aris-token=jwt-token-123');
+    expect(document.cookie).toContain('topnet-token=jwt-token-123');
   });
 
   it('should throw error on login failure', async () => {

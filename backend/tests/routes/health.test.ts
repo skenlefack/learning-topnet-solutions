@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Route Tests: Health Check Endpoints
+// Topnet Solutions Academy — Route Tests: Health Check Endpoints
 // Tests GET /health for all 4 services using Fastify inject
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
@@ -15,8 +15,8 @@ vi.mock('@fastify/rate-limit', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     getPool: vi.fn().mockReturnValue({

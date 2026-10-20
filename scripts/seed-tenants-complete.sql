@@ -1,5 +1,5 @@
 -- ============================================================================
--- AU-IBAR Learning — Complete 8 RECs + 55 African Union Member States
+-- Topnet Solutions Academy — Complete 8 RECs + 55 African Union Member States
 -- ============================================================================
 BEGIN;
 

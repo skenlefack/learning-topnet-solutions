@@ -16,7 +16,7 @@ export default function LocaleSync() {
     if (!hydrated) return;
 
     // Sync cookie (without reload — reload is in setLanguage)
-    document.cookie = `aris-locale=${language}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    document.cookie = `topnet-locale=${language}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
 
     // Sync html attributes
     const html = document.documentElement;

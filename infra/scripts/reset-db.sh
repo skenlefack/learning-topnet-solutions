@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# ARIS Academy — Database Reset Script
+# Topnet Solutions Academy — Database Reset Script
 # Drops all schemas, recreates from init.sql, runs migrations, optionally seeds
 #
 # Usage:
@@ -62,7 +62,7 @@ done
 # Pre-flight checks
 # ---------------------------------------------------------------------------
 echo "=============================================="
-echo " ARIS Academy — Database Reset"
+echo " Topnet Solutions Academy — Database Reset"
 echo "=============================================="
 echo ""
 
@@ -162,7 +162,7 @@ if [ -d "$MIGRATIONS_DIR" ]; then
     if [ "$MIGRATION_COUNT" -gt 0 ]; then
         # Run migrations via Docker (same approach as docker-compose.yml)
         docker run --rm \
-            --network aris-academy_academy-net \
+            --network topnet-academy_academy-net \
             -v "$MIGRATIONS_DIR:/app/migrations:ro" \
             -v "$PROJECT_ROOT/backend/package.json:/app/package.json:ro" \
             -w /app \

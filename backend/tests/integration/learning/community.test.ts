@@ -1,11 +1,11 @@
 // ============================================================================
-// ARIS Academy — Integration Tests: Community Routes
+// Topnet Solutions Academy — Integration Tests: Community Routes
 // Forum posts CRUD, upvote, replies, Study groups join/leave
 // ============================================================================
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
-import { authPlugin, tenantScopePlugin } from '@aris-academy/shared';
+import { authPlugin, tenantScopePlugin } from '@topnet-academy/shared';
 import { TOKENS } from '../../helpers/jwt';
 import { IDS, seedTestData, cleanTestData } from '../../helpers/fixtures';
 import { getTestPool, testQuery, testQueryOne, closeTestPool } from '../../helpers/db';
@@ -28,8 +28,8 @@ vi.mock('../../../packages/shared/src/kafka/index', async (importOriginal) => {
   };
 });
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     publishEvent: vi.fn().mockResolvedValue(undefined),

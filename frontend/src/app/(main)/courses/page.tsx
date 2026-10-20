@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — My Courses
+// Topnet Solutions Academy — My Courses
 // Shows only courses where the user is enrolled, with progress tracking
 // ============================================================================
 import { useState, useMemo } from 'react';

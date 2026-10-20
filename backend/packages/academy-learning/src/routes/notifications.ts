@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Notification Routes
+// Topnet Solutions Academy — Notification Routes
 // GET list, PUT mark read, PUT mark all read, GET unread count
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -11,7 +11,7 @@ import {
   paginationSchema,
   BearerSecurity,
   PaginationQuery,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schemas

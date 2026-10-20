@@ -55,7 +55,7 @@ export async function seedTestData(pool: Pool): Promise<void> {
     // Tenants
     await client.query(
       `INSERT INTO tenants (id, name, code, level, parent_id) VALUES
-        ($1, 'AU-IBAR Continental', 'AU-IBAR', 'continental', NULL),
+        ($1, 'Topnet Solutions Continental', 'TOPNET', 'continental', NULL),
         ($2, 'ECOWAS', 'ECOWAS', 'rec', $1),
         ($3, 'EAC', 'EAC', 'rec', $1),
         ($4, 'SADC', 'SADC', 'rec', $1),
@@ -81,8 +81,8 @@ export async function seedTestData(pool: Pool): Promise<void> {
     // Users (seed + test-specific)
     await client.query(
       `INSERT INTO users (id, email, first_name, last_name, role, tenant_id, preferred_language) VALUES
-        ($1, 'serge@au-ibar.org', 'Serge', 'Admin', 'admin_continental', $5, 'fr'),
-        ($2, 'amina.osei@au-ibar.org', 'Amina', 'Osei', 'trainer', $5, 'en'),
+        ($1, 'serge@topnet-solutions.com', 'Serge', 'Admin', 'admin_continental', $5, 'fr'),
+        ($2, 'amina.osei@topnet-solutions.com', 'Amina', 'Osei', 'trainer', $5, 'en'),
         ($3, 'jean.baptiste@eac.int', 'Jean-Baptiste', 'Nkurunziza', 'trainer', $6, 'fr'),
         ($4, 'fatima.diallo@ecowas.int', 'Fatima', 'Diallo', 'trainer', $7, 'fr'),
         ($8, 'admin@kenya.go.ke', 'Kenya', 'Admin', 'admin_country', $9, 'en'),
@@ -113,10 +113,10 @@ export async function seedTestData(pool: Pool): Promise<void> {
     await client.query(
       `INSERT INTO courses (id, tenant_id, tenant_level, title, description, slug, level, status, estimated_hours, passing_score, published_at) VALUES
         ($1, $7, 'continental', '{"fr":"Surveillance épidémiologique","en":"Epidemiological Surveillance"}', '{"fr":"Maîtrisez la surveillance"}', 'surveillance-epidemiologique', 'beginner', 'published', 12, 70, NOW()),
-        ($2, $7, 'continental', '{"fr":"Collecte de données terrain","en":"Field Data Collection"}', '{"fr":"Apprenez à utiliser ARIS"}', 'collecte-donnees-terrain', 'intermediate', 'published', 24, 75, NOW()),
-        ($3, $7, 'continental', '{"fr":"Analyse & Rapports ARIS","en":"ARIS Analysis & Reports"}', '{"fr":"Créez des tableaux de bord"}', 'analyse-rapports', 'advanced', 'published', 36, 80, NOW()),
-        ($4, $7, 'continental', '{"fr":"Administration système ARIS","en":"ARIS System Administration"}', '{"fr":"Devenez expert"}', 'administration-systeme', 'expert', 'published', 48, 85, NOW()),
-        ($5, $7, 'continental', '{"fr":"Gestion des formulaires","en":"Form Management"}', '{"fr":"FormBuilder ARIS"}', 'gestion-formulaires', 'intermediate', 'published', 18, 75, NOW()),
+        ($2, $7, 'continental', '{"fr":"Collecte de données terrain","en":"Field Data Collection"}', '{"fr":"Apprenez à utiliser Topnet"}', 'collecte-donnees-terrain', 'intermediate', 'published', 24, 75, NOW()),
+        ($3, $7, 'continental', '{"fr":"Analyse & Rapports Topnet","en":"Topnet Analysis & Reports"}', '{"fr":"Créez des tableaux de bord"}', 'analyse-rapports', 'advanced', 'published', 36, 80, NOW()),
+        ($4, $7, 'continental', '{"fr":"Administration système Topnet","en":"Topnet System Administration"}', '{"fr":"Devenez expert"}', 'administration-systeme', 'expert', 'published', 48, 85, NOW()),
+        ($5, $7, 'continental', '{"fr":"Gestion des formulaires","en":"Form Management"}', '{"fr":"FormBuilder Topnet"}', 'gestion-formulaires', 'intermediate', 'published', 18, 75, NOW()),
         ($6, $7, 'continental', '{"fr":"Interopérabilité DHIS2/FHIR","en":"DHIS2/FHIR Interoperability"}', '{"fr":"Échanges de données"}', 'interoperabilite-dhis2-fhir', 'advanced', 'published', 32, 80, NOW())
       ON CONFLICT DO NOTHING`,
       [
@@ -136,7 +136,7 @@ export async function seedTestData(pool: Pool): Promise<void> {
         ($1, $9, '{"fr":"Introduction à la surveillance","en":"Introduction to Surveillance"}', 1, 45, true),
         ($2, $9, '{"fr":"Types de maladies animales","en":"Types of Animal Diseases"}', 2, 60, true),
         ($3, $9, '{"fr":"Protocoles de déclaration","en":"Reporting Protocols"}', 3, 90, true),
-        ($4, $9, '{"fr":"Utilisation ARIS surveillance","en":"Using ARIS for Surveillance"}', 4, 120, true),
+        ($4, $9, '{"fr":"Utilisation Topnet surveillance","en":"Using Topnet for Surveillance"}', 4, 120, true),
         ($5, $9, '{"fr":"Cas pratiques terrain","en":"Field Case Studies"}', 5, 90, true),
         ($6, $9, '{"fr":"Évaluation intermédiaire","en":"Mid-term Assessment"}', 6, 45, true),
         ($7, $9, '{"fr":"Projet de surveillance","en":"Surveillance Project"}', 7, 120, true),

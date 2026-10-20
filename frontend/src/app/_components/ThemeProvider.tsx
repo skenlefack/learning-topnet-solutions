@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Theme Provider
+// Topnet Solutions Academy — Theme Provider
 // Reads theme from Zustand, applies 'dark' class on <html>, persists choice
 // ============================================================================
 import { useEffect } from 'react';

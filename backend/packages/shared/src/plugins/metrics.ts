@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Prometheus Metrics Plugin (Fastify)
+// Topnet Solutions Academy — Prometheus Metrics Plugin (Fastify)
 // Lightweight custom implementation — no external dependency required.
 // Exposes /metrics endpoint with Prometheus-compatible text format.
 // Tracks: request count, request duration, response size, active connections.

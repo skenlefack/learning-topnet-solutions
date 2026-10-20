@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Request Logger Plugin (Fastify)
+// Topnet Solutions Academy — Request Logger Plugin (Fastify)
 // Structured JSON logging for every request with duration, user context,
 // and unique X-Request-ID header. Skips /health and /metrics endpoints.
 // Usage: fastify.register(requestLoggerPlugin)

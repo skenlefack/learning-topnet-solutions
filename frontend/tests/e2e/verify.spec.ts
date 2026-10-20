@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — E2E: Public Certificate Verification Page
+// Topnet Solutions Academy — E2E: Public Certificate Verification Page
 // Tests /verify/[certNumber] — the public page (no auth required)
 // ============================================================================
 import { test, expect } from '@playwright/test';
@@ -15,9 +15,9 @@ test.describe('Certificate Verification Page', () => {
     const mainContent = page.locator('body');
     await expect(mainContent).toBeVisible({ timeout: 15_000 });
 
-    // Should show AU-IBAR branding
+    // Should show Topnet Solutions branding
     await expect(
-      page.locator('text=AU-IBAR').first(),
+      page.locator('text=Topnet Solutions').first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -58,7 +58,7 @@ test.describe('Certificate Verification Page', () => {
   test('verify page has no authentication requirement', async ({ page }) => {
     // Clear any existing auth state
     await page.addInitScript(() => {
-      localStorage.removeItem('aris-academy-auth');
+      localStorage.removeItem('topnet-academy-auth');
     });
 
     await page.goto('/verify/CERT-PUBLIC-001');
@@ -72,14 +72,14 @@ test.describe('Certificate Verification Page', () => {
     await expect(body).toBeVisible({ timeout: 10_000 });
   });
 
-  test('verify page shows AU-IBAR Learning footer link', async ({ page }) => {
+  test('verify page shows Topnet Solutions Academy footer link', async ({ page }) => {
     await page.goto('/verify/CERT-TEST-001');
     await page.waitForLoadState('networkidle');
 
-    // The VerifyClient component includes a "Visit AU-IBAR Learning" link
-    const visitLink = page.locator('a[href*="learning.au-ibar.org"]');
+    // The VerifyClient component includes a "Visit Topnet Solutions Academy" link
+    const visitLink = page.locator('a[href*="learning.topnet-solutions.com"]');
     if (await visitLink.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      expect(await visitLink.getAttribute('href')).toContain('learning.au-ibar.org');
+      expect(await visitLink.getAttribute('href')).toContain('learning.topnet-solutions.com');
     }
   });
 
@@ -124,7 +124,7 @@ test.describe('Certificate Verification Page', () => {
 
   test('verify page handles special characters in certificate number', async ({ page }) => {
     // Certificate numbers might contain hyphens, dots, or alphanumeric chars
-    await page.goto('/verify/AU-IBAR-2026.001-KE');
+    await page.goto('/verify/TOPNET-2026.001-KE');
     await page.waitForLoadState('networkidle');
 
     // Page should load without errors

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Course Grid
+// Topnet Solutions Academy — Course Grid
 // Enrolled + available courses with progress bars
 // ============================================================================
 import clsx from 'clsx';
@@ -163,7 +163,7 @@ function CourseCard({ course, enrollment }: { course: any; enrollment?: any }) {
                 size={36}
                 strokeWidth={3}
                 trailColor="rgba(255,255,255,0.2)"
-                strokeColor="#C8A951"
+                strokeColor="#00B341"
               >
                 <span className="text-[9px] font-bold text-white">{Math.round(progress)}%</span>
               </ProgressRing>

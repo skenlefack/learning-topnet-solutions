@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Path Composite Exam
+// Topnet Solutions Academy — Path Composite Exam
 // Questions pulled from all courses in the learning path
 // ============================================================================
 import { useState, useEffect, useCallback, useRef } from 'react';

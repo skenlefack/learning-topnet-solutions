@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Course Routes
+// Topnet Solutions Academy — Course Routes
 // CRUD + multi-tenant override resolution, publish/archive, deep duplicate
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -23,7 +23,7 @@ import {
   MultiLangTextSchema,
   PaginationQuery,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { resolveCourse, invalidateResolvedCache } from '../services/course-resolver';
 
 // ---------------------------------------------------------------------------
@@ -155,14 +155,14 @@ export async function courseRoutes(app: FastifyInstance): Promise<void> {
         data: [
           {
             id: 'mock-course-1',
-            title: { fr: 'Introduction à ARIS 3.0', en: 'Introduction to ARIS 3.0' },
-            description: { fr: 'Découvrez les fondamentaux du système ARIS', en: 'Discover the fundamentals of the ARIS system' },
-            slug: 'intro-aris-3',
+            title: { fr: 'Introduction to the Academy', en: 'Introduction to the Academy' },
+            description: { fr: 'Découvrez les fondamentaux de la plateforme', en: 'Discover the fundamentals of the platform' },
+            slug: 'intro-academy',
             level: 'beginner',
             status: 'published',
             estimated_hours: 12,
             passing_score: 70,
-            tags: ['aris', 'introduction'],
+            tags: ['academy', 'introduction'],
             thumbnail_url: null,
             enrollment_count: 45,
             module_count: 4,

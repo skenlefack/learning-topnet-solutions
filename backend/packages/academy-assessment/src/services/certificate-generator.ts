@@ -1,11 +1,11 @@
 // ============================================================================
-// ARIS Academy — Certificate Generator
-// Generates AU-IBAR branded PDFs with QR codes, uploads to MinIO
+// Topnet Solutions Academy — Certificate Generator
+// Generates Topnet Solutions branded PDFs with QR codes, uploads to MinIO
 // ============================================================================
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import { Client as MinioClient } from 'minio';
-import { queryOne } from '@aris-academy/shared';
+import { queryOne } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -17,7 +17,7 @@ const GOLD = '#C8A951';
 const DARK = '#1a1a1a';
 const GRAY = '#666666';
 
-const VERIFY_BASE_URL = 'https://learning.au-ibar.org/verify';
+const VERIFY_BASE_URL = 'https://learning.topnet-solutions.com/verify';
 
 // ---------------------------------------------------------------------------
 // MinIO singleton (assessment-local)
@@ -131,7 +131,7 @@ export async function getSignedDownloadUrl(
 }
 
 // ---------------------------------------------------------------------------
-// PDF Construction — A4 landscape, AU-IBAR branding
+// PDF Construction — A4 landscape, Topnet Solutions branding
 // ---------------------------------------------------------------------------
 
 interface PdfParams {
@@ -152,8 +152,8 @@ function buildPdf(params: PdfParams): Promise<Buffer> {
       layout: 'landscape',
       margins: { top: 40, bottom: 40, left: 60, right: 60 },
       info: {
-        Title: `ARIS Certificate — ${params.certNumber}`,
-        Author: 'AU-IBAR — African Union Interafrican Bureau for Animal Resources',
+        Title: `Topnet Solutions Certificate — ${params.certNumber}`,
+        Author: 'Topnet Solutions Academy',
         Subject: `Certificate of Completion — ${params.courseTitle}`,
       },
     });
@@ -181,22 +181,22 @@ function buildPdf(params: PdfParams): Promise<Buffer> {
       doc.rect(cx, cy, cornerSize, cornerSize).lineWidth(1).strokeColor(GOLD).stroke();
     }
 
-    // ── Header: AU-IBAR ─────────────────────────────────────────────────
+    // ── Header: Topnet Solutions ─────────────────────────────────────────
     let y = 55;
 
     doc.fontSize(11).fillColor(NAVY).font('Helvetica-Bold');
-    doc.text('AFRICAN UNION', 60, y, { align: 'center', width: contentW });
+    doc.text('TOPNET SOLUTIONS', 60, y, { align: 'center', width: contentW });
     y += 16;
 
     doc.fontSize(9).fillColor(GRAY).font('Helvetica');
     doc.text(
-      'INTERAFRICAN BUREAU FOR ANIMAL RESOURCES',
+      'ACADEMY',
       60, y, { align: 'center', width: contentW },
     );
     y += 14;
 
     doc.fontSize(9).fillColor(GRAY);
-    doc.text('AU-IBAR', 60, y, { align: 'center', width: contentW });
+    doc.text('Topnet Solutions', 60, y, { align: 'center', width: contentW });
     y += 10;
 
     // ── Divider line ────────────────────────────────────────────────────
@@ -232,7 +232,7 @@ function buildPdf(params: PdfParams): Promise<Buffer> {
 
     doc.fontSize(12).fillColor(DARK).font('Helvetica');
     doc.text(
-      `certification at the ${params.level} level through the ARIS Academy platform.`,
+      `certification at the ${params.level} level through the Topnet Solutions Academy platform.`,
       60, y, { align: 'center', width: contentW },
     );
     y += 40;
@@ -260,7 +260,7 @@ function buildPdf(params: PdfParams): Promise<Buffer> {
     const sigY = pageH - 110;
     doc.moveTo(100, sigY).lineTo(300, sigY).lineWidth(0.5).strokeColor(DARK).stroke();
     doc.fontSize(10).fillColor(DARK).font('Helvetica-Bold');
-    doc.text('Director, AU-IBAR', 100, sigY + 5, { width: 200, align: 'center' });
+    doc.text('Director, Topnet Solutions', 100, sigY + 5, { width: 200, align: 'center' });
 
     // ── QR code (bottom right) ──────────────────────────────────────────
     const qrX = pageW - 190;
@@ -272,7 +272,7 @@ function buildPdf(params: PdfParams): Promise<Buffer> {
     // ── Footer ──────────────────────────────────────────────────────────
     doc.fontSize(7).fillColor(GRAY).font('Helvetica');
     doc.text(
-      'ARIS Academy — learning.au-ibar.org — A platform of the African Union Interafrican Bureau for Animal Resources',
+      'Topnet Solutions Academy — learning.topnet-solutions.com',
       60, pageH - 45, { align: 'center', width: contentW },
     );
 

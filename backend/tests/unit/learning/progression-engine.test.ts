@@ -1,14 +1,14 @@
 // ============================================================================
-// ARIS Academy — Unit Tests: Progression Engine
+// Topnet Solutions Academy — Unit Tests: Progression Engine
 // Tests pure helpers and DB-dependent functions with mocked dependencies
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock external deps that @aris-academy/shared barrel transitively imports
+// Mock external deps that @topnet-academy/shared barrel transitively imports
 vi.mock('@fastify/rate-limit', () => ({ default: vi.fn() }));
 
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: vi.fn(),
@@ -28,7 +28,7 @@ vi.mock('@aris-academy/shared', async (importOriginal) => {
   };
 });
 
-import { query, queryOne, publishEvent, cacheDel } from '@aris-academy/shared';
+import { query, queryOne, publishEvent, cacheDel } from '@topnet-academy/shared';
 import {
   getNextLevel,
   getPassingScore,

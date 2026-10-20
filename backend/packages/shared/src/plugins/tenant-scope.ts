@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Tenant Scope Plugin (Fastify)
+// Topnet Solutions Academy — Tenant Scope Plugin (Fastify)
 // Injects search_path + request.tenantFilter() for multi-tenant SQL queries
 // Usage: fastify.register(tenantScopePlugin) — after authPlugin
 // ============================================================================

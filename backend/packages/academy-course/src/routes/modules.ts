@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Module Routes
+// Topnet Solutions Academy — Module Routes
 // CRUD + reordering for course modules
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -17,7 +17,7 @@ import {
   UuidParamNamed,
   MultiLangTextSchema,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { invalidateResolvedCache } from '../services/course-resolver';
 
 // ---------------------------------------------------------------------------

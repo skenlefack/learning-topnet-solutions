@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Trainer Dashboard
+// Topnet Solutions Academy — Trainer Dashboard
 // Analytics scoped to courses created/taught by the logged-in trainer
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';
@@ -92,10 +92,10 @@ export default function TrainerDashboard() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={BookOpen} label="Mes cours" value={courses.length} color="#1A5632" />
-        <StatCard icon={Users} label="Apprenants inscrits" value={totalEnrolled} color="#B8952E" />
-        <StatCard icon={Award} label="Cours complétés" value={totalCompleted} color="#930e2d" />
-        <StatCard icon={TrendingUp} label="Progression moy." value={`${avgProgress}%`} color="#0e591a" />
+        <StatCard icon={BookOpen} label="Mes cours" value={courses.length} color="#1B0CB3" />
+        <StatCard icon={Users} label="Apprenants inscrits" value={totalEnrolled} color="#009930" />
+        <StatCard icon={Award} label="Cours complétés" value={totalCompleted} color="#00B341" />
+        <StatCard icon={TrendingUp} label="Progression moy." value={`${avgProgress}%`} color="#1B0CB3" />
       </div>
 
       {/* Courses list */}

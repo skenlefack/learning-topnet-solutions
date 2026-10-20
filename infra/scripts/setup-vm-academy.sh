@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# ARIS Academy — VM-ACADEMY Initial Setup Script
+# Topnet Solutions Academy — VM-ACADEMY Initial Setup Script
 # Target: nbo-lms02 (10.202.101.144) — Ubuntu 22.04
 # User: lms
 # Run this script ONCE on the VM to set up the environment
@@ -9,7 +9,7 @@
 set -euo pipefail
 
 echo "=============================================="
-echo " ARIS Academy — VM Setup"
+echo " Topnet Solutions Academy — VM Setup"
 echo " Server: nbo-lms02 (10.202.101.144)"
 echo "=============================================="
 
@@ -46,7 +46,7 @@ fi
 # 3. Clone the repository
 # ---------------------------------------------------------------------------
 echo "[3/7] Cloning repository..."
-DEPLOY_DIR="/opt/aris-academy"
+DEPLOY_DIR="/opt/topnet-academy"
 
 if [ -d "$DEPLOY_DIR" ]; then
   echo "  Directory exists, pulling latest..."
@@ -55,7 +55,7 @@ if [ -d "$DEPLOY_DIR" ]; then
 else
   sudo mkdir -p "$DEPLOY_DIR"
   sudo chown "$USER":"$USER" "$DEPLOY_DIR"
-  git clone http://10.202.101.167/ict-au-ibar-development/e-learning-au-ibar.git "$DEPLOY_DIR"
+  git clone http://10.202.101.167/topnet-solutions/topnet-academy.git "$DEPLOY_DIR"
   cd "$DEPLOY_DIR"
 fi
 
@@ -76,7 +76,7 @@ else
 
   cat > "$ENV_FILE" << ENVEOF
 # ============================================================================
-# ARIS Academy — Production Environment
+# Topnet Solutions Academy — Production Environment
 # Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 # Server: nbo-lms02 (10.202.101.144)
 # ============================================================================
@@ -100,23 +100,23 @@ BBB_URL=http://10.202.101.145/bigbluebutton/
 BBB_SECRET=CHANGE_ME_WITH_BBB_SECRET
 
 # --- Application URLs ---
-APP_URL=https://learning.au-ibar.org
-NEXT_PUBLIC_API_URL=https://learning.au-ibar.org/api
-NEXT_PUBLIC_APP_URL=https://learning.au-ibar.org
+APP_URL=https://learning.topnet-solutions.com
+NEXT_PUBLIC_API_URL=https://learning.topnet-solutions.com/api
+NEXT_PUBLIC_APP_URL=https://learning.topnet-solutions.com
 
-# --- ARIS SSO ---
-ARIS_SSO_URL=https://au-ibar.org/api/auth
-ARIS_SSO_CLIENT_ID=academy-client
-ARIS_SSO_CLIENT_SECRET=CHANGE_ME
+# --- Topnet Solutions SSO ---
+TOPNET_SSO_URL=https://topnet-solutions.com/api/auth
+TOPNET_SSO_CLIENT_ID=academy-client
+TOPNET_SSO_CLIENT_SECRET=CHANGE_ME
 
 # --- Grafana ---
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
 
 # --- SMTP (for Alertmanager notifications) ---
-SMTP_HOST=mail.au-ibar.org
+SMTP_HOST=mail.topnet-solutions.com
 SMTP_PORT=587
-SMTP_USER=lms-alerts@au-ibar.org
+SMTP_USER=lms-alerts@topnet-solutions.com
 SMTP_PASSWORD=CHANGE_ME_SMTP_PASSWORD
 ENVEOF
 
@@ -148,14 +148,14 @@ if [ -f "$ALERTMANAGER_CFG" ] && [ -f "$ENV_FILE" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 5. Configure DNS resolution (learning.au-ibar.org → localhost)
+# 5. Configure DNS resolution (learning.topnet-solutions.com → localhost)
 # ---------------------------------------------------------------------------
 echo "[5/7] Configuring DNS..."
-if ! grep -q "learning.au-ibar.org" /etc/hosts; then
-  echo "127.0.0.1 learning.au-ibar.org" | sudo tee -a /etc/hosts > /dev/null
-  echo "  Added learning.au-ibar.org to /etc/hosts"
+if ! grep -q "learning.topnet-solutions.com" /etc/hosts; then
+  echo "127.0.0.1 learning.topnet-solutions.com" | sudo tee -a /etc/hosts > /dev/null
+  echo "  Added learning.topnet-solutions.com to /etc/hosts"
 else
-  echo "  learning.au-ibar.org already in /etc/hosts"
+  echo "  learning.topnet-solutions.com already in /etc/hosts"
 fi
 
 # ---------------------------------------------------------------------------
@@ -218,15 +218,15 @@ echo "=============================================="
 echo " Setup Complete!"
 echo "=============================================="
 echo ""
-echo " Application:  https://learning.au-ibar.org"
-echo " Grafana:       https://learning.au-ibar.org:3001"
+echo " Application:  https://learning.topnet-solutions.com"
+echo " Grafana:       https://learning.topnet-solutions.com:3001"
 echo " MinIO Console: http://localhost:9001 (internal only)"
 echo ""
-echo " Default login: serge@au-ibar.org / academy2026"
+echo " Default login: admin@topnet-solutions.com / academy2026"
 echo ""
 echo " Next steps:"
-echo "  1. Update BBB_SECRET in /opt/aris-academy/.env"
-echo "  2. Update SMTP_PASSWORD in /opt/aris-academy/.env (then re-run step 4b or edit alertmanager.yml)"
-echo "  3. Setup backup cron: cp infra/scripts/backup-cron.conf /etc/cron.d/aris-backup"
+echo "  1. Update BBB_SECRET in /opt/topnet-academy/.env"
+echo "  2. Update SMTP_PASSWORD in /opt/topnet-academy/.env (then re-run step 4b or edit alertmanager.yml)"
+echo "  3. Setup backup cron: cp infra/scripts/backup-cron.conf /etc/cron.d/topnet-backup"
 echo "  4. TLS certificate will be auto-provisioned by Let's Encrypt on first HTTPS request"
 echo ""

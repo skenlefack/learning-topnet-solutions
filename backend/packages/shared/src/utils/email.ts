@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — Email Service (Postmark)
+// Topnet Solutions Academy — Email Service (Postmark)
 // Transactional emails: welcome, password reset, notifications
 // ============================================================================
 import { ServerClient } from 'postmark';
 
 const POSTMARK_TOKEN = process.env.POSTMARK_API_TOKEN || '';
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@au-ibar.org';
-const APP_URL = process.env.APP_URL || 'https://learning.au-ibar.org';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@topnet-solutions.com';
+const APP_URL = process.env.APP_URL || 'https://learning.topnet-solutions.com';
 
 let client: ServerClient | null = null;
 
@@ -22,7 +22,7 @@ function getClient(): ServerClient | null {
 }
 
 // ---------------------------------------------------------------------------
-// HTML template wrapper (AU-IBAR branding)
+// HTML template wrapper (Topnet Solutions branding)
 // ---------------------------------------------------------------------------
 
 function wrapHtml(content: string): string {
@@ -37,15 +37,15 @@ function wrapHtml(content: string): string {
   <tr><td style="height:4px;background:linear-gradient(to right,#1A5632,#C8A951,#930e2d)"></td></tr>
   <!-- Logo -->
   <tr><td style="padding:24px 32px 0;text-align:center">
-    <span style="font-size:18px;font-weight:700;color:#930e2d">AU-IBAR</span>
-    <span style="font-size:18px;font-weight:700;color:#1A5632;margin-left:4px">Learning</span>
+    <span style="font-size:18px;font-weight:700;color:#930e2d">Topnet Solutions</span>
+    <span style="font-size:18px;font-weight:700;color:#1A5632;margin-left:4px">Academy</span>
   </td></tr>
   <!-- Content -->
   <tr><td style="padding:24px 32px 32px">${content}</td></tr>
   <!-- Footer -->
   <tr><td style="padding:16px 32px;background:#f8f9fa;border-top:1px solid #dee2e6;text-align:center">
     <p style="margin:0;font-size:11px;color:#6c757d">
-      AU-IBAR Learning &mdash; African Union Interafrican Bureau for Animal Resources
+      Topnet Solutions Academy &mdash; Learning Management Platform
     </p>
     <p style="margin:4px 0 0;font-size:11px;color:#adb5bd">
       <a href="${APP_URL}" style="color:#1A5632;text-decoration:none">${APP_URL.replace('https://', '')}</a>
@@ -112,8 +112,8 @@ export async function sendWelcomeEmail(
   const isFr = lang === 'fr';
 
   const subject = isFr
-    ? 'Bienvenue sur AU-IBAR Learning'
-    : 'Welcome to AU-IBAR Learning';
+    ? 'Bienvenue sur Topnet Solutions Academy'
+    : 'Welcome to Topnet Solutions Academy';
 
   const html = wrapHtml(`
     <h2 style="margin:0 0 8px;font-size:20px;color:#212529">
@@ -121,8 +121,8 @@ export async function sendWelcomeEmail(
     </h2>
     <p style="font-size:14px;color:#495057;line-height:1.6">
       ${isFr
-        ? 'Votre compte a été créé sur la plateforme de formation AU-IBAR Learning. Voici vos identifiants de connexion :'
-        : 'Your account has been created on the AU-IBAR Learning training platform. Here are your login credentials:'}
+        ? 'Votre compte a été créé sur la plateforme de formation Topnet Solutions Academy. Voici vos identifiants de connexion :'
+        : 'Your account has been created on the Topnet Solutions Academy training platform. Here are your login credentials:'}
     </p>
     <table style="margin:16px 0;background:#f8f9fa;border-radius:8px;padding:16px;width:100%">
       <tr><td style="padding:8px 16px;font-size:13px;color:#6c757d">${isFr ? 'Email' : 'Email'}</td>
@@ -155,8 +155,8 @@ export async function sendPasswordResetEmail(
   const resetUrl = `${APP_URL}/login?reset=${resetToken}`;
 
   const subject = isFr
-    ? 'Réinitialisez votre mot de passe — AU-IBAR Learning'
-    : 'Reset your password — AU-IBAR Learning';
+    ? 'Réinitialisez votre mot de passe — Topnet Solutions Academy'
+    : 'Reset your password — Topnet Solutions Academy';
 
   const html = wrapHtml(`
     <h2 style="margin:0 0 8px;font-size:20px;color:#212529">
@@ -191,8 +191,8 @@ export async function sendPasswordChangedEmail(
   const isFr = lang === 'fr';
 
   const subject = isFr
-    ? 'Mot de passe modifié — AU-IBAR Learning'
-    : 'Password changed — AU-IBAR Learning';
+    ? 'Mot de passe modifié — Topnet Solutions Academy'
+    : 'Password changed — Topnet Solutions Academy';
 
   const html = wrapHtml(`
     <h2 style="margin:0 0 8px;font-size:20px;color:#212529">

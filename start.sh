@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ###############################################################################
 # ARIS Academy — Platform Startup Script
-# learning.au-ibar.org
+# learning.topnet-solutions.com
 # Usage: ./start.sh [dev|prod|down|logs|status]
 ###############################################################################
 set -euo pipefail
@@ -16,8 +16,8 @@ RESET="\033[0m"
 banner() {
   echo -e "${BLUE}${BOLD}"
   echo "  ╔═══════════════════════════════════════════════════════════╗"
-  echo "  ║           ARIS ACADEMY — learning.au-ibar.org               ║"
-  echo "  ║         AU-IBAR E-Learning Platform © 2026               ║"
+  echo "  ║           TOPNET SOLUTIONS ACADEMY — learning.topnet-solutions.com               ║"
+  echo "  ║         Topnet Solutions E-Learning Platform © 2026               ║"
   echo "  ╚═══════════════════════════════════════════════════════════╝"
   echo -e "${RESET}"
 }
@@ -104,7 +104,7 @@ start_prod() {
   echo -e "${BLUE}Starting ARIS Academy in ${BOLD}production${RESET}${BLUE} mode...${RESET}\n"
   docker compose --profile production up -d --build
   echo -e "\n${GREEN}${BOLD}Production deployment complete!${RESET}"
-  echo -e "  ${BOLD}URL:${RESET} https://learning.au-ibar.org"
+  echo -e "  ${BOLD}URL:${RESET} https://learning.topnet-solutions.com"
 }
 
 stop_all() {

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: ForumTab
+// Topnet Solutions Academy — Component Test: ForumTab
 // Category filters, post rendering, upvotes/replies, empty state
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

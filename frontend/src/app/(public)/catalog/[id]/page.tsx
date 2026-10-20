@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Public Course Catalog Detail
+// Topnet Solutions Academy — Public Course Catalog Detail
 // Shows course presentation & program (modules) without authentication
 // ============================================================================
 import { useState, useEffect } from 'react';
@@ -27,10 +27,10 @@ function getLocalText(text: Record<string, string> | string | undefined, lang: s
 }
 
 const LEVEL_COLORS: Record<string, string> = {
-  beginner: '#1A5632',
-  intermediate: '#B8952E',
-  advanced: '#930e2d',
-  expert: '#154528',
+  beginner: '#1B0CB3',
+  intermediate: '#009930',
+  advanced: '#1B0CB3',
+  expert: '#0D0670',
 };
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -95,7 +95,7 @@ export default function CatalogDetailPage() {
           <p className="text-[#6c757d] mb-6">{t('notFoundDesc')}</p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#1509a0] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> {t('backToHome')}
           </Link>
@@ -107,7 +107,7 @@ export default function CatalogDetailPage() {
   const title = getLocalText(course.title, lang);
   const description = getLocalText(course.description, lang);
   const descriptionHtml = course.metadata?.descriptionHtml || '';
-  const color = LEVEL_COLORS[course.level] || '#1A5632';
+  const color = LEVEL_COLORS[course.level] || '#1B0CB3';
   const modules = course.modules || [];
   const totalLessons = modules.reduce((sum: number, m: any) => sum + (m.lesson_count || 0), 0);
   const totalMinutes = modules.reduce((sum: number, m: any) => sum + (m.estimated_minutes || 0), 0);
@@ -115,28 +115,28 @@ export default function CatalogDetailPage() {
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
       {/* Top accent bar */}
-      <div className="h-1 bg-gradient-to-r from-[#1A5632] via-[#C8A951] to-[#930e2d]" />
+      <div className="h-1 bg-gradient-to-r from-[#1B0CB3] via-[#00B341] to-[#1B0CB3]" />
 
       {/* Navbar minimal */}
       <nav className="bg-white border-b border-[#dee2e6]/50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <Link href="/login" className="flex items-center gap-3">
-            <Image src="/au-logo.png" alt="AU-IBAR" width={32} height={32} className="w-8 h-8 object-contain" />
+            <Image src="/logo-topnet.jpg" alt="Topnet Solutions" width={130} height={130} className="w-[130px] h-auto object-contain" />
             <div>
-              <span className="text-sm font-bold text-[#930e2d]">AU-IBAR</span>
-              <span className="text-sm font-bold text-[#1A5632] ml-1">Learning</span>
+              <span className="text-sm font-bold text-[#1B0CB3]">Topnet Solutions</span>
+              <span className="text-sm font-bold text-[#1B0CB3] ml-1">Academy</span>
             </div>
           </Link>
           <div className="flex items-center gap-2">
             <Link
               href={`/?redirect=/courses/${course.id}&mode=register`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-[#1A5632] text-[#1A5632] hover:bg-[#1A5632]/5 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-[#1B0CB3] text-[#1B0CB3] hover:bg-[#1B0CB3]/5 transition-colors"
             >
               {t('signup')}
             </Link>
             <Link
               href={`/?redirect=/courses/${course.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#1509a0] transition-colors"
             >
               {t('login')}
             </Link>
@@ -151,7 +151,7 @@ export default function CatalogDetailPage() {
       >
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-white/[0.04]" />
-          <div className="absolute -left-10 bottom-0 w-60 h-60 rounded-full bg-[#C8A951]/[0.06]" />
+          <div className="absolute -left-10 bottom-0 w-60 h-60 rounded-full bg-[#00B341]/[0.06]" />
         </div>
 
         {/* Course image — faded on the right */}
@@ -171,7 +171,7 @@ export default function CatalogDetailPage() {
         {!course.thumbnail_url && (
           <div className="absolute right-0 top-0 bottom-0 w-1/3 lg:w-2/5 pointer-events-none select-none hidden md:flex items-center justify-center">
             <Image
-              src="/au-logo.png"
+              src="/logo-topnet.jpg"
               alt=""
               width={200}
               height={200}
@@ -243,7 +243,7 @@ export default function CatalogDetailPage() {
             {(descriptionHtml || description) && (
               <div>
                 <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-[#1A5632]" />
+                  <BookOpen className="w-4 h-4 text-[#1B0CB3]" />
                   {t('summary')}
                 </h2>
                 {descriptionHtml ? (
@@ -272,14 +272,14 @@ export default function CatalogDetailPage() {
             {/* Prerequisites */}
             <div>
               <h2 className="text-base font-bold text-[#212529] mb-3 flex items-center gap-2">
-                <Lock className="w-4 h-4 text-[#B8952E]" />
+                <Lock className="w-4 h-4 text-[#009930]" />
                 {t('prerequisites')}
               </h2>
               {course.prerequisites && course.prerequisites.length > 0 ? (
                 <ul className="space-y-2">
                   {course.prerequisites.map((prereq: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-2 text-sm text-[#495057]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#B8952E] mt-1.5 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#009930] mt-1.5 shrink-0" />
                       {prereq}
                     </li>
                   ))}
@@ -294,7 +294,7 @@ export default function CatalogDetailPage() {
             {/* Program */}
             <div>
             <h2 className="text-lg font-bold text-[#212529] mb-5 flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-[#1A5632]" />
+              <GraduationCap className="w-5 h-5 text-[#1B0CB3]" />
               {t('program')}
             </h2>
 
@@ -332,7 +332,7 @@ export default function CatalogDetailPage() {
                             <span>{mod.estimated_minutes} min</span>
                           )}
                           {mod.is_required === false && (
-                            <span className="text-[#B8952E]">{t('optional')}</span>
+                            <span className="text-[#009930]">{t('optional')}</span>
                           )}
                         </div>
                       </div>
@@ -364,7 +364,7 @@ export default function CatalogDetailPage() {
             <div className="sticky top-20 space-y-4">
               {/* Enroll CTA */}
               <div className="rounded-xl bg-white border border-[#dee2e6]/60 p-6 text-center">
-                <GraduationCap className="w-10 h-10 text-[#1A5632] mx-auto mb-3" />
+                <GraduationCap className="w-10 h-10 text-[#1B0CB3] mx-auto mb-3" />
                 <h3 className="text-sm font-bold text-[#212529] mb-2">
                   {t('enrollTitle')}
                 </h3>
@@ -373,14 +373,14 @@ export default function CatalogDetailPage() {
                 </p>
                 <Link
                   href={`/?redirect=/courses/${course.id}&mode=register`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-[#1A5632] text-white hover:bg-[#154528] transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#1509a0] transition-colors"
                 >
                   {t('enrollCTA')}
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href={`/?redirect=/courses/${course.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold text-[#6c757d] hover:text-[#1A5632] transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-semibold text-[#6c757d] hover:text-[#1B0CB3] transition-colors"
                 >
                   {t('login')}
                 </Link>
@@ -418,8 +418,8 @@ export default function CatalogDetailPage() {
               </div>
 
               {/* Certification badge */}
-              <div className="rounded-xl bg-gradient-to-br from-[#1A5632]/5 to-[#C8A951]/5 border border-[#1A5632]/10 p-5 text-center">
-                <Award className="w-8 h-8 text-[#C8A951] mx-auto mb-2" />
+              <div className="rounded-xl bg-gradient-to-br from-[#1B0CB3]/5 to-[#00B341]/5 border border-[#1B0CB3]/10 p-5 text-center">
+                <Award className="w-8 h-8 text-[#00B341] mx-auto mb-2" />
                 <p className="text-xs text-[#495057] leading-relaxed">
                   {t('certificationBadge')}
                 </p>
@@ -432,7 +432,7 @@ export default function CatalogDetailPage() {
       {/* Footer */}
       <footer className="bg-[#af9c63] py-5">
         <div className="max-w-5xl mx-auto px-4 text-center text-xs text-white/90">
-          &copy; {new Date().getFullYear()} AU-IBAR &mdash; African Union Interafrican Bureau for Animal Resources
+          &copy; {new Date().getFullYear()} Topnet Solutions &mdash; Topnet Solutions — Tous droits réservés
         </div>
       </footer>
     </div>

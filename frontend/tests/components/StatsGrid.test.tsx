@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: StatsGrid
+// Topnet Solutions Academy — Component Test: StatsGrid
 // Rendering, stat counts, loading state, edge cases
 // ============================================================================
 import { describe, it, expect } from 'vitest';

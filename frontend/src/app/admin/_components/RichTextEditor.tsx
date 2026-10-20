@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Rich Text Editor (TipTap)
+// Topnet Solutions Academy — Rich Text Editor (TipTap)
 // Supports paste from Word with formatting and images
 // ============================================================================
 import { useEditor, EditorContent } from '@tiptap/react';

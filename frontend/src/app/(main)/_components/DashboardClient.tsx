@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Dashboard Client Orchestrator
+// Topnet Solutions Academy — Dashboard Client Orchestrator
 // SWR data fetching, framer-motion stagger, skeleton fallbacks
 // ============================================================================
 import useSWR from 'swr';

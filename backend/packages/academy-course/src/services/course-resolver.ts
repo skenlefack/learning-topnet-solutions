@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Course Override Resolver
+// Topnet Solutions Academy — Course Override Resolver
 // Resolves: Continental base → REC override → Country override (cascade merge)
 // Caches resolved courses in Redis with 5-min TTL
 // ============================================================================
@@ -10,7 +10,7 @@ import {
   cacheSet,
   cacheDel,
   type SupportedLanguage,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 const CACHE_TTL = 300; // 5 minutes
 

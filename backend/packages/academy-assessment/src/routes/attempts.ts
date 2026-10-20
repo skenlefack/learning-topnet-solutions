@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — Attempt Routes
+// Topnet Solutions Academy — Attempt Routes
 // Start and submit assessment attempts (uses adaptive scoring engine)
 // ============================================================================
 import { FastifyInstance } from 'fastify';
 import {
   query, queryOne, publishEvent, TOPICS,
   UuidParamNamed, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { selectQuestions, scoreAttempt } from '../services/scoring-engine';
 import { issueCertification } from './certifications';
 

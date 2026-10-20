@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Quiz Builder (Admin)
+// Topnet Solutions Academy — Quiz Builder (Admin)
 // Create assessments + manage questions with 7 question types
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Tenant Comparison (Admin Continental)
+// Topnet Solutions Academy — Tenant Comparison (Admin Continental)
 // Side-by-side metrics comparison across countries/RECs
 // ============================================================================
 import { useState, useEffect } from 'react';

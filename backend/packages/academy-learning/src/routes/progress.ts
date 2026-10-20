@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Progress Routes
+// Topnet Solutions Academy — Progress Routes
 // GET  /progress/:enrollmentId   — detailed progress for an enrollment
 // POST /progress                 — update lesson progress (standard)
 // POST /progress/video-heartbeat — high-frequency video position (Redis buffer)
@@ -11,7 +11,7 @@ import {
   query, queryOne, publishEvent, TOPICS,
   getRedis, validateBody, uuidSchema,
   UuidParamNamed, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { recalculateProgress, updateStreak } from '../services/progression-engine';
 
 // ---------------------------------------------------------------------------

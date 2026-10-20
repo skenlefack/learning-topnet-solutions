@@ -36,7 +36,7 @@ export const TOKENS = {
   continentalAdmin: () =>
     createTestToken({
       sub: '00000000-0000-0000-0000-000000000201',
-      email: 'serge@au-ibar.org',
+      email: 'serge@topnet-solutions.com',
       role: 'admin_continental',
       tenantId: '00000000-0000-0000-0000-000000000001',
       tenantLevel: 'continental',
@@ -80,7 +80,7 @@ export const TOKENS = {
   trainer: () =>
     createTestToken({
       sub: '00000000-0000-0000-0000-000000000202',
-      email: 'amina.osei@au-ibar.org',
+      email: 'amina.osei@topnet-solutions.com',
       role: 'trainer',
       tenantId: '00000000-0000-0000-0000-000000000001',
       tenantLevel: 'continental',

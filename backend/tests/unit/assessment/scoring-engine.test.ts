@@ -1,16 +1,16 @@
 // ============================================================================
-// ARIS Academy — Unit Tests: Adaptive Scoring Engine
+// Topnet Solutions Academy — Unit Tests: Adaptive Scoring Engine
 // Mocks DB queries (query, queryOne) to test selectQuestions() and
 // scoreAttempt() in complete isolation — no database required.
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock external deps that @aris-academy/shared barrel transitively imports
+// Mock external deps that @topnet-academy/shared barrel transitively imports
 vi.mock('@fastify/rate-limit', () => ({ default: vi.fn() }));
 
 // Mock the shared package's DB functions before importing the module under test
-vi.mock('@aris-academy/shared', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@aris-academy/shared')>();
+vi.mock('@topnet-academy/shared', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@topnet-academy/shared')>();
   return {
     ...original,
     query: vi.fn(),
@@ -18,7 +18,7 @@ vi.mock('@aris-academy/shared', async (importOriginal) => {
   };
 });
 
-import { query, queryOne } from '@aris-academy/shared';
+import { query, queryOne } from '@topnet-academy/shared';
 import {
   selectQuestions,
   scoreAttempt,

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Profile Routes
+// Topnet Solutions Academy — Profile Routes
 // GET /users/me, PUT /users/me, POST /users/me/avatar
 // ============================================================================
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
@@ -9,7 +9,7 @@ import {
   queryOne,
   validateBody,
   BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Zod schemas

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: AdminDashboardContent
+// Topnet Solutions Academy — Component Test: AdminDashboardContent
 // Lightweight tests for tab navigation and initial render
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

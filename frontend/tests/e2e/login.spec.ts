@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — E2E: Login Flow
+// Topnet Solutions Academy — E2E: Login Flow
 // Tests the login modal on the landing page with dev credentials
 // ============================================================================
 import { test, expect } from '@playwright/test';
@@ -10,9 +10,9 @@ test.describe('Login Flow', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // The landing page should have the AU-IBAR Learning branding
+    // The landing page should have the Topnet Solutions Academy branding
     await expect(
-      page.locator('text=AU-IBAR').first(),
+      page.locator('text=Topnet Solutions').first(),
     ).toBeVisible({ timeout: 15_000 });
 
     // Login button should be present in the navbar
@@ -50,7 +50,7 @@ test.describe('Login Flow', () => {
 
     // Fill in credentials
     const emailInput = page.locator('input[type="email"]');
-    await emailInput.fill('serge@au-ibar.org');
+    await emailInput.fill('serge@topnet-solutions.com');
 
     const passwordInput = page.locator('input[type="password"]');
     await passwordInput.fill('academy2026');
@@ -67,13 +67,13 @@ test.describe('Login Flow', () => {
 
     // Verify auth state was stored
     const authState = await page.evaluate(() => {
-      const raw = localStorage.getItem('aris-academy-auth');
+      const raw = localStorage.getItem('topnet-academy-auth');
       return raw ? JSON.parse(raw) : null;
     });
 
     expect(authState?.state?.isAuthenticated).toBe(true);
     expect(authState?.state?.token).toBeTruthy();
-    expect(authState?.state?.user?.email).toBe('serge@au-ibar.org');
+    expect(authState?.state?.user?.email).toBe('serge@topnet-solutions.com');
   });
 
   test('login with wrong password shows error', async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe('Login Flow', () => {
 
     // Fill in wrong credentials
     const emailInput = page.locator('input[type="email"]');
-    await emailInput.fill('serge@au-ibar.org');
+    await emailInput.fill('serge@topnet-solutions.com');
 
     const passwordInput = page.locator('input[type="password"]');
     await passwordInput.fill('wrong-password');
@@ -149,7 +149,7 @@ test.describe('Login Flow', () => {
 
     // Verify correct user data stored
     const authState = await page.evaluate(() => {
-      const raw = localStorage.getItem('aris-academy-auth');
+      const raw = localStorage.getItem('topnet-academy-auth');
       return raw ? JSON.parse(raw) : null;
     });
 

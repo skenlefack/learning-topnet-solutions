@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — PlanSessionModal
+// Topnet Solutions Academy — PlanSessionModal
 // Plan a live BBB session (title, course, date, duration, max participants)
 // ============================================================================
 import { useState, useEffect } from 'react';

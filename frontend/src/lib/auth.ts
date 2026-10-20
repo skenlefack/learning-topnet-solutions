@@ -1,11 +1,11 @@
 // ============================================================================
-// AU-IBAR Learning — JWT Auth Utilities
+// Topnet Solutions Academy — JWT Auth Utilities
 // Edge-compatible (jose) for use in middleware + API routes
 // ============================================================================
 import { SignJWT, jwtVerify } from 'jose';
 
-const AUTH_SECRET = process.env.AUTH_SECRET || 'aris-academy-dev-secret-2026';
-export const AUTH_COOKIE_NAME = 'aris-token';
+const AUTH_SECRET = process.env.AUTH_SECRET || 'topnet-academy-dev-secret-2026';
+export const AUTH_COOKIE_NAME = 'topnet-token';
 
 const secret = new TextEncoder().encode(AUTH_SECRET);
 

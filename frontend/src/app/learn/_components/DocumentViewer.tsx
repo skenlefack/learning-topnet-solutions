@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Professional Document Viewer
+// Topnet Solutions Academy — Professional Document Viewer
 // Renders PDFs (via PDF.js), audio, video, HTML, and Office previews
 // ============================================================================
 import { useState, useEffect, useRef, useCallback } from 'react';

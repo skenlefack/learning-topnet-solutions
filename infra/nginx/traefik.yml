@@ -1,5 +1,5 @@
 ###############################################################################
-# ARIS Academy — Traefik v3 Static Configuration
+# Topnet Solutions Academy — Traefik v3 Static Configuration
 # Production: TLS via Let's Encrypt, security hardening, access logging
 ###############################################################################
 
@@ -63,7 +63,7 @@ entryPoints:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: admin@au-ibar.org
+      email: admin@topnet-solutions.com
       storage: /letsencrypt/acme.json
       httpChallenge:
         entryPoint: web

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Live Sessions Panel
+// Topnet Solutions Academy — Live Sessions Panel
 // Upcoming / in-progress live sessions sidebar panel
 // ============================================================================
 import clsx from 'clsx';

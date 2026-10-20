@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — File Upload Component
+// Topnet Solutions Academy — File Upload Component
 // Drag & drop + click, with preview for images and file info for docs
 // ============================================================================
 import { useState, useRef, useCallback } from 'react';

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: CourseCard (within CourseGrid)
+// Topnet Solutions Academy — Component Test: CourseCard (within CourseGrid)
 // Rendering, props, hover state, edge cases
 // ============================================================================
 import { describe, it, expect } from 'vitest';

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Redis Client (Cache + Sessions)
+// Topnet Solutions Academy — Redis Client (Cache + Sessions)
 // Graceful degradation: cache misses if Redis is unavailable
 // ============================================================================
 import Redis from 'ioredis';

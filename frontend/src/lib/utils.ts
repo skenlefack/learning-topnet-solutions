@@ -1,5 +1,5 @@
 // ============================================================================
-// AU-IBAR Learning — Utility Helpers
+// Topnet Solutions Academy — Utility Helpers
 // ============================================================================
 
 /** Extract localised text from a JSONB multilang field. */

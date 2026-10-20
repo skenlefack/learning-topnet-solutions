@@ -1,10 +1,10 @@
 // ============================================================================
-// ARIS Academy — Live Service Consumers
+// Topnet Solutions Academy — Live Service Consumers
 // Listens: ENROLLMENT_CREATED, academy.live.recording-ready
 // Publishes: academy.notification.* via ARIS Message Service
 // ============================================================================
-import { createConsumer, TOPICS, query, queryOne, publishEvent } from '@aris-academy/shared';
-import type { AcademyEvent } from '@aris-academy/shared';
+import { createConsumer, TOPICS, query, queryOne, publishEvent } from '@topnet-academy/shared';
+import type { AcademyEvent } from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // ENROLLMENT_CREATED → auto-register for upcoming live sessions of the course

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: DashboardShell
+// Topnet Solutions Academy — Component Test: DashboardShell
 // Layout wrapper with Sidebar + Header
 // ============================================================================
 import { describe, it, expect, vi } from 'vitest';
@@ -56,9 +56,9 @@ describe('DashboardShell', () => {
     expect(screen.getByTestId('child-content')).toBeInTheDocument();
   });
 
-  it('renders sidebar with AU-IBAR branding', () => {
+  it('renders sidebar with Topnet Solutions branding', () => {
     render(<DashboardShell><div>content</div></DashboardShell>);
-    expect(screen.getAllByText('AU-IBAR').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Topnet Solutions').length).toBeGreaterThan(0);
   });
 
   it('renders header with menu toggle button', () => {

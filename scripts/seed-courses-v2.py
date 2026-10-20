@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AU-IBAR Learning — Seed 8 ARIS courses from Word documents (v2)
+Topnet Solutions Academy — Seed 8 courses from Word documents (v2)
 Correct structure: H1=Module, H2=Lesson, H3=sub-section content
 """
 import docx, os, sys, json, uuid, re, html as html_mod

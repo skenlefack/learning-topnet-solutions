@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Admin Dashboard Content (lazy-loaded)
+// Topnet Solutions Academy — Admin Dashboard Content (lazy-loaded)
 // Stats, recharts, CRUD tables, session planning, role-scoped
 // ============================================================================
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -51,7 +51,7 @@ const fadeUp = {
 
 type AdminTab = 'dashboard' | 'categories' | 'courses' | 'paths' | 'quiz' | 'users' | 'sessions' | 'certificates' | 'analytics' | 'tenants';
 
-const CHART_COLORS = ['#2E7D32', '#C8A951', '#7B1639', '#a855f7', '#ef4444', '#3b82f6'];
+const CHART_COLORS = ['#2E7D32', '#00B341', '#A09060', '#a855f7', '#ef4444', '#3b82f6'];
 
 function getLocalizedText(text: Record<string, string> | string | undefined): string {
   if (!text) return '';
@@ -270,7 +270,7 @@ function DashboardTab() {
                 }}
                 formatter={(v: number) => [`${v}%`, t('completion')]}
               />
-              <Bar dataKey="rate" fill="#C8A951" radius={[0, 4, 4, 0]} name={t('rate')} />
+              <Bar dataKey="rate" fill="#00B341" radius={[0, 4, 4, 0]} name={t('rate')} />
             </BarChart>
           </ResponsiveContainer>
         </motion.div>

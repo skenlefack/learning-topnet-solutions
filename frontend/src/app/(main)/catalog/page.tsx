@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — All Courses Catalog
+// Topnet Solutions Academy — All Courses Catalog
 // Browse all platform courses with search, category filter, enroll
 // ============================================================================
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -296,7 +296,7 @@ export default function CoursesPage() {
                               ? 'text-white dark:text-gray-900'
                               : 'bg-gray-100 dark:bg-gray-800 text-[var(--text-secondary)] hover:bg-gray-200 dark:hover:bg-gray-700',
                           )}
-                          style={category === cat.id ? { backgroundColor: cat.color || '#1A5632' } : undefined}
+                          style={category === cat.id ? { backgroundColor: cat.color || '#1B0CB3' } : undefined}
                         >
                           {t(cat.name, language)}
                         </button>

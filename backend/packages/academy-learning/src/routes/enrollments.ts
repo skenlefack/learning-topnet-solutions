@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Enrollment Routes
+// Topnet Solutions Academy — Enrollment Routes
 // GET  /enrollments      — list my enrollments
 // POST /enrollments      — enroll in a course
 // ============================================================================
@@ -9,7 +9,7 @@ import {
   query, queryOne, publishEvent, TOPICS,
   validateBody, uuidSchema,
   UuidParam, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { getNextCourse, calculateTimeEstimate } from '../services/progression-engine';
 
 const enrollBodySchema = z.object({

@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Rate Limiting Plugin (Fastify)
+// Topnet Solutions Academy — Rate Limiting Plugin (Fastify)
 // Uses @fastify/rate-limit with Redis store for distributed rate limiting.
 // Graceful degradation: falls back to in-memory store if Redis is unavailable.
 // Usage: fastify.register(rateLimitPlugin)

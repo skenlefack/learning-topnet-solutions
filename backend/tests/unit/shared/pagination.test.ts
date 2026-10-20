@@ -1,22 +1,22 @@
 // ============================================================================
-// ARIS Academy — Unit Tests: Pagination Helper
+// Topnet Solutions Academy — Unit Tests: Pagination Helper
 // Mocks the DB query function to test paginate() logic in isolation
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock external deps that @aris-academy/shared barrel transitively imports
+// Mock external deps that @topnet-academy/shared barrel transitively imports
 vi.mock('@fastify/rate-limit', () => ({ default: vi.fn() }));
 
 // Mock the db module used internally by pagination.ts
 // paginate() imports query from '../db' (relative), so we must mock the actual
-// db module path — mocking the barrel '@aris-academy/shared' would NOT intercept
+// db module path — mocking the barrel '@topnet-academy/shared' would NOT intercept
 // the internal relative import.
 vi.mock('../../../packages/shared/src/db/index', async (importOriginal) => {
   const original = await importOriginal<typeof import('../../../packages/shared/src/db/index')>();
   return { ...original, query: vi.fn() };
 });
 
-import { paginate } from '@aris-academy/shared';
+import { paginate } from '@topnet-academy/shared';
 import { query } from '../../../packages/shared/src/db/index';
 
 const mockQuery = vi.mocked(query);

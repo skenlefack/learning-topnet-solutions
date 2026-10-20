@@ -11,7 +11,7 @@ export default function NotFound() {
       {/* Watermark logo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none opacity-[0.04] dark:opacity-[0.03]">
         <Image
-          src="/au-logo.png"
+          src="/logo-topnet.jpg"
           alt=""
           width={400}
           height={400}
@@ -52,7 +52,7 @@ export default function NotFound() {
         </div>
 
         <p className="mt-12 text-xs text-[var(--text-secondary)]/60">
-          AU-IBAR Learning
+          Topnet Solutions Academy
         </p>
       </div>
     </div>

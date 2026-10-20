@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: SectionErrorBoundary
+// Topnet Solutions Academy — Component Test: SectionErrorBoundary
 // Class component error boundary with retry
 // ============================================================================
 import { describe, it, expect, vi, beforeEach } from 'vitest';

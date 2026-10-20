@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Assessment Routes
+// Topnet Solutions Academy — Assessment Routes
 // GET  /course/:courseId       — list assessments for a course
 // GET  /:id                   — get single assessment
 // POST /                      — create assessment
@@ -11,7 +11,7 @@ import { z } from 'zod';
 import {
   query, queryOne, validateBody, uuidSchema, multiLangTextSchema,
   UuidParam, UuidParamNamed, MultiLangTextSchema, BearerSecurity,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 
 // ---------------------------------------------------------------------------
 // Schemas

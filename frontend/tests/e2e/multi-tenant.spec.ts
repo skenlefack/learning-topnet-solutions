@@ -1,12 +1,12 @@
 // ============================================================================
-// ARIS Academy — E2E: Multi-Tenant Isolation
+// Topnet Solutions Academy — E2E: Multi-Tenant Isolation
 // Verify tenant-scoped data visibility and switching
 // ============================================================================
 import { test, expect } from '@playwright/test';
 
 function injectKenyaLearner(page: import('@playwright/test').Page) {
   return page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-ke-001',
@@ -30,11 +30,11 @@ function injectKenyaLearner(page: import('@playwright/test').Page) {
 
 function injectContinentalAdmin(page: import('@playwright/test').Page) {
   return page.addInitScript(() => {
-    localStorage.setItem('aris-academy-auth', JSON.stringify({
+    localStorage.setItem('topnet-academy-auth', JSON.stringify({
       state: {
         user: {
           id: 'usr-admin-001',
-          email: 'admin@au-ibar.org',
+          email: 'admin@topnet-solutions.com',
           firstName: 'Jean',
           lastName: 'Continental',
           role: 'admin_continental',

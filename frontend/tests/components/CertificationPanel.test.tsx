@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Component Test: CertificationPanel
+// Topnet Solutions Academy — Component Test: CertificationPanel
 // ============================================================================
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -60,11 +60,11 @@ describe('CertificationPanel', () => {
     expect(screen.getByText(/déc\. 2025/i)).toBeInTheDocument();
   });
 
-  it('renders "Certifications AU-IBAR" heading', () => {
+  it('renders "Certifications Topnet Solutions" heading', () => {
     render(
       <CertificationPanel certifications={[]} enrollments={[]} isLoading={false} />,
     );
-    expect(screen.getByText('Certifications AU-IBAR')).toBeInTheDocument();
+    expect(screen.getByText('Certifications Topnet Solutions')).toBeInTheDocument();
   });
 
   it('shows certification count when certifications exist', () => {

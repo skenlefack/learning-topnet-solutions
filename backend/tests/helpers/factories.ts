@@ -37,7 +37,7 @@ export function createMockCourse(overrides: Record<string, any> = {}) {
     estimated_hours: 10,
     passing_score: 70,
     tags: ['test'],
-    tenant_id: 'au-ibar',
+    tenant_id: 'topnet-solutions',
     ...overrides,
   };
 }
@@ -114,7 +114,7 @@ export function createMockLiveSession(overrides: Record<string, any> = {}) {
     title: { en: 'Live Training Session', fr: 'Session de formation en direct' },
     description: { en: 'A test live session' },
     trainer_id: 'usr_trainer_001',
-    tenant_id: 'au-ibar',
+    tenant_id: 'topnet-solutions',
     status: 'scheduled',
     bbb_meeting_id: 'bbb-meeting-001',
     scheduled_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),

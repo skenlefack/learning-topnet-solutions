@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --brand-navy: #1A5632;
-  --brand-gold: #C8A951;
-  --brand-accent: #7B1639;
-  --bg-primary: #F7F5EF;
+  --brand-navy: #1B0CB3;
+  --brand-gold: #00B341;
+  --brand-accent: #A09060;
+  --bg-primary: #F5F6FA;
   --bg-surface: #FFFFFF;
   --text-primary: #212529;
   --text-secondary: #6c757d;

@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-// AU-IBAR Learning — Certificate Template Manager (Admin)
+// Topnet Solutions Academy — Certificate Template Manager (Admin)
 // CRUD certificate templates by level with signatories and live preview
 // ============================================================================
 import { useState, useEffect, useCallback } from 'react';
@@ -46,48 +46,48 @@ interface CertTemplate {
 }
 
 const LEVELS = [
-  { value: 'beginner', label: 'Débutant', color: '#1A5632' },
-  { value: 'intermediate', label: 'Intermédiaire', color: '#B8952E' },
-  { value: 'advanced', label: 'Avancé', color: '#930e2d' },
-  { value: 'expert', label: 'Expert', color: '#154528' },
+  { value: 'beginner', label: 'Débutant', color: '#1B0CB3' },
+  { value: 'intermediate', label: 'Intermédiaire', color: '#009930' },
+  { value: 'advanced', label: 'Avancé', color: '#00B341' },
+  { value: 'expert', label: 'Expert', color: '#0D0670' },
 ];
 
 const PRESET_STYLES = [
   {
     id: 'classic',
-    name: 'Classique AU-IBAR',
-    borderColor: '#1A5632',
-    accentColor: '#C8A951',
-    headerText: 'AFRICAN UNION — INTERAFRICAN BUREAU FOR ANIMAL RESOURCES\nAU-IBAR Online Learning & Capacity Building Platform',
-    bodyText: 'CERTIFICATE OF COMPLETION\n\nThe African Union — Interafrican Bureau for Animal Resources\nhereby certifies that\n\n{{learnerName}}\n\nhas successfully completed the official AU-IBAR training programme\n\n{{courseName}}\n\nachieving a final assessment score of {{score}}%\nand is hereby awarded this\n\nCERTIFICATE OF {{level}}\n\nThis certification attests that the holder has acquired the knowledge\nand competencies required at the {{level}} level in the field of\nAfrican animal resources management, in accordance with the\nAU-IBAR capacity building framework for the 55 Member States.',
-    footerText: 'Issued on {{date}} at AU-IBAR Headquarters, Nairobi, Kenya — Certificate Nº {{certNumber}} — Verify at learning.au-ibar.org/verify',
+    name: 'Classique Topnet',
+    borderColor: '#1B0CB3',
+    accentColor: '#00B341',
+    headerText: 'TOPNET SOLUTIONS\nOnline Learning & Capacity Building Platform',
+    bodyText: 'CERTIFICATE OF COMPLETION\n\nTopnet Solutions\nhereby certifies that\n\n{{learnerName}}\n\nhas successfully completed the official training programme\n\n{{courseName}}\n\nachieving a final assessment score of {{score}}%\nand is hereby awarded this\n\nCERTIFICATE OF {{level}}\n\nThis certification attests that the holder has acquired the knowledge\nand competencies required at the {{level}} level,\nin accordance with the Topnet Solutions\ncapacity building framework.',
+    footerText: 'Issued on {{date}} at Topnet Solutions — Certificate Nº {{certNumber}} — Verify at learning.topnet-solutions.com/verify',
   },
   {
     id: 'modern',
     name: 'Moderne',
     borderColor: '#0D47A1',
     accentColor: '#42A5F5',
-    headerText: 'AU-IBAR LEARNING\nProfessional Development & Certification Programme',
-    bodyText: 'CERTIFICATE OF ACHIEVEMENT\n\nThis is to acknowledge that\n\n{{learnerName}}\n\nhas demonstrated dedication and commitment by successfully\ncompleting the comprehensive training programme\n\n{{courseName}}\n\nLevel of Certification: {{level}}\nFinal Assessment Score: {{score}}%\n\nThis certificate recognises the holder\'s proficiency and validates\ntheir expertise in the subject matter covered by this programme.\nThe skills and knowledge demonstrated meet the professional\nstandards set by the African Union — Interafrican Bureau\nfor Animal Resources.',
-    footerText: 'Issued on {{date}} — Certificate Nº {{certNumber}} — AU-IBAR Learning Platform — learning.au-ibar.org/verify/{{certNumber}}',
+    headerText: 'TOPNET SOLUTIONS ACADEMY\nProfessional Development & Certification Programme',
+    bodyText: 'CERTIFICATE OF ACHIEVEMENT\n\nThis is to acknowledge that\n\n{{learnerName}}\n\nhas demonstrated dedication and commitment by successfully\ncompleting the comprehensive training programme\n\n{{courseName}}\n\nLevel of Certification: {{level}}\nFinal Assessment Score: {{score}}%\n\nThis certificate recognises the holder\'s proficiency and validates\ntheir expertise in the subject matter covered by this programme.\nThe skills and knowledge demonstrated meet the professional\nstandards set by Topnet Solutions.',
+    footerText: 'Issued on {{date}} — Certificate Nº {{certNumber}} — Topnet Solutions Academy — learning.topnet-solutions.com/verify/{{certNumber}}',
   },
   {
     id: 'elegant',
     name: 'Élégant Or',
-    borderColor: '#B8952E',
-    accentColor: '#1A5632',
-    headerText: 'UNION AFRICAINE\nBUREAU INTERAFRICAIN DES RESSOURCES ANIMALES\nPlateforme de Formation en Ligne et de Renforcement des Capacités',
-    bodyText: 'CERTIFICAT DE FORMATION PROFESSIONNELLE\n\nLe Bureau Interafricain des Ressources Animales de l\'Union Africaine\na le plaisir de certifier que\n\n{{learnerName}}\n\na complété avec succès l\'intégralité du programme de formation\n\n{{courseName}}\n\nen obtenant un score final de {{score}}% à l\'évaluation\net se voit décerner le présent\n\nCERTIFICAT DE NIVEAU {{level}}\n\nCe certificat atteste que le titulaire a acquis les connaissances\net compétences requises au niveau {{level}} dans le domaine\nde la gestion des ressources animales africaines, conformément\nau cadre de renforcement des capacités de l\'AU-IBAR\npour les 55 États membres de l\'Union Africaine.',
-    footerText: 'Délivré le {{date}} au siège de l\'AU-IBAR, Nairobi, Kenya — Certificat Nº {{certNumber}} — Vérification : learning.au-ibar.org/verify/{{certNumber}}',
+    borderColor: '#009930',
+    accentColor: '#1B0CB3',
+    headerText: 'TOPNET SOLUTIONS\nPlateforme de Formation en Ligne et de Renforcement des Capacités',
+    bodyText: 'CERTIFICAT DE FORMATION PROFESSIONNELLE\n\nTopnet Solutions\na le plaisir de certifier que\n\n{{learnerName}}\n\na complété avec succès l\'intégralité du programme de formation\n\n{{courseName}}\n\nen obtenant un score final de {{score}}% à l\'évaluation\net se voit décerner le présent\n\nCERTIFICAT DE NIVEAU {{level}}\n\nCe certificat atteste que le titulaire a acquis les connaissances\net compétences requises au niveau {{level}},\nconformément au cadre de renforcement des capacités\nde Topnet Solutions.',
+    footerText: 'Délivré le {{date}} — Certificat Nº {{certNumber}} — Vérification : learning.topnet-solutions.com/verify/{{certNumber}}',
   },
   {
     id: 'gold',
     name: 'Prestige Continental',
-    borderColor: '#7B1639',
-    accentColor: '#C8A951',
-    headerText: 'AFRICAN UNION\nINTERAFRICAN BUREAU FOR ANIMAL RESOURCES\nExcellence in Capacity Building Across Africa',
-    bodyText: 'CERTIFICATE OF PROFESSIONAL COMPETENCY\n\nThe African Union — Interafrican Bureau for Animal Resources\nofficially recognises that\n\n{{learnerName}}\n\nhas demonstrated outstanding proficiency and professional\ncompetence by completing the certified training programme\n\n{{courseName}}\n\nCertification Level: {{level}}\nAssessment Score: {{score}}%\n\nThis certificate validates that the holder possesses the professional\nskills, technical knowledge and analytical capabilities required\nat the {{level}} level. The competencies demonstrated are aligned\nwith international standards set by WOAH, FAO and the African Union\nfor the management and development of animal resources\nacross the African continent.\n\nThe holder is recognised as a certified professional under\nthe AU-IBAR Capacity Building Framework.',
-    footerText: 'Officially issued on {{date}} at AU-IBAR Headquarters, Kenindia Business Park, Nairobi, Kenya — ID: {{certNumber}} — Verify: learning.au-ibar.org/verify/{{certNumber}}',
+    borderColor: '#A09060',
+    accentColor: '#00B341',
+    headerText: 'TOPNET SOLUTIONS\nExcellence in Capacity Building',
+    bodyText: 'CERTIFICATE OF PROFESSIONAL COMPETENCY\n\nTopnet Solutions\nofficially recognises that\n\n{{learnerName}}\n\nhas demonstrated outstanding proficiency and professional\ncompetence by completing the certified training programme\n\n{{courseName}}\n\nCertification Level: {{level}}\nAssessment Score: {{score}}%\n\nThis certificate validates that the holder possesses the professional\nskills, technical knowledge and analytical capabilities required\nat the {{level}} level.\n\nThe holder is recognised as a certified professional under\nthe Topnet Solutions Capacity Building Framework.',
+    footerText: 'Officially issued on {{date}} — ID: {{certNumber}} — Verify: learning.topnet-solutions.com/verify/{{certNumber}}',
   },
 ];
 
@@ -139,10 +139,10 @@ function CertPreview({ template }: { template: CertTemplate }) {
         {/* Header */}
         <div>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <img src="/au-logo.png" alt="" className="w-8 h-8 object-contain" />
+            <img src="/logo-topnet.jpg" alt="" className="w-[100px] h-auto object-contain" />
             <div className="h-6 w-px" style={{ backgroundColor: d.borderColor }} />
             <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: d.borderColor }}>
-              AU-IBAR Learning
+              Topnet Solutions Academy
             </span>
           </div>
           <p className="text-[6px] uppercase tracking-[0.2em] text-gray-500 whitespace-pre-line">
@@ -163,7 +163,7 @@ function CertPreview({ template }: { template: CertTemplate }) {
               .replace('{{level}}', level?.label || 'Débutant')
               .replace('{{score}}', '85')
               .replace('{{date}}', '21 mai 2026')
-              .replace('{{certNumber}}', 'AU-IBAR-2026-001234');
+              .replace('{{certNumber}}', 'TOPNET-2026-001234');
 
             if (!display.trim()) return <div key={i} className="h-1" />;
             return (
@@ -207,7 +207,7 @@ function CertPreview({ template }: { template: CertTemplate }) {
           <p className="text-[4px] text-gray-400">
             {d.footerText
               .replace('{{date}}', '21 mai 2026')
-              .replace('{{certNumber}}', 'AU-IBAR-2026-001234')}
+              .replace('{{certNumber}}', 'TOPNET-2026-001234')}
           </p>
         </div>
       </div>
@@ -240,7 +240,7 @@ function SignatoryRow({ sig, onChange, onDelete }: { sig: Signatory; onChange: (
         <input
           value={sig.title}
           onChange={e => onChange({ ...sig, title: e.target.value })}
-          placeholder="Fonction (ex: Directeur AU-IBAR)"
+          placeholder="Fonction (ex: Directeur Topnet Solutions)"
           className={inputClass}
         />
       </div>
@@ -310,7 +310,7 @@ export default function CertificateManager() {
         footerText: preset.footerText,
       },
       signatories: [
-        { id: uid(), name: 'Prof. Ahmed A. Bahri', title: 'Director, AU-IBAR', signatureUrl: '' },
+        { id: uid(), name: 'Director', title: 'Director, Topnet Solutions', signatureUrl: '' },
         { id: uid(), name: '', title: 'National Coordinator', signatureUrl: '' },
       ],
       is_default: false,
@@ -628,7 +628,7 @@ export default function CertificateManager() {
                     {t.is_default && <Star className="w-3 h-3 text-brand-gold fill-brand-gold shrink-0" />}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-white" style={{ backgroundColor: level?.color || '#1A5632' }}>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium text-white" style={{ backgroundColor: level?.color || '#1B0CB3' }}>
                       {level?.label || t.level}
                     </span>
                     <span className={clsx('text-[10px]', t.is_active ? 'text-green-500' : 'text-gray-400')}>

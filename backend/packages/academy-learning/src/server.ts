@@ -1,5 +1,5 @@
 // ============================================================================
-// ARIS Academy — Learning Service (academy-learning)
+// Topnet Solutions Academy — Learning Service (academy-learning)
 // Port: 4002
 // Manages: enrollments, progress tracking, level unlocking, progression engine
 // ============================================================================
@@ -15,7 +15,7 @@ import {
   requestLoggerPlugin,
   swaggerPlugin,
   getCorsConfig,
-} from '@aris-academy/shared';
+} from '@topnet-academy/shared';
 import { initBuckets } from './services/minio';
 import { initConsumers } from './consumers';
 import enrollmentRoutes from './routes/enrollments';
