@@ -531,6 +531,7 @@
     "questionsExported": "{count} questions exported",
     "exportFailed": "Export failed",
     "selectAssessmentAndFile": "Select an assessment and a file",
+    "categoryName": "Category name",
     "allRoles": "All roles",
     "completion": "Completion",
     "rate": "Rate",

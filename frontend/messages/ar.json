@@ -531,6 +531,7 @@
     "questionsExported": "تم تصدير {count} أسئلة",
     "exportFailed": "فشل التصدير",
     "selectAssessmentAndFile": "حدد تقييم وملف",
+    "categoryName": "اسم الفئة",
     "allRoles": "جميع الأدوار",
     "completion": "الإكمال",
     "rate": "المعدل",

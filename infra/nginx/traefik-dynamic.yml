@@ -1,288 +1,244 @@
 ###############################################################################
-# Topnet Solutions Academy — Traefik Dynamic Routing
-# learning.topnet-solutions.com | 10.202.101.144
+# Topnet Solutions Academy — Traefik Dynamic Routing (Let's Encrypt TLS)
+# learning.topnet-solutions.com | 179.237.122.141
 ###############################################################################
 
 http:
-  # =========================================================================
-  # Routers — HTTP (port 80) for internal access
-  # =========================================================================
   routers:
-    # --- Frontend (HTTP) ---------------------------------------------------
-    academy-web-http:
-      rule: "Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)"
+    # --- HTTP to HTTPS redirect ---
+    http-to-https:
+      rule: "Host(`learning.topnet-solutions.com`)"
       entryPoints: ["web"]
+      middlewares: ["redirect-https"]
       service: academy-frontend
-      middlewares: ["security-headers", "compress", "rate-limit-frontend"]
-      priority: 1
 
-    # --- API: Public (HTTP, no auth) ----------------------------------------
-    academy-api-public-http:
-      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/public`)"
-      entryPoints: ["web"]
-      service: academy-course-svc
-      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress"]
-      priority: 15
-
-    # --- API: Course (HTTP) ------------------------------------------------
-    academy-api-course-http:
-      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/courses`)"
-      entryPoints: ["web"]
-      service: academy-course-svc
-      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
-
-    # --- API: Learning (HTTP) ----------------------------------------------
-    academy-api-learning-http:
-      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/learning`)"
-      entryPoints: ["web"]
-      service: academy-learning-svc
-      middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
-
-    # --- API: Assessment (HTTP) --------------------------------------------
-    academy-api-assessment-http:
-      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/assessment`)"
-      entryPoints: ["web"]
-      service: academy-assessment-svc
-      middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
-
-    # --- API: Live (HTTP) --------------------------------------------------
-    academy-api-live-http:
-      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/api/live`)"
-      entryPoints: ["web"]
-      service: academy-live-svc
-      middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
-
-    # --- Traefik Dashboard (HTTP, secured) ----------------------------------
-    academy-dashboard-http:
-      rule: "(Host(`learning.topnet-solutions.com`) || Host(`10.202.101.144`)) && PathPrefix(`/traefik`)"
-      entryPoints: ["web"]
-      service: api@internal
-      middlewares: ["dashboard-auth"]
-
-    # =====================================================================
-    # Routers — HTTPS (port 443) with TLS (domain only, no IP)
-    # These activate automatically once Let's Encrypt issues the cert
-    # =====================================================================
-    academy-web-https:
+    # --- Frontend HTTPS ---
+    academy-web:
       rule: "Host(`learning.topnet-solutions.com`)"
       entryPoints: ["websecure"]
       service: academy-frontend
-      middlewares: ["security-headers", "compress", "rate-limit-frontend"]
-      priority: 1
+      middlewares: ["security-headers", "compress"]
       tls:
         certResolver: letsencrypt
+      priority: 1
 
-    academy-api-public-https:
+    # --- Frontend HTTP (IP direct) ---
+    academy-web-ip:
+      rule: "Host(`179.237.122.141`)"
+      entryPoints: ["web"]
+      service: academy-frontend
+      middlewares: ["security-headers", "compress"]
+      priority: 1
+
+    # --- API: Public ---
+    academy-api-public:
       rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/public`)"
       entryPoints: ["websecure"]
       service: academy-course-svc
-      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress"]
-      priority: 15
+      middlewares: ["api-strip-courses", "cors", "security-headers"]
       tls:
         certResolver: letsencrypt
+      priority: 15
 
-    academy-api-course-https:
+    academy-api-public-http:
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`179.237.122.141`)) && PathPrefix(`/api/public`)"
+      entryPoints: ["web"]
+      service: academy-course-svc
+      middlewares: ["api-strip-courses", "cors", "security-headers"]
+      priority: 15
+
+    # --- API: Course ---
+    academy-api-course:
       rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/courses`)"
       entryPoints: ["websecure"]
       service: academy-course-svc
-      middlewares: ["api-strip-courses", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
+      middlewares: ["api-strip-courses", "cors", "security-headers"]
       tls:
         certResolver: letsencrypt
+      priority: 10
 
-    academy-api-learning-https:
+    academy-api-course-http:
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`179.237.122.141`)) && PathPrefix(`/api/courses`)"
+      entryPoints: ["web"]
+      service: academy-course-svc
+      middlewares: ["api-strip-courses", "cors", "security-headers"]
+      priority: 10
+
+    # --- API: Learning ---
+    academy-api-learning:
       rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/learning`)"
       entryPoints: ["websecure"]
       service: academy-learning-svc
-      middlewares: ["api-strip-learning", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
+      middlewares: ["api-strip-learning", "cors", "security-headers"]
       tls:
         certResolver: letsencrypt
+      priority: 10
 
-    academy-api-assessment-https:
+    academy-api-learning-http:
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`179.237.122.141`)) && PathPrefix(`/api/learning`)"
+      entryPoints: ["web"]
+      service: academy-learning-svc
+      middlewares: ["api-strip-learning", "cors", "security-headers"]
+      priority: 10
+
+    # --- API: Assessment ---
+    academy-api-assessment:
       rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/assessment`)"
       entryPoints: ["websecure"]
       service: academy-assessment-svc
-      middlewares: ["api-strip-assessment", "cors", "rate-limit", "security-headers", "compress", "retry"]
-      priority: 10
+      middlewares: ["api-strip-assessment", "cors", "security-headers"]
       tls:
         certResolver: letsencrypt
+      priority: 10
 
-    academy-api-live-https:
+    academy-api-assessment-http:
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`179.237.122.141`)) && PathPrefix(`/api/assessment`)"
+      entryPoints: ["web"]
+      service: academy-assessment-svc
+      middlewares: ["api-strip-assessment", "cors", "security-headers"]
+      priority: 10
+
+    # --- API: Live ---
+    academy-api-live:
       rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/live`)"
       entryPoints: ["websecure"]
       service: academy-live-svc
-      middlewares: ["api-strip-live", "cors", "rate-limit", "security-headers", "compress", "retry"]
+      middlewares: ["api-strip-live", "cors", "security-headers"]
+      tls:
+        certResolver: letsencrypt
       priority: 10
-      tls:
-        certResolver: letsencrypt
 
-    academy-dashboard-https:
-      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/traefik`)"
+    academy-api-live-http:
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`179.237.122.141`)) && PathPrefix(`/api/live`)"
+      entryPoints: ["web"]
+      service: academy-live-svc
+      middlewares: ["api-strip-live", "cors", "security-headers"]
+      priority: 10
+
+    # --- API: Commerce ---
+    academy-api-commerce:
+      rule: "Host(`learning.topnet-solutions.com`) && PathPrefix(`/api/commerce`)"
       entryPoints: ["websecure"]
-      service: api@internal
-      middlewares: ["dashboard-auth"]
+      service: academy-commerce-svc
+      middlewares: ["api-strip-commerce", "cors", "security-headers"]
       tls:
         certResolver: letsencrypt
+      priority: 10
+
+    academy-api-commerce-http:
+      rule: "(Host(`learning.topnet-solutions.com`) || Host(`179.237.122.141`)) && PathPrefix(`/api/commerce`)"
+      entryPoints: ["web"]
+      service: academy-commerce-svc
+      middlewares: ["api-strip-commerce", "cors", "security-headers"]
+      priority: 10
 
   # =========================================================================
-  # Services (load-balanced backends)
+  # Services
   # =========================================================================
   services:
     academy-frontend:
       loadBalancer:
         servers:
-          - url: "http://frontend:3000"
-        healthCheck:
-          path: /
-          interval: 30s
-          timeout: 5s
+          - url: "http://academy-frontend:3000"
 
     academy-course-svc:
       loadBalancer:
         servers:
           - url: "http://academy-course:4001"
-        healthCheck:
-          path: /health
-          interval: 15s
-          timeout: 5s
 
     academy-learning-svc:
       loadBalancer:
         servers:
           - url: "http://academy-learning:4002"
-        healthCheck:
-          path: /health
-          interval: 15s
-          timeout: 5s
 
     academy-assessment-svc:
       loadBalancer:
         servers:
           - url: "http://academy-assessment:4003"
-        healthCheck:
-          path: /health
-          interval: 15s
-          timeout: 5s
 
     academy-live-svc:
       loadBalancer:
         servers:
           - url: "http://academy-live:4004"
-        healthCheck:
-          path: /health
-          interval: 15s
-          timeout: 5s
+
+    academy-commerce-svc:
+      loadBalancer:
+        servers:
+          - url: "http://academy-commerce:4005"
 
   # =========================================================================
   # Middlewares
   # =========================================================================
   middlewares:
-    # --- Strip prefixes (per service) ----------------------------------------
-    api-strip-courses:
-      stripPrefix:
-        prefixes:
-          - "/api"
+    redirect-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
 
-    api-strip-learning:
-      stripPrefix:
-        prefixes:
-          - "/api/learning"
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        customResponseHeaders:
+          X-Powered-By: ""
 
-    api-strip-assessment:
-      stripPrefix:
-        prefixes:
-          - "/api/assessment"
+    compress:
+      compress: {}
 
-    api-strip-live:
-      stripPrefix:
-        prefixes:
-          - "/api/live"
-
-    # --- CORS --------------------------------------------------------------
     cors:
       headers:
         accessControlAllowOriginList:
           - "https://learning.topnet-solutions.com"
-          - "https://topnet-solutions.com"
-          - "https://bbb.topnet-solutions.com"
           - "http://learning.topnet-solutions.com"
-          - "http://10.202.101.144"
+          - "http://179.237.122.141"
         accessControlAllowMethods:
           - GET
           - POST
           - PUT
-          - PATCH
           - DELETE
           - OPTIONS
         accessControlAllowHeaders:
           - Content-Type
           - Authorization
-          - X-Tenant-ID
-          - X-Request-ID
-          - Accept-Language
-        accessControlExposeHeaders:
-          - X-Request-ID
-          - X-RateLimit-Limit
-          - X-RateLimit-Remaining
+          - X-Requested-With
+          - X-Tenant-Id
         accessControlMaxAge: 86400
         addVaryHeader: true
 
-    # --- Rate limiting (API) — 100 avg / 200 burst per source IP ----------
     rate-limit:
       rateLimit:
         average: 100
         burst: 200
-        period: 1s
-        sourceCriterion:
-          requestHeaderName: X-Forwarded-For
+        period: 1m
 
-    # --- Rate limiting (frontend) — more generous -------------------------
-    rate-limit-frontend:
-      rateLimit:
-        average: 200
-        burst: 400
-        period: 1s
-        sourceCriterion:
-          requestHeaderName: X-Forwarded-For
+    api-strip-courses:
+      stripPrefix:
+        prefixes:
+          - "/api/courses"
+        forceSlash: false
 
-    # --- Security headers --------------------------------------------------
-    security-headers:
-      headers:
-        browserXssFilter: true
-        contentTypeNosniff: true
-        frameDeny: false
-        stsIncludeSubdomains: true
-        stsPreload: true
-        stsSeconds: 31536000
-        customFrameOptionsValue: "SAMEORIGIN"
-        referrerPolicy: "strict-origin-when-cross-origin"
-        permissionsPolicy: "camera=(self \"https://bbb.topnet-solutions.com\"), microphone=(self \"https://bbb.topnet-solutions.com\"), fullscreen=(self \"https://bbb.topnet-solutions.com\"), display-capture=(self \"https://bbb.topnet-solutions.com\"), geolocation=(), payment=()"
-        customResponseHeaders:
-          X-Content-Type-Options: "nosniff"
-          X-Download-Options: "noopen"
-          X-Permitted-Cross-Domain-Policies: "none"
-          X-Robots-Tag: "noindex, nofollow"
+    api-strip-learning:
+      stripPrefix:
+        prefixes:
+          - "/api/learning"
+        forceSlash: false
 
-    # --- Gzip compression --------------------------------------------------
-    compress:
-      compress:
-        excludedContentTypes:
-          - text/event-stream
-        minResponseBodyBytes: 1024
+    api-strip-assessment:
+      stripPrefix:
+        prefixes:
+          - "/api/assessment"
+        forceSlash: false
 
-    # --- Retry (backend services) ------------------------------------------
-    retry:
-      retry:
-        attempts: 3
-        initialInterval: 100ms
+    api-strip-live:
+      stripPrefix:
+        prefixes:
+          - "/api/live"
+        forceSlash: false
 
-    # --- Dashboard basic auth (generate with htpasswd) ---------------------
-    dashboard-auth:
-      basicAuth:
-        users:
-          - "admin:$apr1$TOPNET2026$ly1e4f69xCaUOzHH6mYFv0"
+    api-strip-commerce:
+      stripPrefix:
+        prefixes:
+          - "/api/commerce"
+        forceSlash: false
