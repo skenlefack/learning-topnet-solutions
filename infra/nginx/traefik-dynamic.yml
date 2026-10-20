@@ -216,7 +216,7 @@ http:
     api-strip-courses:
       stripPrefix:
         prefixes:
-          - "/api/courses"
+          - "/api"
         forceSlash: false
 
     api-strip-learning:
