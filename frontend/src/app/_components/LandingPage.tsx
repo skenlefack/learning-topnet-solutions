@@ -416,6 +416,7 @@ function SearchSection() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function StatsBar({ onSignup }: { onSignup: () => void }) {
+  const router = useRouter();
   const t_stats = useTranslations('stats');
   const [data, setData] = useState<{ courses: number; enrollments: number; certifications: number; paths: number } | null>(null);
 
@@ -472,7 +473,7 @@ function StatsBar({ onSignup }: { onSignup: () => void }) {
               'shadow-[0_4px_20px_rgba(27,12,179,0.2)] hover:shadow-[0_8px_30px_rgba(27,12,179,0.35)]',
               'border border-[#1B0CB3]/20 transition-shadow duration-300',
             )}
-            onClick={onSignup}
+            onClick={() => router.push('/skills')}
           >
             {/* Decorative circles */}
             <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/[0.06]" />
