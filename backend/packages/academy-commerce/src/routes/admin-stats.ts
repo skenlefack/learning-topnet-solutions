@@ -66,7 +66,7 @@ export async function adminStatsRoutes(app: FastifyInstance) {
                 COUNT(*)::int AS count, COALESCE(SUM(o.amount),0)::int AS amount
          FROM academy_core.orders o
          JOIN academy_core.offers of ON of.id = o.offer_id
-         WHERE o.${clause} AND o.status = 'paid'
+         WHERE ${clause === '1=1' ? '1=1' : 'o.' + clause} AND o.status = 'paid'
          GROUP BY o.offer_id, of.name, of.kind
          ORDER BY amount DESC`,
         params,

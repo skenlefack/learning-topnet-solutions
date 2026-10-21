@@ -188,7 +188,7 @@ export async function orderRoutes(app: FastifyInstance) {
       FROM academy_core.orders o
       JOIN academy_core.offers of ON of.id = o.offer_id
       JOIN academy_core.users u ON u.id = o.user_id
-      WHERE o.${clause}`;
+      WHERE ${clause === '1=1' ? '1=1' : 'o.' + clause}`;
 
     if (status) {
       params.push(status);

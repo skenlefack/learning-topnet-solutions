@@ -56,7 +56,7 @@ export async function serviceRoutes(app: FastifyInstance) {
        FROM academy_core.purchased_services ps
        JOIN academy_core.users u ON u.id = ps.user_id
        JOIN academy_core.orders o ON o.id = ps.order_id
-       WHERE ps.${clause}
+       WHERE ${clause === '1=1' ? '1=1' : 'ps.' + clause}
        ORDER BY
          CASE ps.status
            WHEN 'to_schedule' THEN 1
