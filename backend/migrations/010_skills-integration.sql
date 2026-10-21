@@ -109,8 +109,9 @@ CREATE INDEX idx_questions_skill_track ON questions(skill_track_id)
 -- 5. ENHANCE ASSESSMENT ATTEMPTS — standalone support + skills metadata
 -- ============================================================================
 
--- Allow attempts without enrollment (standalone skill tests)
+-- Allow attempts without enrollment or assessment (standalone skill tests)
 ALTER TABLE assessment_attempts ALTER COLUMN enrollment_id DROP NOT NULL;
+ALTER TABLE assessment_attempts ALTER COLUMN assessment_id DROP NOT NULL;
 
 -- Add skills-specific fields
 ALTER TABLE assessment_attempts
