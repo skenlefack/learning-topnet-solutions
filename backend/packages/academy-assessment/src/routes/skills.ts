@@ -427,6 +427,78 @@ export async function skillRoutes(app: FastifyInstance) {
     return reply.send({ success: true, data: rows });
   });
 
+  // GET /skills/result/:attemptId/recommendations — course suggestions for weak domains
+  app.get('/result/:attemptId/recommendations', {
+    schema: { summary: 'Course recommendations based on test results', tags: ['Skills'], security: BearerSecurity },
+    preHandler: [app.authenticate],
+  }, async (req: any, reply) => {
+    const attempt = await queryOne<any>(
+      `SELECT a.domain_scores, a.skill_track_id, st.code AS track_code, st.domains AS track_domains
+       FROM academy_core.assessment_attempts a
+       LEFT JOIN academy_core.skill_tracks st ON st.id = a.skill_track_id
+       WHERE a.id = $1 AND (a.user_id = $2 OR $3 = true)`,
+      [req.params.attemptId, req.user.sub, req.user.role?.includes('admin')],
+    );
+    if (!attempt || !attempt.domain_scores) {
+      return reply.send({ success: true, data: { weakDomains: [], courses: [] } });
+    }
+
+    // Identify weak domains (score < 70%)
+    const domainScores = typeof attempt.domain_scores === 'string'
+      ? JSON.parse(attempt.domain_scores) : attempt.domain_scores;
+    const trackDomains = typeof attempt.track_domains === 'string'
+      ? JSON.parse(attempt.track_domains) : (attempt.track_domains || {});
+
+    const weakDomains: Array<{ code: string; label: string; pct: number }> = [];
+    for (const [code, data] of Object.entries(domainScores as Record<string, any>)) {
+      if (data.pct < 70) {
+        weakDomains.push({
+          code,
+          label: trackDomains[code] || code,
+          pct: data.pct,
+        });
+      }
+    }
+    weakDomains.sort((a, b) => a.pct - b.pct); // weakest first
+
+    // Search courses that match weak domain tags or track code
+    const searchTags = [
+      attempt.track_code,
+      ...weakDomains.map(d => d.code),
+    ];
+
+    const courses = await query(
+      `SELECT id, title, description, slug, level, status, thumbnail_url, estimated_hours, tags
+       FROM academy_core.courses
+       WHERE status = 'published' AND tags && $1::text[]
+       ORDER BY
+         CASE level WHEN 'beginner' THEN 1 WHEN 'intermediate' THEN 2 WHEN 'advanced' THEN 3 ELSE 4 END
+       LIMIT 10`,
+      [searchTags],
+    );
+
+    // If no tag-matched courses, return general courses
+    let recommendedCourses = courses;
+    if (courses.length === 0) {
+      recommendedCourses = await query(
+        `SELECT id, title, description, slug, level, status, thumbnail_url, estimated_hours, tags
+         FROM academy_core.courses
+         WHERE status = 'published'
+         ORDER BY created_at DESC
+         LIMIT 6`,
+      );
+    }
+
+    return reply.send({
+      success: true,
+      data: {
+        weakDomains,
+        courses: recommendedCourses,
+        trackCode: attempt.track_code,
+      },
+    });
+  });
+
   // GET /skills/verify/:certCode — public verification
   app.get('/verify/:certCode', async (req: any, reply) => {
     const attempt = await queryOne<any>(

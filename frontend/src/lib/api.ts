@@ -102,6 +102,8 @@ export const skillsApi = {
     apiFetch<{ success: boolean; data: any }>(`/api/assessment/skills/result/${attemptId}`, { token }),
   history: (token: string) =>
     apiFetch<{ success: boolean; data: any[] }>('/api/assessment/skills/history', { token }),
+  recommendations: (token: string, attemptId: string) =>
+    apiFetch<{ success: boolean; data: { weakDomains: any[]; courses: any[]; trackCode: string } }>(`/api/assessment/skills/result/${attemptId}/recommendations`, { token }),
   verify: (certCode: string) =>
     apiFetch<{ success: boolean; data: any }>(`/api/assessment/skills/verify/${certCode}`),
 };

@@ -6,12 +6,13 @@ import { skillsApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 import {
   ArrowLeft, Award, Clock, Eye, CheckCircle, XCircle,
-  BarChart3, Shield, Lock, ExternalLink,
+  BarChart3, Shield, Lock, ExternalLink, BookOpen, GraduationCap,
 } from 'lucide-react';
 
 export default function SkillResultPage() {
   const { id: attemptId } = useParams<{ id: string }>();
   const [result, setResult] = useState<any>(null);
+  const [recommendations, setRecommendations] = useState<{ weakDomains: any[]; courses: any[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { token } = useAuthStore();
@@ -23,15 +24,22 @@ export default function SkillResultPage() {
       setResult(JSON.parse(cached));
       sessionStorage.removeItem('skill-result');
       setLoading(false);
-      return;
-    }
-    if (token && attemptId) {
+    } else if (token && attemptId) {
       skillsApi.result(token, attemptId)
         .then(res => setResult(res.data))
         .catch(console.error)
         .finally(() => setLoading(false));
     }
   }, [token, attemptId]);
+
+  // Fetch course recommendations based on weak domains
+  useEffect(() => {
+    if (token && attemptId && result) {
+      skillsApi.recommendations(token, attemptId)
+        .then(res => setRecommendations(res.data))
+        .catch(() => {}); // non-blocking
+    }
+  }, [token, attemptId, result]);
 
   if (loading) {
     return (
@@ -206,6 +214,76 @@ export default function SkillResultPage() {
                 Voir les offres
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Course Recommendations */}
+        {recommendations && (recommendations.weakDomains.length > 0 || recommendations.courses.length > 0) && (
+          <div className="mt-8 border-t border-gray-100 dark:border-gray-700 pt-6">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-blue-600" />
+              Renforcez vos competences
+            </h3>
+
+            {recommendations.weakDomains.length > 0 && (
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Domaines a ameliorer :
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {recommendations.weakDomains.map((d: any) => (
+                    <span key={d.code} className="px-2.5 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full text-xs font-medium">
+                      {d.code} — {d.pct}%
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {recommendations.courses.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {recommendations.courses.map((course: any) => (
+                  <div
+                    key={course.id}
+                    onClick={() => router.push(`/courses/${course.id}`)}
+                    className="p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-xl hover:shadow-md transition-shadow cursor-pointer"
+                  >
+                    <div className="flex items-start gap-3">
+                      <BookOpen className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-sm text-gray-900 dark:text-white">
+                          {course.title?.fr || course.title?.en || 'Cours'}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {course.level} {course.estimated_hours ? `— ${course.estimated_hours}h` : ''}
+                        </p>
+                        {course.tags && course.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {course.tags.slice(0, 3).map((tag: string) => (
+                              <span key={tag} className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-800/30 text-blue-600 rounded text-[10px]">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-center">
+                <p className="text-sm text-gray-500">
+                  Aucun cours correspondant pour le moment.
+                </p>
+                <button
+                  onClick={() => router.push('/catalog')}
+                  className="mt-2 text-sm text-blue-600 hover:underline font-medium"
+                >
+                  Parcourir le catalogue de formations
+                </button>
+              </div>
+            )}
           </div>
         )}
 
