@@ -296,7 +296,7 @@ export default function SkillResultPage() {
             Passer un autre test
           </button>
           <button
-            onClick={() => router.push('/skills/results/' + attemptId)}
+            onClick={() => router.push('/dashboard')}
             className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
           >
             Voir l'historique

@@ -3,22 +3,21 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { skillsApi } from '@/lib/api';
-import { Monitor, Shield, Cloud, Code, Database, Network, Award, Briefcase } from 'lucide-react';
+import { Monitor, Shield, Cloud, Code, Database, Network, Award, Briefcase, ShoppingBag } from 'lucide-react';
 
 const trackIcons: Record<string, any> = {
   SUPPORT: Monitor, SECU: Shield, CLOUD: Cloud, DEV: Code,
   DATA: Database, NET: Network, PM: Briefcase,
 };
 
-export default function SkillsPage() {
+export default function SkillsCatalogPage() {
   const [tracks, setTracks] = useState<any[]>([]);
-  const [formats, setFormats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    Promise.all([skillsApi.tracks(), skillsApi.formats()])
-      .then(([t, f]) => { setTracks(t.data || []); setFormats(f.data || []); })
+    skillsApi.tracks()
+      .then((res) => setTracks(res.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -36,16 +35,42 @@ export default function SkillsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Hero */}
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
           Tests de niveau IT
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Evaluez vos competences en informatique avec des tests professionnels couvrant 43 parcours et certifications.
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">
+          Evaluez vos competences en informatique avec des tests professionnels.
+          Identifiez vos forces, vos lacunes, et trouvez la formation adaptee.
         </p>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => router.push('/shop')}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <ShoppingBag className="w-4 h-4" /> Voir les offres
+          </button>
+        </div>
       </div>
 
-      {/* Skill Tracks (parcours metier) */}
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-10 max-w-lg mx-auto">
+        <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+          <p className="text-2xl font-bold text-blue-600">{tracks.length}</p>
+          <p className="text-xs text-gray-500">Tests</p>
+        </div>
+        <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+          <p className="text-2xl font-bold text-blue-600">{skillTracks.length}</p>
+          <p className="text-xs text-gray-500">Parcours</p>
+        </div>
+        <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+          <p className="text-2xl font-bold text-blue-600">{certTracks.length}</p>
+          <p className="text-xs text-gray-500">Certifications</p>
+        </div>
+      </div>
+
+      {/* Skill Tracks */}
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
         Parcours metier ({skillTracks.length})
       </h2>

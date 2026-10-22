@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { skillsApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
-import { ArrowLeft, Play, Clock, HelpCircle, Award, Lock } from 'lucide-react';
+import { ArrowLeft, Play, Clock, HelpCircle, Award, Lock, ShoppingBag } from 'lucide-react';
 
-export default function SkillTrackPage() {
+export default function SkillTrackDetailPage() {
   const { track: trackCode } = useParams<{ track: string }>();
   const [track, setTrack] = useState<any>(null);
   const [formats, setFormats] = useState<any[]>([]);
@@ -21,7 +21,6 @@ export default function SkillTrackPage() {
     Promise.all([skillsApi.track(trackCode), skillsApi.formats()])
       .then(([t, f]) => {
         setTrack(t.data);
-        // Filter formats applicable to this track kind
         const applicable = (f.data || []).filter((fmt: any) =>
           fmt.applicable_to?.includes(t.data?.kind),
         );
@@ -33,16 +32,18 @@ export default function SkillTrackPage() {
   }, [trackCode]);
 
   const handleStart = async () => {
-    if (!token) { router.push('/login?redirect=/skills/' + trackCode); return; }
-    if (!selectedFormat) return;
+    if (!token) {
+      router.push('/login?redirect=/skills/' + trackCode);
+      return;
+    }
     setStarting(true);
     setError('');
     try {
       const res = await skillsApi.start(token, { trackCode, format: selectedFormat });
       if (res.success && res.data) {
-        // Store test data in sessionStorage and navigate to test UI
         sessionStorage.setItem('skill-test', JSON.stringify(res.data));
-        router.push(`/skills/${trackCode}/test`);
+        // Navigate to dedicated test environment (outside main layout)
+        router.push(`/test/${trackCode}`);
       }
     } catch (err: any) {
       if (err.message?.includes('payment_required') || err.message?.includes('402')) {
@@ -76,13 +77,6 @@ export default function SkillTrackPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <button
-        onClick={() => router.push('/skills')}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6"
-      >
-        <ArrowLeft className="w-4 h-4" /> Retour aux tests
-      </button>
-
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
@@ -164,8 +158,8 @@ export default function SkillTrackPage() {
           <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
             {error}
             {error.includes('credits') && (
-              <button onClick={() => router.push('/shop')} className="underline ml-2 font-medium">
-                Voir les offres
+              <button onClick={() => router.push('/shop')} className="underline ml-2 font-medium flex items-center gap-1 mt-1">
+                <ShoppingBag className="w-3.5 h-3.5" /> Voir les offres
               </button>
             )}
           </div>

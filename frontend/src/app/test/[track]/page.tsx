@@ -104,7 +104,7 @@ export default function SkillTestPage() {
         setSubmitted(true);
         sessionStorage.removeItem('skill-test');
         sessionStorage.setItem('skill-result', JSON.stringify(res.data));
-        router.push(`/skills/results/${testData.attemptId}`);
+        router.push(`/test/results/${testData.attemptId}`);
       }
     } catch (err: any) {
       console.error('Submit failed:', err);

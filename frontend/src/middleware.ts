@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const AUTH_COOKIE_NAME = 'topnet-token';
 
-const PUBLIC_PATHS = ['/login', '/register', '/auth/callback', '/api/', '/verify', '/catalog', '/category', '/paths', '/skills', '/shop', '/sponsor'];
+const PUBLIC_PATHS = ['/login', '/register', '/auth/callback', '/api/', '/verify', '/catalog', '/category', '/paths', '/skills', '/shop', '/sponsor', '/test'];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
