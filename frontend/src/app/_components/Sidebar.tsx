@@ -60,11 +60,7 @@ const NAV_KEYS = [
   { href: '/courses', key: 'myCourses', icon: BookOpen },
   { href: '/live', key: 'live', icon: Video },
   { href: '/resources', key: 'resources', icon: FileText },
-  { href: '/skills', key: 'skills', icon: BarChart3 },
   { href: '/certificates', key: 'certificates', icon: Award },
-  { href: '/shop', key: 'shop', icon: Settings },
-  { href: '/orders', key: 'orders', icon: FileText },
-  { href: '/wallet', key: 'wallet', icon: Award },
   { href: '/community', key: 'community', icon: Users },
 ] as const;
 
