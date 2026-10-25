@@ -199,7 +199,7 @@ export default function LoginPage() {
 
               <div className="mt-8 pt-6 border-t border-gray-100 text-center">
                 <span className="text-sm text-[#6c757d]">{t('noAccount')} </span>
-                <Link href="/register" className="text-sm font-bold text-[#1B0CB3] hover:underline">
+                <Link href={`/register${searchParams.get('redirect') ? '?redirect=' + encodeURIComponent(searchParams.get('redirect')!) : ''}`} className="text-sm font-bold text-[#1B0CB3] hover:underline">
                   {t('signup')}
                 </Link>
               </div>

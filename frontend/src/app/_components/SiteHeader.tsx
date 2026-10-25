@@ -4,7 +4,7 @@
 // Same branding as landing page navbar
 // ============================================================================
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, X, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
@@ -20,6 +20,7 @@ const NAV_LINKS = [
 
 export default function SiteHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const { token, user } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -77,13 +78,13 @@ export default function SiteHeader() {
               ) : (
                 <>
                   <button
-                    onClick={() => router.push('/login')}
+                    onClick={() => router.push(`/login?redirect=${encodeURIComponent(pathname)}`)}
                     className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border border-[#1B0CB3] text-[#1B0CB3] hover:bg-[#1B0CB3]/5 transition-colors"
                   >
                     <LogIn className="w-4 h-4" /> Connexion
                   </button>
                   <button
-                    onClick={() => router.push('/register')}
+                    onClick={() => router.push(`/register?redirect=${encodeURIComponent(pathname)}`)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[#1B0CB3] text-white hover:bg-[#0D0670] transition-colors"
                   >
                     <UserPlus className="w-4 h-4" />
